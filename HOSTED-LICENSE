@@ -19,6 +19,6 @@ license of the bot
 
 you can use Barista if you do this:
 
-barista can only be in guilds where all bots in the guild are under open source licenses
+barista can only be in guilds where all source code of all the bots in the guild are under open source licenses
 
 these are open source licenses: https://opensource.org/licenses, https://www.gnu.org/licenses/license-list.en.html
