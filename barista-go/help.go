@@ -86,6 +86,9 @@ const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro di
 ( -l | --list )
 	List files provided by PKG. Will override other flags.`
 
+const msgtags string = `SR1234		openSUSE Build Service Submit Requests
+FEDORA-*		Fedora Bodhi Updates`
+
 func Help(s *discordgo.Session, cmd *LexedCommand) {
 	page := dgwidgets.NewPaginator(s, cmd.CommandMessage.ChannelID)
 	page.Add(
@@ -110,6 +113,9 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 	)
 	page.Add(
 		cmdEmbed("sudo profile", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
+	)
+	page.Add(
+		cmdEmbed("Message Tags", "```"+msgtags+"```"),
 	)
 	cmd.PaginatorPageName = "Command"
 	cmd.SendPaginator(page)

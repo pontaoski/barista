@@ -34,9 +34,10 @@ type LexedCommand struct {
 
 	PaginatorPageName string
 
-	CommandMessage *discordgo.Message
-	SentMessage    *discordgo.Message
-	SentPaginator  *dgwidgets.Paginator
+	CommandMessage  *discordgo.Message
+	SentMessage     *discordgo.Message
+	SentTagMessages []*discordgo.Message
+	SentPaginator   *dgwidgets.Paginator
 
 	Session *discordgo.Session
 
@@ -63,6 +64,23 @@ func (cmd *LexedCommand) SendMessage(s *discordgo.MessageSend) {
 	}
 	if err != nil {
 		println(err.Error())
+	}
+}
+
+// SendTags : Send a bunch of embeds
+func (cmd *LexedCommand) SendTags(embeds []*Embed) {
+	for _, old := range cmd.SentTagMessages {
+		cmd.Session.ChannelMessageDelete(old.ChannelID, old.ID)
+	}
+	cmd.SentTagMessages = []*discordgo.Message{}
+	for _, new := range embeds {
+		msgSend := discordgo.MessageSend{
+			Embed: new.MessageEmbed,
+		}
+		msg, err := cmd.Session.ChannelMessageSendComplex(cmd.CommandMessage.ChannelID, &msgSend)
+		if err == nil {
+			cmd.SentTagMessages = append(cmd.SentTagMessages, msg)
+		}
 	}
 }
 
@@ -98,6 +116,9 @@ func (cmd *LexedCommand) GetFlagPair(short string, long string) string {
 }
 
 func (cmd *LexedCommand) lex() {
+	if len(strings.Split(cmd.CommandMessage.Content, " ")) < 2 {
+		return
+	}
 	arr := strings.Split(cmd.CommandMessage.Content, " ")[2:]
 	var toremove []int
 	hasFlag := false

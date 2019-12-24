@@ -25,6 +25,11 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"dnf repoquery": DnfRepoQuery,
 }
 
+var handlers []CommandFunc = []CommandFunc{
+	Obs,
+	Bodhi,
+}
+
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
@@ -33,6 +38,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		if strings.HasPrefix(m.Content, key) {
 			go LexedCommandFunction(s, m.Message, val)
 		}
+	}
+	for _, val := range handlers {
+		go LexedCommandFunction(s, m.Message, val)
 	}
 }
 func messageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {

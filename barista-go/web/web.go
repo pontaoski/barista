@@ -87,25 +87,11 @@ func oauthHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	text, err := ioutil.ReadAll(resp.Body)
+	_, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	bod, _ := req.GetBody()
-	reqBody, err := ioutil.ReadAll(ioutil.NopCloser(bod))
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	println(formatRequest(req))
-	println("Request body:")
-	println(string(reqBody))
-	fmt.Fprintf(w, "<br>===================================<br>")
-	fmt.Fprintf(w, form.Encode())
-	fmt.Fprintf(w, "<br>===================================<br>")
-	fmt.Fprintf(w, string(text))
 
 	err = session.Save(r, w)
 	if err != nil {
