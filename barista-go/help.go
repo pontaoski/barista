@@ -63,7 +63,9 @@ const profilehelp string = `# Syntax: sudo profile --flag value
 ( --set-languages | -p )
 	Set your programming languages.
 ( --set-blurb | -b )
-	Set your profile blurb.`
+	Set your profile blurb.
+( --set-screenshot | -i )
+	Set your screenshot to a PNG.`
 
 const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro distro
 ( -f | --file )

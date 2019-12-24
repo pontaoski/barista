@@ -35,6 +35,9 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
+	if m.Message.WebhookID != "" {
+		return
+	}
 	for key, val := range cmds {
 		if strings.HasPrefix(m.Content, key) {
 			go LexedCommandFunction(s, m.Message, val)
