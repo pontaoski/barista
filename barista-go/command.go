@@ -3,6 +3,7 @@ package barista
 import (
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/Necroforger/dgwidgets"
@@ -188,6 +189,7 @@ func (cmd *LexedCommand) lex() {
 	}
 }
 
+var lexedCommandsMutex = &sync.Mutex{}
 var lexedcommands map[string]*LexedCommand = map[string]*LexedCommand{}
 
 // Cleaner : Cleans old lexed commands.
@@ -201,13 +203,17 @@ func Cleaner() {
 			}
 		}
 		for _, key := range rmkeys {
+			lexedCommandsMutex.Lock()
 			delete(lexedcommands, key)
+			lexedCommandsMutex.Unlock()
 		}
 	}
 }
 
 // NewLexedCommandForMessageAndSession : A function that creates a new lexed command for a message.
 func NewLexedCommandForMessageAndSession(m *discordgo.Message, s *discordgo.Session) *LexedCommand {
+	lexedCommandsMutex.Lock()
+	defer lexedCommandsMutex.Unlock()
 	if val, ok := lexedcommands[m.ID]; ok {
 		cmd := val
 		cmd.CommandMessage = m
