@@ -29,6 +29,7 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 var handlers []CommandFunc = []CommandFunc{
 	Obs,
 	Bodhi,
+	Bugzilla,
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {

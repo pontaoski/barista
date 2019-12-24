@@ -2,6 +2,7 @@ package barista
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/Necroforger/dgwidgets"
 
@@ -119,8 +120,12 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 	page.Add(
 		cmdEmbed("sudo about", "About Barista"),
 	)
+	bztags := []string{}
+	for _, bugzilla := range BugzillaInstances {
+		bztags = append(bztags, fmt.Sprintf("%s\t\t%s", strings.Join(bugzilla.Matches, ", "), bugzilla.Name))
+	}
 	page.Add(
-		cmdEmbed("Message Tags", "```"+msgtags+"```"),
+		cmdEmbed("Message Tags", "```"+msgtags+"\n"+strings.Join(bztags, "\n")+"```"),
 	)
 	cmd.PaginatorPageName = "Command"
 	cmd.SendPaginator(page)

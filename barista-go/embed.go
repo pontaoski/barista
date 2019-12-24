@@ -131,6 +131,12 @@ func (e *Embed) SetThumbnail(args ...string) *Embed {
 	return e
 }
 
+// SetTimestamp
+func (e *Embed) SetTimestamp(time string) *Embed {
+	e.MessageEmbed.Timestamp = time
+	return e
+}
+
 //SetAuthor ...
 func (e *Embed) SetAuthor(args ...string) *Embed {
 	var (
