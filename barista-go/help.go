@@ -115,6 +115,9 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 		cmdEmbed("sudo profile", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
 	)
 	page.Add(
+		cmdEmbed("sudo about", "About Barista"),
+	)
+	page.Add(
 		cmdEmbed("Message Tags", "```"+msgtags+"```"),
 	)
 	cmd.PaginatorPageName = "Command"

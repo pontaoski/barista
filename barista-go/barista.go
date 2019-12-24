@@ -23,6 +23,7 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"sudo help":     Help,
 	"sudo ddg":      Ddg,
 	"dnf repoquery": DnfRepoQuery,
+	"sudo about":    About,
 }
 
 var handlers []CommandFunc = []CommandFunc{
