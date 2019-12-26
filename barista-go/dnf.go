@@ -18,6 +18,61 @@ type Package struct {
 	installsize int
 }
 
+type Distro struct {
+	matches      []string
+	displayName  string
+	queryKitName string
+	iconURL      string
+	colour       int
+}
+
+var Distros []Distro = []Distro{
+	{
+		displayName:  "openSUSE",
+		queryKitName: "opensuse",
+		matches:      []string{"opensuse", "os", "tumbleweed", "tw"},
+		iconURL:      "https://en.opensuse.org/images/c/cd/Button-colour.png",
+		colour:       0x73ba25,
+	},
+	{
+		displayName:  "Fedora",
+		queryKitName: "fedora",
+		matches:      []string{"fedora"},
+		iconURL:      "https://fedoraproject.org/w/uploads/archive/e/e5/20110717032101%21Fedora_infinity.png",
+		colour:       0x0b57a4,
+	},
+	{
+		displayName:  "Mageia",
+		queryKitName: "mageia",
+		matches:      []string{"mageia"},
+		iconURL:      "https://pbs.twimg.com/profile_images/553311070215892992/lf8QV6oJ_400x400.png",
+		colour:       0x2397d4,
+	},
+	{
+		displayName:  "OpenMandriva",
+		queryKitName: "openmandriva",
+		matches:      []string{"openmandriva"},
+		iconURL:      "https://pbs.twimg.com/profile_images/1140547712208822272/dG9610ZK_400x400.jpg",
+		colour:       0x40a5da,
+	},
+}
+
+func resolveDistro(name string) (Distro, bool) {
+	var distro Distro
+	set := false
+
+	for _, dist := range Distros {
+		for _, match := range dist.matches {
+			if strings.ToLower(name) == strings.ToLower(match) {
+				distro = dist
+				set = true
+			}
+		}
+	}
+
+	return distro, set
+}
+
 func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	helpmsg := "```dsconfig\n" + repoqueryhelp + "\n```"
 
@@ -32,30 +87,8 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.SendMessage(&msgSend)
 		return
 	}
-	var embedauthor discordgo.MessageEmbedAuthor
-	var colour int
-	switch cmd.GetFlagPair("-d", "--distro") {
-	case "fedora":
-		embedauthor.Name = "Fedora Repoquery"
-		embedauthor.IconURL = "https://fedoraproject.org/w/uploads/archive/e/e5/20110717032101%21Fedora_infinity.png"
-		colour = 0x0b57a4
-		break
-	case "opensuse":
-		embedauthor.Name = "openSUSE Repoquery"
-		embedauthor.IconURL = "https://en.opensuse.org/images/c/cd/Button-colour.png"
-		colour = 0x73ba25
-		break
-	case "openmandriva":
-		embedauthor.Name = "OpenMandriva Repoquery"
-		embedauthor.IconURL = "https://pbs.twimg.com/profile_images/1140547712208822272/dG9610ZK_400x400.jpg"
-		colour = 0x40a5da
-		break
-	case "mageia":
-		embedauthor.Name = "Mageia Repoquery"
-		embedauthor.IconURL = "https://pbs.twimg.com/profile_images/553311070215892992/lf8QV6oJ_400x400.png"
-		colour = 0x2397d4
-		break
-	default:
+	distro, set := resolveDistro(cmd.GetFlagPair("-d", "--distro"))
+	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
 			SetTitle("Please specify a distro from the following list: `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
@@ -114,10 +147,11 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		}
 		if len(files) < 20 {
 			embed := NewEmbed().
-				SetColor(colour).
+				SetColor(distro.colour).
 				SetTitle(fmt.Sprintf("Files of %s", cmd.Query.Content)).
-				SetDescription("```" + strings.Join(files, "\n") + "```")
-			embed.MessageEmbed.Author = &embedauthor
+				SetDescription("```"+strings.Join(files, "\n")+"```").
+				SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+
 			msgSend := discordgo.MessageSend{
 				Embed: embed.MessageEmbed,
 			}
@@ -135,10 +169,10 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 				}
 
 				embed := NewEmbed().
-					SetColor(colour).
+					SetColor(distro.colour).
 					SetTitle(fmt.Sprintf("Files of %s", cmd.Query.Content)).
-					SetDescription("```" + strings.Join(files[i:end], "\n") + "```")
-				embed.MessageEmbed.Author = &embedauthor
+					SetDescription("```"+strings.Join(files[i:end], "\n")+"```").
+					SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
 
 				paginator.Add(embed.MessageEmbed)
 			}
@@ -190,13 +224,13 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
 	for _, pkg := range pkgs {
 		embed := NewEmbed().
-			SetColor(colour).
+			SetColor(distro.colour).
 			SetTitle(pkg[0].(string)).
 			SetDescription(pkg[1].(string)).
 			AddField("Version", pkg[2].(string), true).
 			AddField("Download Size", humanize.Bytes(uint64(pkg[3].(int32))), true).
-			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true)
-		embed.MessageEmbed.Author = &embedauthor
+			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true).
+			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
 
 		paginator.Add(embed.MessageEmbed)
 	}
@@ -232,30 +266,8 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.SendMessage(&msgSend)
 		return
 	}
-	var embedauthor discordgo.MessageEmbedAuthor
-	var colour int
-	switch cmd.GetFlagPair("-d", "--distro") {
-	case "fedora":
-		embedauthor.Name = fmt.Sprintf("Fedora Repoquery %s", cmd.Query.Content)
-		embedauthor.IconURL = "https://fedoraproject.org/w/uploads/archive/e/e5/20110717032101%21Fedora_infinity.png"
-		colour = 0x0b57a4
-		break
-	case "opensuse":
-		embedauthor.Name = fmt.Sprintf("openSUSE Package Search for %s", cmd.Query.Content)
-		embedauthor.IconURL = "https://en.opensuse.org/images/c/cd/Button-colour.png"
-		colour = 0x73ba25
-		break
-	case "openmandriva":
-		embedauthor.Name = fmt.Sprintf("OpenMandriva Package Search for %s", cmd.Query.Content)
-		embedauthor.IconURL = "https://pbs.twimg.com/profile_images/1140547712208822272/dG9610ZK_400x400.jpg"
-		colour = 0x40a5da
-		break
-	case "mageia":
-		embedauthor.Name = fmt.Sprintf("Mageia Package Search for %s", cmd.Query.Content)
-		embedauthor.IconURL = "https://pbs.twimg.com/profile_images/553311070215892992/lf8QV6oJ_400x400.png"
-		colour = 0x2397d4
-		break
-	default:
+	distro, set := resolveDistro(cmd.GetFlagPair("-d", "--distro"))
+	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
 			SetTitle("Please specify a distro from the following list: `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
@@ -293,13 +305,13 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
 	for _, pkg := range pkgs {
 		embed := NewEmbed().
-			SetColor(colour).
+			SetColor(distro.colour).
 			SetTitle(pkg[0].(string)).
 			SetDescription(pkg[1].(string)).
 			AddField("Version", pkg[2].(string), true).
 			AddField("Download Size", humanize.Bytes(uint64(pkg[3].(int32))), true).
-			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true)
-		embed.MessageEmbed.Author = &embedauthor
+			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true).
+			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
 
 		paginator.Add(embed.MessageEmbed)
 	}
