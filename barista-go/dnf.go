@@ -77,17 +77,14 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	helpmsg := "```dsconfig\n" + repoqueryhelp + "\n```"
 
 	cmd.PaginatorPageName = "Package"
+	var dist string
 	if cmd.GetFlagPair("-d", "--distro") == "" {
-		embed := NewEmbed().
-			SetColor(0xff0000).
-			SetTitle("Please specify a distro in your command with the `-d`/`--distro` flag. Distros are `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
-		msgSend := discordgo.MessageSend{
-			Embed: embed.MessageEmbed,
-		}
-		cmd.SendMessage(&msgSend)
-		return
+		set := getSetting("dnf", "defaultDistro")
+		dist = set.getValue(cmd)
+	} else {
+		dist = cmd.GetFlagPair("-d", "--distro")
 	}
-	distro, set := resolveDistro(cmd.GetFlagPair("-d", "--distro"))
+	distro, set := resolveDistro(dist)
 	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -133,7 +130,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 
 	if cmd.GetFlagPair("-l", "--list") == "nil" {
 		var files []string
-		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, cmd.Query.Content, cmd.GetFlagPair("-d", "--distro")).Store(&files)
+		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, cmd.Query.Content, distro.queryKitName).Store(&files)
 		if err != nil {
 			embed := NewEmbed().
 				SetColor(0xff0000).
@@ -209,7 +206,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	}
 
 	var pkgs [][]interface{}
-	err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, m, cmd.GetFlagPair("-d", "--distro")).Store(&pkgs)
+	err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, m, distro.queryKitName).Store(&pkgs)
 	if err != nil {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -230,7 +227,8 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 			AddField("Version", pkg[2].(string), true).
 			AddField("Download Size", humanize.Bytes(uint64(pkg[3].(int32))), true).
 			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true).
-			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL).
+			SetURL(pkg[5].(string))
 
 		paginator.Add(embed.MessageEmbed)
 	}
@@ -246,15 +244,12 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 
 func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	cmd.PaginatorPageName = "Package"
+	var dist string
 	if cmd.GetFlagPair("-d", "--distro") == "" {
-		embed := NewEmbed().
-			SetColor(0xff0000).
-			SetTitle("Please specify a distro in your command with the `-d`/`--distro` flag. Distros are `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
-		msgSend := discordgo.MessageSend{
-			Embed: embed.MessageEmbed,
-		}
-		cmd.SendMessage(&msgSend)
-		return
+		set := getSetting("dnf", "defaultDistro")
+		dist = set.getValue(cmd)
+	} else {
+		dist = cmd.GetFlagPair("-d", "--distro")
 	}
 	if cmd.Query.Content == "" {
 		embed := NewEmbed().
@@ -266,7 +261,7 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.SendMessage(&msgSend)
 		return
 	}
-	distro, set := resolveDistro(cmd.GetFlagPair("-d", "--distro"))
+	distro, set := resolveDistro(dist)
 	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -290,7 +285,7 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	}
 	var pkgs [][]interface{}
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
-	err = obj.Call("com.github.Appadeia.QueryKit.SearchPackages", 0, cmd.Query.Content, cmd.GetFlagPair("-d", "--distro")).Store(&pkgs)
+	err = obj.Call("com.github.Appadeia.QueryKit.SearchPackages", 0, cmd.Query.Content, distro.queryKitName).Store(&pkgs)
 	if err != nil {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -311,7 +306,8 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 			AddField("Version", pkg[2].(string), true).
 			AddField("Download Size", humanize.Bytes(uint64(pkg[3].(int32))), true).
 			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true).
-			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+			SetAuthor(fmt.Sprintf("%s Package Search", distro.displayName), distro.iconURL).
+			SetURL(pkg[5].(string))
 
 		paginator.Add(embed.MessageEmbed)
 	}

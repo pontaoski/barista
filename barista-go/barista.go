@@ -17,13 +17,14 @@ import (
 var Cfg *ini.File
 
 var cmds map[string]CommandFunc = map[string]CommandFunc{
-	"sudo echo":     Echo,
-	"dnf search":    Dnf,
-	"sudo profile":  Profile,
-	"sudo help":     Help,
-	"sudo ddg":      Ddg,
-	"dnf repoquery": DnfRepoQuery,
-	"sudo about":    About,
+	"sudo echo":      Echo,
+	"dnf search":     Dnf,
+	"sudo profile":   Profile,
+	"sudo help":      Help,
+	"sudo ddg":       Ddg,
+	"dnf repoquery":  DnfRepoQuery,
+	"sudo about":     About,
+	"sudo gsettings": Gsettings,
 }
 
 var handlers []CommandFunc = []CommandFunc{

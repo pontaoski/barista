@@ -68,6 +68,16 @@ const profilehelp string = `# Syntax: sudo profile --flag value
 ( --set-screenshot | -i )
 	Set your screenshot to a PNG.`
 
+const gsettingshelp string = `# Syntax: sudo gsettings [--action] [--schema schema] [--setting setting] [--value value]
+( -g | --get )
+	Get the value of SCHEMA > SETTING
+( -s | --set )
+	Set the value of SCHEMA > SETTING.
+( -l | --list-schemas )
+	List schemas.
+( -k | --list-settings )
+	List settings in SCHEMA.`
+
 const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro distro
 ( -f | --file )
 	Get packages that have FILE

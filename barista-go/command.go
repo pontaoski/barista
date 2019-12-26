@@ -13,11 +13,50 @@ import (
 // CommandFunc : The type definition for a command function.
 type CommandFunc func(*discordgo.Session, *LexedCommand)
 
+// MemberHasPermission checks if a member has the given permission
+// for example, If you would like to check if user has the administrator
+// permission you would use
+// --- MemberHasPermission(s, guildID, userID, discordgo.PermissionAdministrator)
+// If you want to check for multiple permissions you would use the bitwise OR
+// operator to pack more bits in. (e.g): PermissionAdministrator|PermissionAddReactions
+// =================================================================================
+//     s          :  discordgo session
+//     guildID    :  guildID of the member you wish to check the roles of
+//     userID     :  userID of the member you wish to retrieve
+//     permission :  the permission you wish to check for
+func MemberHasPermission(s *discordgo.Session, guildID string, userID string, permission int) bool {
+	if userID == Cfg.Section("Bot").Key("owner").String() {
+		return true
+	}
+
+	member, err := s.State.Member(guildID, userID)
+	if err != nil {
+		if member, err = s.GuildMember(guildID, userID); err != nil {
+			return false
+		}
+	}
+
+	// Iterate through the role IDs stored in member.Roles
+	// to check permissions
+	for _, roleID := range member.Roles {
+		role, err := s.State.Role(guildID, roleID)
+		if err != nil {
+			return false
+		}
+		if role.Permissions&permission != 0 {
+			return true
+		}
+	}
+
+	return false
+}
+
 // LexedAuthor : information about a command's author.
 type LexedAuthor struct {
 	DisplayName string
 	Colour      int
 	Avatar      string
+	IsAdmin     bool
 }
 
 // LexedQuery : information about what a command requests
@@ -185,6 +224,7 @@ func (cmd *LexedCommand) lex() {
 			}
 			cmd.Author.Avatar = cmd.CommandMessage.Author.AvatarURL("")
 			cmd.Author.Colour = cmd.Session.State.UserColor(cmd.CommandMessage.Author.ID, cmd.CommandMessage.ChannelID)
+			cmd.Author.IsAdmin = MemberHasPermission(cmd.Session, cmd.CommandMessage.GuildID, cmd.CommandMessage.Author.ID, discordgo.PermissionAdministrator)
 		}
 	}
 }
