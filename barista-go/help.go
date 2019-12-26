@@ -97,7 +97,9 @@ const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro di
 	Get packages that supplement PKG.
 
 ( -l | --list )
-	List files provided by PKG. Will override other flags.`
+	List files provided by PKG. Will override other flags.
+( -n | --no-details )
+	Only list package names without details.`
 
 const msgtags string = `SR1234		openSUSE Build Service Submit Requests
 FEDORA-*		Fedora Bodhi Updates`

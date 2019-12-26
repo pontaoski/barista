@@ -142,7 +142,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 			cmd.SendMessage(&msgSend)
 			return
 		}
-		if len(files) < 20 {
+		if len(files) < 2000 {
 			embed := NewEmbed().
 				SetColor(distro.colour).
 				SetTitle(fmt.Sprintf("Files of %s", cmd.Query.Content)).
@@ -156,7 +156,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 			return
 		} else {
 			cmd.PaginatorPageName = "Page"
-			chunkSize := (len(files) + 19) / 20
+			chunkSize := (len(files) + 1999) / 2000
 			paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
 			for i := 0; i < len(files); i += chunkSize {
 				end := i + chunkSize
@@ -218,6 +218,56 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.SendMessage(&msgSend)
 		return
 	}
+	if len(pkgs) == 0 {
+		embed := NewEmbed().
+			SetColor(0xff0000).
+			SetTitle("No packages were found.")
+
+		msgSend := discordgo.MessageSend{
+			Embed: embed.MessageEmbed,
+		}
+		cmd.SendMessage(&msgSend)
+	}
+	if cmd.GetFlagPair("-n", "--no-details") != "" {
+		pkgnames := []string{}
+		for _, pk := range pkgs {
+			pkgnames = append(pkgnames, pk[0].(string))
+		}
+		if len(pkgs) < 2000 {
+			embed := NewEmbed().
+				SetColor(distro.colour).
+				SetTitle("Packages matching your query").
+				SetDescription("```"+strings.Join(pkgnames, "\n")+"```").
+				SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+
+			msgSend := discordgo.MessageSend{
+				Embed: embed.MessageEmbed,
+			}
+			cmd.SendMessage(&msgSend)
+			return
+		} else {
+			cmd.PaginatorPageName = "Page"
+			chunkSize := (len(pkgnames) + 1999) / 2000
+			paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
+			for i := 0; i < len(pkgnames); i += chunkSize {
+				end := i + chunkSize
+
+				if end > len(pkgnames) {
+					end = len(pkgnames)
+				}
+
+				embed := NewEmbed().
+					SetColor(distro.colour).
+					SetTitle("Packages matching your query").
+					SetDescription("```"+strings.Join(pkgnames[i:end], "\n")+"```").
+					SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+
+				paginator.Add(embed.MessageEmbed)
+			}
+			cmd.SendPaginator(paginator)
+			return
+		}
+	}
 	paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
 	for _, pkg := range pkgs {
 		embed := NewEmbed().
@@ -229,13 +279,6 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 			AddField("Install Size", humanize.Bytes(uint64(pkg[4].(int32))), true).
 			SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL).
 			SetURL(pkg[5].(string))
-
-		paginator.Add(embed.MessageEmbed)
-	}
-	if len(pkgs) == 0 {
-		embed := NewEmbed().
-			SetColor(0xff0000).
-			SetTitle("No packages were found.")
 
 		paginator.Add(embed.MessageEmbed)
 	}
