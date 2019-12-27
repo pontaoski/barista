@@ -28,9 +28,16 @@ type Distro struct {
 
 var Distros []Distro = []Distro{
 	{
-		displayName:  "openSUSE",
-		queryKitName: "opensuse",
+		displayName:  "openSUSE Tumbleweed",
+		queryKitName: "tumbleweed",
 		matches:      []string{"opensuse", "os", "tumbleweed", "tw"},
+		iconURL:      "https://en.opensuse.org/images/c/cd/Button-colour.png",
+		colour:       0x73ba25,
+	},
+	{
+		displayName:  "openSUSE Leap",
+		queryKitName: "leap",
+		matches:      []string{"leap", "opensuse-leap", "os-leap"},
 		iconURL:      "https://en.opensuse.org/images/c/cd/Button-colour.png",
 		colour:       0x73ba25,
 	},
@@ -103,6 +110,14 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.GetFlagPair("", "--whatenhances") == "" &&
 		cmd.GetFlagPair("", "--whatsupplements") == "" &&
 		cmd.GetFlagPair("", "--whatsuggests") == "" &&
+		cmd.GetFlagPair("", "--provides") == "" &&
+		cmd.GetFlagPair("", "--requires") == "" &&
+		cmd.GetFlagPair("", "--recommends") == "" &&
+		cmd.GetFlagPair("", "--suggests") == "" &&
+		cmd.GetFlagPair("", "--supplements") == "" &&
+		cmd.GetFlagPair("", "--enhances") == "" &&
+		cmd.GetFlagPair("", "--conflicts") == "" &&
+		cmd.GetFlagPair("", "--obsoletes") == "" &&
 		cmd.GetFlagPair("-l", "--list") != "nil" {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -128,8 +143,93 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	}
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
 
+	if cmd.GetFlagPair("", "--provides") != "" ||
+		cmd.GetFlagPair("", "--requires") != "" ||
+		cmd.GetFlagPair("", "--recommends") != "" ||
+		cmd.GetFlagPair("", "--suggests") != "" ||
+		cmd.GetFlagPair("", "--supplements") != "" ||
+		cmd.GetFlagPair("", "--enhances") != "" ||
+		cmd.GetFlagPair("", "--conflicts") != "" ||
+		cmd.GetFlagPair("", "--obsoletes") != "" {
+
+		queryKitType := ""
+
+		if cmd.GetFlagPair("", "--provides") != "" {
+			queryKitType = "provides"
+		}
+		if cmd.GetFlagPair("", "--requires") != "" {
+			queryKitType = "requires"
+		}
+		if cmd.GetFlagPair("", "--recommends") != "" {
+			queryKitType = "recommends"
+		}
+		if cmd.GetFlagPair("", "--suggests") != "" {
+			queryKitType = "suggests"
+		}
+		if cmd.GetFlagPair("", "--supplements") != "" {
+			queryKitType = "supplements"
+		}
+		if cmd.GetFlagPair("", "--enhances") != "" {
+			queryKitType = "enhances"
+		}
+		if cmd.GetFlagPair("", "--conflicts") != "" {
+			queryKitType = "conflicts"
+		}
+		if cmd.GetFlagPair("", "--obsoletes") != "" {
+			queryKitType = "obsoletes"
+		}
+
+		var reldeps []string
+		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepoPackage", 0, cmd.Query.Content, queryKitType, distro.queryKitName).Store(&reldeps)
+		if err != nil {
+			embed := NewEmbed().
+				SetColor(0xff0000).
+				SetTitle("There was an issue querying packages.").
+				SetDescription(err.Error())
+			msgSend := discordgo.MessageSend{
+				Embed: embed.MessageEmbed,
+			}
+			cmd.SendMessage(&msgSend)
+			return
+		}
+		if len(reldeps) < 2000 {
+			embed := NewEmbed().
+				SetColor(distro.colour).
+				SetTitle(fmt.Sprintf("Query %s for %s", queryKitType, cmd.Query.Content)).
+				SetDescription("```"+strings.Join(reldeps, "\n")+"```").
+				SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+
+			msgSend := discordgo.MessageSend{
+				Embed: embed.MessageEmbed,
+			}
+			cmd.SendMessage(&msgSend)
+			return
+		} else {
+			cmd.PaginatorPageName = "Page"
+			chunkSize := (len(reldeps) + 1999) / 2000
+			paginator := dgwidgets.NewPaginator(cmd.Session, cmd.CommandMessage.ChannelID)
+			for i := 0; i < len(reldeps); i += chunkSize {
+				end := i + chunkSize
+
+				if end > len(reldeps) {
+					end = len(reldeps)
+				}
+
+				embed := NewEmbed().
+					SetColor(distro.colour).
+					SetTitle(fmt.Sprintf("Query %s for %s", queryKitType, cmd.Query.Content)).
+					SetDescription("```"+strings.Join(reldeps[i:end], "\n")+"```").
+					SetAuthor(fmt.Sprintf("%s Repoquery", distro.displayName), distro.iconURL)
+
+				paginator.Add(embed.MessageEmbed)
+			}
+			cmd.SendPaginator(paginator)
+			return
+		}
+	}
 	if cmd.GetFlagPair("-l", "--list") == "nil" {
 		var files []string
+		s.ChannelTyping(cmd.CommandMessage.ChannelID)
 		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, cmd.Query.Content, distro.queryKitName).Store(&files)
 		if err != nil {
 			embed := NewEmbed().
@@ -206,6 +306,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	}
 
 	var pkgs [][]interface{}
+	s.ChannelTyping(cmd.CommandMessage.ChannelID)
 	err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, m, distro.queryKitName).Store(&pkgs)
 	if err != nil {
 		embed := NewEmbed().
@@ -328,6 +429,7 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	}
 	var pkgs [][]interface{}
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
+	s.ChannelTyping(cmd.CommandMessage.ChannelID)
 	err = obj.Call("com.github.Appadeia.QueryKit.SearchPackages", 0, cmd.Query.Content, distro.queryKitName).Store(&pkgs)
 	if err != nil {
 		embed := NewEmbed().
