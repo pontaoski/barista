@@ -96,6 +96,23 @@ const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro di
 ( --whatsuggests )
 	Get packages that supplement PKG.
 
+( --provides )
+	Get capabilities provided by PKG.
+( --requires )
+	Get capabilities required by PKG.
+( --recommends )
+	Get capabilities recommended by PKG.
+( --suggests )
+	Get capabilities suggested by PKG.
+( --supplements )
+	Get capabilities supplemented by PKG.
+( --enhances )
+	Get capabilities enhanced by PKG.
+( --conflicts )
+	Get capabilities conflicted by PKG.
+( --obsoletes )
+	Get capabilities obsoleted by PKG.
+
 ( -l | --list )
 	List files provided by PKG. Will override other flags.
 ( -n | --no-details )
