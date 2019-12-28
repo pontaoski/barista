@@ -110,6 +110,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		cmd.GetFlagPair("", "--whatenhances") == "" &&
 		cmd.GetFlagPair("", "--whatsupplements") == "" &&
 		cmd.GetFlagPair("", "--whatsuggests") == "" &&
+		cmd.GetFlagPair("", "--whatrequires") == "" &&
 		cmd.GetFlagPair("", "--provides") == "" &&
 		cmd.GetFlagPair("", "--requires") == "" &&
 		cmd.GetFlagPair("", "--recommends") == "" &&
@@ -303,6 +304,9 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	}
 	if val := cmd.GetFlagPair("", "--whatsuggests"); val != "" {
 		m["whatsuggests"] = val
+	}
+	if val := cmd.GetFlagPair("", "--whatrequires"); val != "" {
+		m["whatrequires"] = val
 	}
 
 	var pkgs [][]interface{}

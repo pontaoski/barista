@@ -95,6 +95,8 @@ const repoqueryhelp string = `# Syntax: dnf repoquery [--flag value] --distro di
 	Get packages that supplement PKG.
 ( --whatsuggests )
 	Get packages that supplement PKG.
+( --whatrequires )
+	Get packages that require PKG.
 
 ( --provides )
 	Get capabilities provided by PKG.
