@@ -101,7 +101,7 @@ var PagureInstances []PagureInstance = []PagureInstance{
 		Name:    "CentOS Git Server",
 		Matches: []string{"gitco"},
 		Icon:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CentOS_color_logo.svg/1024px-CentOS_color_logo.svg.png",
-		Colour:  0x9ECE26,
+		Colour:  0x951C7A,
 		URL:     "https://git.centos.org/api/0/",
 		UserURL: "https://git.centos.org",
 	},
