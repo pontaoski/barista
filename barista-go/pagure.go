@@ -49,10 +49,18 @@ type PagureIssue struct {
 	User        PagureUser `json:"user"`
 }
 
+type PagureRepo struct {
+	Fullname string `json:"fullname"`
+}
+
 type PagurePullRequest struct {
-	Title  string     `json:"title"`
-	Status string     `json:"status"`
-	User   PagureUser `json:"user"`
+	Title          string     `json:"title"`
+	InitialComment string     `json:"initial_comment"`
+	Status         string     `json:"status"`
+	User           PagureUser `json:"user"`
+	FromRepo       PagureRepo `json:"repo_from"`
+	FromBranch     string     `json:"branch_from"`
+	ToBranch       string     `json:"branch"`
 }
 
 type PagureInstance struct {
@@ -76,7 +84,7 @@ var PagureInstances []PagureInstance = []PagureInstance{
 	{
 		Name:    "Fedora Package Sources",
 		Matches: []string{"srcfpo"},
-		Icon:    "https://fedoraproject.org/w/uploads/e/e5/201110717032101%21Fedora_infinity.png",
+		Icon:    "https://fedoraproject.org/w/uploads/archive/e/e5/20110717032101%21Fedora_infinity.png",
 		Colour:  0x0b57a4,
 		URL:     "https://src.fedoraproject.org/api/0/",
 		UserURL: "https://src.fedoraproject.org/",
@@ -94,7 +102,7 @@ var PagureInstances []PagureInstance = []PagureInstance{
 		Matches: []string{"gitco"},
 		Icon:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CentOS_color_logo.svg/1024px-CentOS_color_logo.svg.png",
 		Colour:  0x9ECE26,
-		URL:     "https://git.centos.org/api/0",
+		URL:     "https://git.centos.org/api/0/",
 		UserURL: "https://git.centos.org",
 	},
 }
@@ -117,24 +125,39 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 						s.ChannelTyping(cmd.CommandMessage.ChannelID)
 						pr, err := http.Get(pagure.Path(items[1] + "/pull-request/" + id))
 						if err != nil {
+							println(err.Error())
 							continue
 						}
 						defer pr.Body.Close()
 						body, err := ioutil.ReadAll(pr.Body)
 						if err != nil {
+							println(err.Error())
 							continue
 						}
 
 						var pullRequest PagurePullRequest
 						err = json.Unmarshal(body, &pullRequest)
 						if err != nil {
+							println(err.Error())
 							continue
 						}
 
 						embed := NewEmbed().
-							SetTitle(fmt.Sprintf("Pull request %s to %s: %s", id, items[1], pullRequest.Title)).
+							SetTitle(fmt.Sprintf("PR#%s: %s", id, pullRequest.Title)).
+							SetDescription(pullRequest.InitialComment).
 							SetColor(pagure.Colour).
 							AddField("Status", pullRequest.Status, true).
+							AddField(
+								"Pull Request",
+								fmt.Sprintf(
+									"Merge [%s/%s](%s) into [%s](%s)",
+									pullRequest.FromRepo.Fullname,
+									pullRequest.FromBranch,
+									strings.ReplaceAll(pagure.UserPath(pullRequest.FromRepo.Fullname+"/tree/"+pullRequest.FromBranch), "forks", "fork"),
+									pullRequest.ToBranch,
+									pagure.UserPath(items[1]+"/tree/"+pullRequest.ToBranch),
+								),
+								true).
 							SetAuthor(pullRequest.User.FullName, pullRequest.User.GetAvatarURL(pagure)).
 							SetURL(pagure.UserPath(items[1]+"/pull-request/"+id)).
 							SetFooter(pagure.Name, pagure.Icon)
@@ -158,7 +181,7 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 						}
 
 						embed := NewEmbed().
-							SetTitle(fmt.Sprintf("Issue %s in %s: %s", items[2], items[1], pIssue.Title)).
+							SetTitle(fmt.Sprintf("Issue #%s: %s — %s", items[2], pIssue.Title, items[1])).
 							SetDescription(pIssue.Description).
 							SetColor(pagure.Colour).
 							AddField("Status", pIssue.Status, true).
