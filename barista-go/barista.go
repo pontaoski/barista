@@ -35,6 +35,7 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"dnf rq":         DnfRepoQuery,
 	"sudo about":     About,
 	"sudo gsettings": Gsettings,
+	"lutris search":  Lutris,
 }
 
 var handlers []CommandFunc = []CommandFunc{

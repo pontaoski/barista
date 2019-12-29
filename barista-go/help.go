@@ -146,6 +146,13 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 		),
 	)
 	page.Add(
+		cmdEmbedWithArgs(
+			"lutris search", "Search Lutris for games.",
+			[]arg{arg{name: "query", desc: "The search to look for"}},
+			[]flag{},
+		),
+	)
+	page.Add(
 		cmdEmbed("sudo profile", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
 	)
 	page.Add(
