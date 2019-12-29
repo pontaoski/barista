@@ -125,20 +125,17 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 						s.ChannelTyping(cmd.CommandMessage.ChannelID)
 						pr, err := http.Get(pagure.Path(items[1] + "/pull-request/" + id))
 						if err != nil {
-							println(err.Error())
 							continue
 						}
 						defer pr.Body.Close()
 						body, err := ioutil.ReadAll(pr.Body)
 						if err != nil {
-							println(err.Error())
 							continue
 						}
 
 						var pullRequest PagurePullRequest
 						err = json.Unmarshal(body, &pullRequest)
 						if err != nil {
-							println(err.Error())
 							continue
 						}
 
