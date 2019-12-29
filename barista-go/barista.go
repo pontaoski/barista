@@ -42,6 +42,7 @@ var handlers []CommandFunc = []CommandFunc{
 	Obs,
 	Bodhi,
 	Bugzilla,
+	Pagure,
 }
 
 func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {

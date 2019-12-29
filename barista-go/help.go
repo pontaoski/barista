@@ -160,10 +160,15 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 	)
 	bztags := []string{}
 	for _, bugzilla := range BugzillaInstances {
-		bztags = append(bztags, fmt.Sprintf("%s\t\t%s", strings.Join(bugzilla.Matches, ", "), bugzilla.Name))
+		bztags = append(bztags, fmt.Sprintf("%s#id\t\t%s", strings.Join(bugzilla.Matches, "#id, "), bugzilla.Name))
+	}
+	paguretags := []string{}
+	for _, pagure := range PagureInstances {
+		paguretags = append(paguretags, fmt.Sprintf("%s#proj#id\t\t%s Issues", strings.Join(pagure.Matches, ", "), pagure.Name))
+		paguretags = append(paguretags, fmt.Sprintf("%s#proj#PRid\t\t%s Pull Requests", strings.Join(pagure.Matches, ", "), pagure.Name))
 	}
 	page.Add(
-		cmdEmbed("Message Tags", "```"+msgtags+"\n"+strings.Join(bztags, "\n")+"```"),
+		cmdEmbed("Message Tags", "```"+msgtags+"\n"+strings.Join(bztags, "\n")+"\n"+strings.Join(paguretags, "\n")+"```"),
 	)
 	cmd.PaginatorPageName = "Command"
 	cmd.SendPaginator(page)
