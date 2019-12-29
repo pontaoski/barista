@@ -51,6 +51,7 @@ func Bodhi(s *discordgo.Session, cmd *LexedCommand) {
 	if strings.Contains(ctnt, "FEDORA-") {
 		for _, word := range words {
 			if strings.HasPrefix(word, "FEDORA-") {
+				s.ChannelTyping(cmd.CommandMessage.ChannelID)
 				resp, err := http.Get(fmt.Sprintf("https://bodhi.fedoraproject.org/updates/%s", word))
 				if err != nil {
 					continue

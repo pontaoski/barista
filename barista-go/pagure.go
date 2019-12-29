@@ -114,6 +114,7 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 					}
 					if strings.HasPrefix(strings.ToLower(items[2]), "pr") {
 						id := strings.TrimPrefix(strings.ToLower(items[2]), "pr")
+						s.ChannelTyping(cmd.CommandMessage.ChannelID)
 						pr, err := http.Get(pagure.Path(items[1] + "/pull-request/" + id))
 						if err != nil {
 							continue

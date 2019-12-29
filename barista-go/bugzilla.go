@@ -123,6 +123,7 @@ func Bugzilla(s *discordgo.Session, cmd *LexedCommand) {
 			for _, match := range bugzilla.Matches {
 				if strings.HasPrefix(word, match+"#") {
 					tag := strings.TrimPrefix(word, match+"#")
+					s.ChannelTyping(cmd.CommandMessage.ChannelID)
 					bug, err := http.Get(fmt.Sprintf("%s/show_bug.cgi?id=%s&ctype=xml", bugzilla.URL, tag))
 					if err != nil {
 						continue BugzillaLoop

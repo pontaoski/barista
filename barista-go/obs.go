@@ -66,6 +66,7 @@ func Obs(s *discordgo.Session, cmd *LexedCommand) {
 	var embeds []*Embed
 
 	for _, id := range ids {
+		s.ChannelTyping(cmd.CommandMessage.ChannelID)
 		request, _ := http.NewRequest("GET", fmt.Sprintf("https://api.opensuse.org/request/%d", id), nil)
 		request.SetBasicAuth("zyp_user", "zyp_pw_1")
 		resp, err := client.Do(request)
