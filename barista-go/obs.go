@@ -104,6 +104,10 @@ func Obs(s *discordgo.Session, cmd *LexedCommand) {
 		}
 		action := list[0].InnerText()
 
+		if action == "maintenance_incident" {
+			action = "Submit update from"
+		}
+
 		list, err = xmlquery.QueryAll(doc, "/request/action/source/@project")
 		if err != nil {
 			continue
@@ -126,13 +130,21 @@ func Obs(s *discordgo.Session, cmd *LexedCommand) {
 		if err != nil {
 			continue
 		}
-		targetPkg := list[0].InnerText()
+		var targetPkg string
+		if len(list) > 0 {
+			targetPkg = list[0].InnerText()
+		}
 
 		embed := NewEmbed().
 			SetColor(0x73ba25).
 			SetTitle(fmt.Sprintf("SR#%d — %s — **%s**", id, desc, strings.Title(state))).
-			SetDescription(fmt.Sprintf("%s **%s**:**%s** → **%s**:**%s**", strings.Title(action), sourceProj, sourcePkg, targetProj, targetPkg)).
 			SetAuthor("openSUSE Build Service", "https://en.opensuse.org/images/c/cd/Button-colour.png", fmt.Sprintf("https://build.opensuse.org/request/show/%d", id))
+
+		if targetPkg == "" {
+			embed.SetDescription(fmt.Sprintf("%s **%s**:**%s** → **%s**", strings.Title(action), sourceProj, sourcePkg, targetProj))
+		} else {
+			embed.SetDescription(fmt.Sprintf("%s **%s**:**%s** → **%s**:**%s**", strings.Title(action), sourceProj, sourcePkg, targetProj, targetPkg))
+		}
 
 		embeds = append(embeds, embed)
 	}
