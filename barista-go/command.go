@@ -1,6 +1,7 @@
 package barista
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -120,8 +121,25 @@ func (cmd *LexedCommand) SendTags(embeds []*Embed) {
 		msg, err := cmd.Session.ChannelMessageSendComplex(cmd.CommandMessage.ChannelID, &msgSend)
 		if err == nil {
 			cmd.SentTagMessages = append(cmd.SentTagMessages, msg)
+		} else {
+			println(err.Error())
+			jsn, _ := json.Marshal(new.MessageEmbed)
+			println(string(jsn))
 		}
 	}
+}
+
+// SendErrorEmbed : Send error embed
+func (cmd *LexedCommand) SendErrorEmbed(title string, description string) {
+	embed := NewEmbed().
+		SetColor(0xff0000).
+		SetTitle(title).
+		SetDescription(description)
+	msgSend := discordgo.MessageSend{
+		Embed: embed.MessageEmbed,
+	}
+	cmd.SendMessage(&msgSend)
+	return
 }
 
 // SendPaginator : Send paginator

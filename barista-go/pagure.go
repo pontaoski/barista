@@ -103,7 +103,7 @@ var PagureInstances []PagureInstance = []PagureInstance{
 		Icon:    "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CentOS_color_logo.svg/1024px-CentOS_color_logo.svg.png",
 		Colour:  0x951C7A,
 		URL:     "https://git.centos.org/api/0/",
-		UserURL: "https://git.centos.org",
+		UserURL: "https://git.centos.org/",
 	},
 }
 
@@ -125,18 +125,18 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 						s.ChannelTyping(cmd.CommandMessage.ChannelID)
 						pr, err := http.Get(pagure.Path(items[1] + "/pull-request/" + id))
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 						defer pr.Body.Close()
 						body, err := ioutil.ReadAll(pr.Body)
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 
 						var pullRequest PagurePullRequest
 						err = json.Unmarshal(body, &pullRequest)
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 
 						embed := NewEmbed().
@@ -163,18 +163,18 @@ func Pagure(s *discordgo.Session, cmd *LexedCommand) {
 					} else {
 						issue, err := http.Get(pagure.Path(items[1] + "/issue/" + items[2]))
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 						defer issue.Body.Close()
 						body, err := ioutil.ReadAll(issue.Body)
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 
 						var pIssue PagureIssue
 						err = json.Unmarshal(body, &pIssue)
 						if err != nil {
-							continue
+							cmd.SendErrorEmbed("Error", err.Error())
 						}
 
 						embed := NewEmbed().
