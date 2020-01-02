@@ -3,6 +3,7 @@ package barista
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/Necroforger/dgwidgets"
 	"github.com/bwmarrin/discordgo"
@@ -181,7 +182,20 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 		}
 
 		var reldeps []string
+		completed := make(chan int)
+		go func() {
+			for {
+				select {
+				case <-completed:
+					return
+				default:
+					s.ChannelTyping(cmd.CommandMessage.ChannelID)
+				}
+				time.Sleep(500)
+			}
+		}()
 		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepoPackage", 0, cmd.Query.Content, queryKitType, distro.queryKitName).Store(&reldeps)
+		completed <- 0
 		if err != nil {
 			embed := NewEmbed().
 				SetColor(0xff0000).
@@ -230,8 +244,20 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	}
 	if cmd.GetFlagPair("-l", "--list") == "nil" {
 		var files []string
-		s.ChannelTyping(cmd.CommandMessage.ChannelID)
+		completed := make(chan int)
+		go func() {
+			for {
+				select {
+				case <-completed:
+					return
+				default:
+					s.ChannelTyping(cmd.CommandMessage.ChannelID)
+				}
+				time.Sleep(500)
+			}
+		}()
 		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, cmd.Query.Content, distro.queryKitName).Store(&files)
+		completed <- 0
 		if err != nil {
 			embed := NewEmbed().
 				SetColor(0xff0000).
@@ -311,7 +337,20 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 
 	var pkgs [][]interface{}
 	s.ChannelTyping(cmd.CommandMessage.ChannelID)
+	completed := make(chan int)
+	go func() {
+		for {
+			select {
+			case <-completed:
+				return
+			default:
+				s.ChannelTyping(cmd.CommandMessage.ChannelID)
+			}
+			time.Sleep(500)
+		}
+	}()
 	err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, m, distro.queryKitName).Store(&pkgs)
+	completed <- 0
 	if err != nil {
 		embed := NewEmbed().
 			SetColor(0xff0000).
@@ -332,6 +371,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 			Embed: embed.MessageEmbed,
 		}
 		cmd.SendMessage(&msgSend)
+		return
 	}
 	if cmd.GetFlagPair("-n", "--no-details") != "" {
 		pkgnames := []string{}
@@ -434,7 +474,20 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	var pkgs [][]interface{}
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
 	s.ChannelTyping(cmd.CommandMessage.ChannelID)
+	completed := make(chan int)
+	go func() {
+		for {
+			select {
+			case <-completed:
+				return
+			default:
+				s.ChannelTyping(cmd.CommandMessage.ChannelID)
+			}
+			time.Sleep(500)
+		}
+	}()
 	err = obj.Call("com.github.Appadeia.QueryKit.SearchPackages", 0, cmd.Query.Content, distro.queryKitName).Store(&pkgs)
+	completed <- 0
 	if err != nil {
 		embed := NewEmbed().
 			SetColor(0xff0000).
