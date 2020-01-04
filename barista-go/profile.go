@@ -93,6 +93,7 @@ func Profile(s *discordgo.Session, cmd *LexedCommand) {
 			AddField("Programming Languages", Default(GetGlobalKey(cmd.MemKey("langs")), "No programming languages set."), true).
 			AddField("DE/WM", Default(GetGlobalKey(cmd.MemKey("de")), "No DE/WM set."), true).
 			SetImage(Default(GetGlobalKey(cmd.MemKey("screenshot")), ""))
+		SetGlobalKey(cmd.MemKey("ss-votes"), "")
 		msgSend := discordgo.MessageSend{
 			Embed: embed.MessageEmbed,
 		}

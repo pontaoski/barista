@@ -68,6 +68,19 @@ const profilehelp string = `# Syntax: sudo profile --flag value
 ( --set-screenshot | -i )
 	Set your screenshot to a PNG.`
 
+const sshelp string = `# Syntax: sudo screenshot --flag value
+( --set-screenshot | -s )
+	Set your screenshot to a PNG.
+( --set-description | -d )
+	Set your screenshot's description.
+
+( --user | -u )
+	Get the screenshot of the user specified.
+( --upvote )
+	Upvote the specified user's screenshot.
+( --downvote )
+	Downvote the specified user's screenshot.`
+
 const gsettingshelp string = `# Syntax: sudo gsettings [--action] [--schema schema] [--setting setting] [--value value]
 ( -g | --get )
 	Get the value of SCHEMA > SETTING
@@ -154,6 +167,9 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 	)
 	page.Add(
 		cmdEmbed("sudo profile", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
+	)
+	page.Add(
+		cmdEmbed("sudo ss", "Look at user screenshots. Screenshots synchronized with profile"+"```dsconfig\n"+sshelp+"\n```"),
 	)
 	page.Add(
 		cmdEmbed("sudo about", "About Barista"),
