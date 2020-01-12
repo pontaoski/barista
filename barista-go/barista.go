@@ -38,6 +38,7 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"lutris search":   Lutris,
 	"sudo ss":         Screenshot,
 	"sudo screenshot": Screenshot,
+	"sudo paste":      Paste,
 }
 
 var handlers []CommandFunc = []CommandFunc{

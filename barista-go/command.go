@@ -58,6 +58,7 @@ type LexedAuthor struct {
 	Colour      int
 	Avatar      string
 	IsAdmin     bool
+	IsOwner     bool
 }
 
 // LexedQuery : information about what a command requests
@@ -243,6 +244,9 @@ func (cmd *LexedCommand) lex() {
 			cmd.Author.Avatar = cmd.CommandMessage.Author.AvatarURL("")
 			cmd.Author.Colour = cmd.Session.State.UserColor(cmd.CommandMessage.Author.ID, cmd.CommandMessage.ChannelID)
 			cmd.Author.IsAdmin = MemberHasPermission(cmd.Session, cmd.CommandMessage.GuildID, cmd.CommandMessage.Author.ID, discordgo.PermissionAdministrator)
+		}
+		if cmd.CommandMessage.Author.ID == Cfg.Section("Bot").Key("owner").String() {
+			cmd.Author.IsOwner = true
 		}
 	}
 }
