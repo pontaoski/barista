@@ -51,6 +51,9 @@ func (cmd *LexedCommand) MatchUser(user string) string {
 	mems := cmd.GetChannelMembers(cmd.CommandMessage.ChannelID, cmd.CommandMessage.GuildID)
 	var memNames []string
 	for _, mem := range mems {
+		if mem.User.Bot {
+			continue
+		}
 		memNames = append(memNames, mem.User.Username+"#"+mem.User.Discriminator)
 	}
 	matches := fuzzy.Find(user, memNames)
