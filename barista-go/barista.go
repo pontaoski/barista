@@ -27,7 +27,6 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"apt se":          Dnf,
 	"apt-get search":  Dnf,
 	"apt-get se":      Dnf,
-	"urpmq -Y":        Dnf,
 	"sudo profile":    Profile,
 	"sudo help":       Help,
 	"sudo ddg":        Ddg,
