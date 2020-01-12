@@ -26,6 +26,9 @@ func (cmd *LexedCommand) GetGuildMembers(id string) []*discordgo.Member {
 	var members []*discordgo.Member
 	for i == 1000 {
 		mems, _ := cmd.Session.GuildMembers(id, prev, 1000)
+		if len(mems) == 0 {
+			continue
+		}
 		members = append(members, mems...)
 		prev = mems[len(mems)-1].User.ID
 		i = len(mems)

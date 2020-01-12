@@ -113,6 +113,7 @@ func Profile(s *discordgo.Session, cmd *LexedCommand) {
 			SetColor(colour).
 			SetTitle(disp+"'s Profile").
 			SetDescription(GetGlobalKey(val+"blurb")).
+			SetThumbnail(mem.User.AvatarURL("")).
 			AddField("Distro", Default(GetGlobalKey(val+"distro"), "No distro set."), true).
 			AddField("Shell", Default(GetGlobalKey(val+"shell"), "No shell set."), true).
 			AddField("Editor", Default(GetGlobalKey(val+"editor"), "No editor set."), true).

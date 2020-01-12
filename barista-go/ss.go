@@ -173,6 +173,7 @@ func Screenshot(s *discordgo.Session, cmd *LexedCommand) {
 		embed := NewEmbed().
 			SetColor(colour).
 			SetTitle(disp + "'s Screenshot").
+			SetThumbnail(mem.User.AvatarURL("")).
 			SetDescription(GetGlobalKey(val + "ss-description")).
 			SetImage(Default(GetGlobalKey(val+"screenshot"), "")).
 			SetFooter(fmt.Sprintf("Score: %d", len(votes.UpvotedUsers)-len(votes.DownvotedUsers)))
