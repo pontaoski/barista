@@ -91,6 +91,12 @@ func Obs(s *discordgo.Session, cmd *LexedCommand) {
 			continue
 		}
 		desc := list[0].InnerText()
+		longdesc := ""
+
+		if strings.Contains(desc, "\n") {
+			longdesc = desc
+			desc = strings.Split(desc, "\n")[0]
+		}
 
 		list, err = xmlquery.QueryAll(doc, "/request/state/@name")
 		if err != nil {
@@ -144,6 +150,10 @@ func Obs(s *discordgo.Session, cmd *LexedCommand) {
 			embed.SetDescription(fmt.Sprintf("%s **%s**:**%s** → **%s**", strings.Title(action), sourceProj, sourcePkg, targetProj))
 		} else {
 			embed.SetDescription(fmt.Sprintf("%s **%s**:**%s** → **%s**:**%s**", strings.Title(action), sourceProj, sourcePkg, targetProj, targetPkg))
+		}
+
+		if longdesc != "" {
+			embed.AddField("Description", longdesc, true)
 		}
 
 		embeds = append(embeds, embed)
