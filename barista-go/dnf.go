@@ -63,6 +63,13 @@ var Distros []Distro = []Distro{
 		iconURL:      "https://pbs.twimg.com/profile_images/1140547712208822272/dG9610ZK_400x400.jpg",
 		colour:       0x40a5da,
 	},
+	{
+		displayName:  "CentOS",
+		queryKitName: "centos",
+		matches:      []string{"centos"},
+		iconURL:      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CentOS_color_logo.svg/1024px-CentOS_color_logo.svg.png",
+		colour:       0x951C7A,
+	},
 }
 
 func resolveDistro(name string) (Distro, bool) {
@@ -96,7 +103,7 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
-			SetTitle("Please specify a distro from the following list: `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
+			SetTitle("Please specify a distro from the following list: `fedora`, `tumbleweed`, `leap`, `centos`, `mageia`, and `openmandriva`.")
 		msgSend := discordgo.MessageSend{
 			Embed: embed.MessageEmbed,
 		}
@@ -453,7 +460,7 @@ func Dnf(s *discordgo.Session, cmd *LexedCommand) {
 	if !set {
 		embed := NewEmbed().
 			SetColor(0xff0000).
-			SetTitle("Please specify a distro from the following list: `fedora`, `opensuse`, `mageia`, and `openmandriva`.")
+			SetTitle("Please specify a distro from the following list: `fedora`, `tumbleweed`, `leap`, `centos`, `mageia`, and `openmandriva`.")
 		msgSend := discordgo.MessageSend{
 			Embed: embed.MessageEmbed,
 		}
