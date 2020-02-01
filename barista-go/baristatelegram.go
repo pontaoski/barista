@@ -10,10 +10,7 @@ import (
 )
 
 func TelegramMain() {
-	bot, err := tgbotapi.NewBotAPI(Cfg.Section("Bot").Key("telegramtoken").String())
-	if err != nil {
-		log.Panic(err)
-	}
+	bot, _ := tgbotapi.NewBotAPI(Cfg.Section("Bot").Key("telegramtoken").String())
 
 	log.Printf("Authorised on account %s", bot.Self.UserName)
 	log.Printf("Barista Telegram is now running")
