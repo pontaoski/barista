@@ -172,6 +172,13 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 		cmdEmbed("sudo ss", "Look at user screenshots. Screenshots synchronized with profile"+"```dsconfig\n"+sshelp+"\n```"),
 	)
 	page.Add(
+		cmdEmbedWithArgs(
+			"sudo embed", "Create embeds. Requires admin.",
+			[]arg{arg{name: "json", desc: "The JSON of an embed. Uses Discord's JSON format directly."}},
+			[]flag{flag{longForm: "message", shortForm: "m", desc: "The ID of the message to edit with this embed", name: "messageid"}},
+		),
+	)
+	page.Add(
 		cmdEmbed("sudo about", "About Barista"),
 	)
 	bztags := []string{}

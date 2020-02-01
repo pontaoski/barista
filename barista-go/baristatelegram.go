@@ -10,7 +10,11 @@ import (
 )
 
 func TelegramMain() {
-	bot, _ := tgbotapi.NewBotAPI(Cfg.Section("Bot").Key("telegramtoken").String())
+	bot, err := tgbotapi.NewBotAPI(Cfg.Section("Bot").Key("telegramtoken").String())
+
+	if err != nil {
+		return
+	}
 
 	log.Printf("Authorised on account %s", bot.Self.UserName)
 	log.Printf("Barista Telegram is now running")
@@ -18,7 +22,7 @@ func TelegramMain() {
 	u := tgbotapi.NewUpdate(0)
 	u.Timeout = 60
 
-	updates, err := bot.GetUpdatesChan(u)
+	updates, _ := bot.GetUpdatesChan(u)
 
 	for update := range updates {
 		if update.Message == nil || !update.Message.IsCommand() { // ignore any non-Message and non-Command Updates

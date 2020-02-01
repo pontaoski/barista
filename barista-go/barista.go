@@ -38,6 +38,7 @@ var cmds map[string]CommandFunc = map[string]CommandFunc{
 	"sudo ss":         Screenshot,
 	"sudo screenshot": Screenshot,
 	"sudo paste":      Paste,
+	"sudo embed":      EmbedCmd,
 }
 
 var handlers []CommandFunc = []CommandFunc{
