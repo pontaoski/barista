@@ -3,7 +3,7 @@ FROM golang:stretch as builder
 WORKDIR $GOPATH/src
 
 RUN CGO_ENABLED=0 go get -v \
-    github.com/Appadeia/barista
+    github.com/pontaoski/barista
 
 FROM fedora:latest
 
