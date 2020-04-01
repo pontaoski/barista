@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/appadeia/barista/barista-go"
 	"github.com/appadeia/barista/barista-go/telegram"
 )
 
