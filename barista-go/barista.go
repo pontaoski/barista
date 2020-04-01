@@ -84,6 +84,7 @@ var db *badger.DB
 
 // Main : Call this function to start the bot's main loop.
 func Main() {
+	fmt.Println("Initializing Barista Discord...")
 	defer func() {
 		if err := recover(); err != nil {
 			fmt.Println("There was a panic!\n\t%s", err)
@@ -121,7 +122,6 @@ func Main() {
 	go Cleaner()
 
 	fmt.Println("Barista Discord is now running.")
-	go TelegramMain()
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
