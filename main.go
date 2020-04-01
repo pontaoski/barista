@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	// barista.Main()
+	go barista.Main()
 	telegram.Main()
 }
