@@ -1,6 +1,7 @@
 package barista
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -12,6 +13,7 @@ type Setting struct {
 	parent       string
 	defaultValue string
 	summary      string
+	list         bool
 }
 
 type Schema struct {
@@ -28,23 +30,37 @@ var Schemas []Schema = []Schema{
 			{
 				parent:       "dnf",
 				name:         "defaultDistro",
-				defaultValue: "fedora",
+				defaultValue: `"fedora"`,
 				summary:      "The default distro of this guild",
+			},
+		},
+	},
+	{
+		name:        "commands",
+		description: "Settings for meta commands",
+		settings: []Setting{
+			{
+				parent:       "commands",
+				name:         "disabled",
+				defaultValue: "",
+				summary:      "A list of command IDs to disable. Command IDs are found in parentheses in `sudo help`. `sudo help` or `gsettings` cannot be blacklisted.",
+				list:         true,
 			},
 		},
 	},
 }
 
-func (set *Setting) getValue(cmd *LexedCommand) string {
+func (set *Setting) getValue(cmd *LexedCommand, v interface{}) {
 	val := cmd.GetGuildKey(fmt.Sprintf("gsettings_%s_%s", set.parent, set.name))
 	if val == "" {
-		return set.defaultValue
+		json.Unmarshal([]byte(set.defaultValue), v)
 	}
-	return val
+	json.Unmarshal([]byte(val), v)
 }
 
-func (set *Setting) setValue(cmd *LexedCommand, val string) {
-	cmd.SetGuildKey(fmt.Sprintf("gsettings_%s_%s", set.parent, set.name), val)
+func (set *Setting) setValue(cmd *LexedCommand, v interface{}) {
+	marshalled, _ := json.Marshal(v)
+	cmd.SetGuildKey(fmt.Sprintf("gsettings_%s_%s", set.parent, set.name), string(marshalled))
 }
 
 func schemaExists(name string) bool {
@@ -91,6 +107,18 @@ func settingExists(schemaName string, settingName string) bool {
 		}
 	}
 	return false
+}
+
+func commandEnabled(cmd *LexedCommand, query string) bool {
+	cmds := getSetting("commands", "disabled")
+	var blacklisted []string
+	cmds.getValue(cmd, &blacklisted)
+	for _, command := range blacklisted {
+		if command == query {
+			return false
+		}
+	}
+	return true
 }
 
 func Gsettings(s *discordgo.Session, cmd *LexedCommand) {
@@ -189,7 +217,11 @@ func Gsettings(s *discordgo.Session, cmd *LexedCommand) {
 		schema := getSchema(cmd.GetFlagPair("", "--schema"))
 		embedmsg := []string{}
 		for _, set := range schema.settings {
-			embedmsg = append(embedmsg, fmt.Sprintf("%s\n\t%s", set.name, set.summary))
+			var listmsg string
+			if set.list {
+				listmsg = "(List)"
+			}
+			embedmsg = append(embedmsg, fmt.Sprintf("%s %s\n\t%s", set.name, listmsg, set.summary))
 		}
 		embed := NewEmbed().
 			SetTitle("List of settings in schema " + schema.name).
@@ -202,10 +234,12 @@ func Gsettings(s *discordgo.Session, cmd *LexedCommand) {
 		return
 	}
 	if cmd.GetFlagPair("-g", "--get") != "" {
+		var desc string
 		setting := getSetting(cmd.GetFlagPair("", "--schema"), cmd.GetFlagPair("", "--setting"))
+		setting.getValue(cmd, &desc)
 		embed := NewEmbed().
 			SetTitle("Value of " + setting.name + ":").
-			SetDescription(setting.getValue(cmd)).
+			SetDescription(desc).
 			SetColor(0xc12fb7)
 		msgSend := discordgo.MessageSend{
 			Embed: embed.MessageEmbed,
@@ -226,11 +260,23 @@ func Gsettings(s *discordgo.Session, cmd *LexedCommand) {
 			return
 		}
 		setting := getSetting(cmd.GetFlagPair("", "--schema"), cmd.GetFlagPair("", "--setting"))
-		setting.setValue(cmd, cmd.GetFlagPair("", "--value"))
+		if setting.list {
+			setting.setValue(cmd, strings.Split(cmd.GetFlagPair("", "--value"), "<|>"))
+		} else {
+			setting.setValue(cmd, cmd.GetFlagPair("", "--value"))
+		}
 		embed := NewEmbed().
 			SetTitle("Value of " + setting.name + " set:").
-			SetDescription(setting.getValue(cmd)).
 			SetColor(0xc12fb7)
+		if setting.list {
+			var desc []string
+			setting.getValue(cmd, &desc)
+			embed.SetDescription("`" + strings.Join(desc, "`, `") + "`")
+		} else {
+			var desc string
+			setting.getValue(cmd, &desc)
+			embed.SetDescription("`" + desc + "`")
+		}
 		msgSend := discordgo.MessageSend{
 			Embed: embed.MessageEmbed,
 		}

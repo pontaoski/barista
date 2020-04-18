@@ -1,6 +1,7 @@
 package barista
 
 import (
+	"encoding/json"
 	"sort"
 	"strconv"
 	"strings"
@@ -17,6 +18,11 @@ func Default(in string, def string) string {
 	} else {
 		return def
 	}
+}
+
+func prettyPrint(v interface{}) {
+	out, _ := json.Marshal(v)
+	println(string(out))
 }
 
 // GetGuildMembers : Get all members in a guild

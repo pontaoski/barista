@@ -89,13 +89,16 @@ func resolveDistro(name string) (Distro, bool) {
 }
 
 func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "dnfrq") {
+		return
+	}
 	helpmsg := "```dsconfig\n" + repoqueryhelp + "\n```"
 
 	cmd.PaginatorPageName = "Package"
 	var dist string
 	if cmd.GetFlagPair("-d", "--distro") == "" {
 		set := getSetting("dnf", "defaultDistro")
-		dist = set.getValue(cmd)
+		set.getValue(cmd, &dist)
 	} else {
 		dist = cmd.GetFlagPair("-d", "--distro")
 	}
@@ -438,11 +441,14 @@ func DnfRepoQuery(s *discordgo.Session, cmd *LexedCommand) {
 }
 
 func Dnf(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "dnfse") {
+		return
+	}
 	cmd.PaginatorPageName = "Package"
 	var dist string
 	if cmd.GetFlagPair("-d", "--distro") == "" {
 		set := getSetting("dnf", "defaultDistro")
-		dist = set.getValue(cmd)
+		set.getValue(cmd, &dist)
 	} else {
 		dist = cmd.GetFlagPair("-d", "--distro")
 	}

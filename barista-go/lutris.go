@@ -98,6 +98,9 @@ func startLutrisUpdates() {
 var wg sync.WaitGroup
 
 func Lutris(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "ltsse") {
+		return
+	}
 	startLutrisUpdates()
 	wg.Wait()
 	cmd.PaginatorPageName = "Game"

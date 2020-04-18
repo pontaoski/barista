@@ -6,6 +6,9 @@ import (
 )
 
 func Ddg(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "ddgse") {
+		return
+	}
 	if cmd.Query.Content == "" {
 		embed := NewEmbed().
 			SetColor(0xff0000).

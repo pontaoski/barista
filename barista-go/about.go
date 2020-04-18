@@ -16,6 +16,9 @@ func contains(s []discordgo.User, e discordgo.User) bool {
 }
 
 func About(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "about") {
+		return
+	}
 	guildCount := len(s.State.Guilds)
 	var users []discordgo.User
 	for _, guild := range s.State.Guilds {

@@ -138,48 +138,62 @@ FEDORA-*		Fedora Bodhi Updates`
 
 func Help(s *discordgo.Session, cmd *LexedCommand) {
 	page := dgwidgets.NewPaginator(s, cmd.CommandMessage.ChannelID)
+	if commandEnabled(cmd, "dnfse") {
+		page.Add(
+			cmdEmbedWithArgs(
+				"dnf search (`dnfse`)", "Search through distro repositories",
+				[]arg{arg{name: "query", desc: "The search to look for"}},
+				[]flag{flag{longForm: "distro", shortForm: "d", desc: "The distro's repositories to search.", name: "distro"}},
+			),
+		)
+	}
+	if commandEnabled(cmd, "dnfrq") {
+		page.Add(
+			cmdEmbed("dnf repoquery (`dnfrq`)", "Query distro repos"+"```dsconfig\n"+repoqueryhelp+"\n```"),
+		)
+	}
+	if commandEnabled(cmd, "ddgse") {
+		page.Add(
+			cmdEmbedWithArgs(
+				"sudo ddg (`ddgse`)", "Get answers from DuckDuckGo. Note: due to issues with DDG, answers may not be relevant or even existent.",
+				[]arg{arg{name: "query", desc: "The search to look for"}},
+				[]flag{},
+			),
+		)
+	}
+	if commandEnabled(cmd, "ltsse") {
+		page.Add(
+			cmdEmbedWithArgs(
+				"lutris search (`ltsse`)", "Search Lutris for games.",
+				[]arg{arg{name: "query", desc: "The search to look for"}},
+				[]flag{},
+			),
+		)
+	}
+	if commandEnabled(cmd, "profl") {
+		page.Add(
+			cmdEmbed("sudo profile (`profl`)", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
+		)
+		page.Add(
+			cmdEmbed("sudo ss (`profl`)", "Look at user screenshots. Screenshots synchronized with profile"+"```dsconfig\n"+sshelp+"\n```"),
+		)
+	}
+	if commandEnabled(cmd, "embed") {
+		page.Add(
+			cmdEmbedWithArgs(
+				"sudo embed (`embed`)", "Create embeds. Requires admin.",
+				[]arg{{name: "json", desc: "The JSON of an embed. Uses Discord's JSON format directly."}},
+				[]flag{{longForm: "message", shortForm: "m", desc: "The ID of the message to edit with this embed", name: "messageid"}},
+			),
+		)
+	}
+	if commandEnabled(cmd, "about") {
+		page.Add(
+			cmdEmbed("sudo about (`about`)", "About Barista"),
+		)
+	}
 	page.Add(
-		cmdEmbed("sudo help", "This command"),
-	)
-	page.Add(
-		cmdEmbedWithArgs(
-			"dnf search", "Search through distro repositories",
-			[]arg{arg{name: "query", desc: "The search to look for"}},
-			[]flag{flag{longForm: "distro", shortForm: "d", desc: "The distro's repositories to search.", name: "distro"}},
-		),
-	)
-	page.Add(
-		cmdEmbed("dnf repoquery", "Query distro repos"+"```dsconfig\n"+repoqueryhelp+"\n```"),
-	)
-	page.Add(
-		cmdEmbedWithArgs(
-			"sudo ddg", "Get answers from DuckDuckGo. Note: due to issues with DDG, answers may not be relevant or even existent.",
-			[]arg{arg{name: "query", desc: "The search to look for"}},
-			[]flag{},
-		),
-	)
-	page.Add(
-		cmdEmbedWithArgs(
-			"lutris search", "Search Lutris for games.",
-			[]arg{arg{name: "query", desc: "The search to look for"}},
-			[]flag{},
-		),
-	)
-	page.Add(
-		cmdEmbed("sudo profile", "Look at user profiles"+"```dsconfig\n"+profilehelp+"\n```"),
-	)
-	page.Add(
-		cmdEmbed("sudo ss", "Look at user screenshots. Screenshots synchronized with profile"+"```dsconfig\n"+sshelp+"\n```"),
-	)
-	page.Add(
-		cmdEmbedWithArgs(
-			"sudo embed", "Create embeds. Requires admin.",
-			[]arg{arg{name: "json", desc: "The JSON of an embed. Uses Discord's JSON format directly."}},
-			[]flag{flag{longForm: "message", shortForm: "m", desc: "The ID of the message to edit with this embed", name: "messageid"}},
-		),
-	)
-	page.Add(
-		cmdEmbed("sudo about", "About Barista"),
+		cmdEmbed("sudo gsettings", "Settings management for Barista. List settings have values separated with `<|>`."+"```dsconfig\n"+gsettingshelp+"\n```"),
 	)
 	bztags := []string{}
 	for _, bugzilla := range BugzillaInstances {
@@ -191,7 +205,7 @@ func Help(s *discordgo.Session, cmd *LexedCommand) {
 		paguretags = append(paguretags, fmt.Sprintf("%s#proj#PRid\t\t%s Pull Requests", strings.Join(pagure.Matches, ", "), pagure.Name))
 	}
 	page.Add(
-		cmdEmbed("Message Tags", "```"+msgtags+"\n"+strings.Join(bztags, "\n")+"\n"+strings.Join(paguretags, "\n")+"```"),
+		cmdEmbed("Message Tags (`msgtg`)", "```"+msgtags+"\n"+strings.Join(bztags, "\n")+"\n"+strings.Join(paguretags, "\n")+"```"),
 	)
 	cmd.PaginatorPageName = "Command"
 	cmd.SendPaginator(page)

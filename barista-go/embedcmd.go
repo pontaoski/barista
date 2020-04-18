@@ -7,6 +7,9 @@ import (
 )
 
 func EmbedCmd(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "embed") {
+		return
+	}
 	var embed discordgo.MessageEmbed
 	json.Unmarshal([]byte(cmd.Query.Content), &embed)
 

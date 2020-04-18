@@ -82,6 +82,9 @@ func DeserializeScreenshotUpvotes(data string) ScreenshotUpvotes {
 }
 
 func Screenshot(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "profl") {
+		return
+	}
 	helpmsg := "```dsconfig\n" + sshelp + "```"
 
 	used := false

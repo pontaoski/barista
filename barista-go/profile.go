@@ -7,6 +7,9 @@ import (
 )
 
 func Profile(s *discordgo.Session, cmd *LexedCommand) {
+	if !commandEnabled(cmd, "profl") {
+		return
+	}
 	helpmsg := "```" + `dsconfig
 # Syntax: sudo profile --flag value
 ( --user | -u )
