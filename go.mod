@@ -14,8 +14,11 @@ require (
 	github.com/godbus/dbus v4.1.0+incompatible
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/kylelemons/godebug v1.1.0 // indirect
+	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
+	github.com/olekukonko/tablewriter v0.0.4
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect
+	github.com/spf13/pflag v1.0.3
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	gopkg.in/ini.v1 v1.51.0
 )
