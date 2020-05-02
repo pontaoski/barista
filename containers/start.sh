@@ -4,7 +4,7 @@ dbus-uuidgen > /var/lib/dbus/machine-id
 
 export $(dbus-launch)
 
-cd /barista/QueryKit-0.1/
+cd /barista/QueryKit-0.1.1/
 ./QueryKit.py &
 
 cd /barista
