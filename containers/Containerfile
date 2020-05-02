@@ -2,15 +2,15 @@ FROM fedora:latest AS base
 
     WORKDIR /barista
 
-    COPY start.sh .
-
-    ADD https://github.com/Appadeia/QueryKit/archive/0.1.1.tar.gz .
-
-    RUN tar -xvf 0.1.1.tar.gz
-
     RUN dnf -y install python3-pip python3-dnf dbus-daemon dbus-x11
 
     RUN yes | pip3 install dbus-next
+
+    COPY start.sh .
+
+    ADD https://github.com/Appadeia/QueryKit/archive/0.2.tar.gz .
+
+    RUN tar -xvf 0.2.tar.gz
 
 FROM golang:stretch AS builder
 
