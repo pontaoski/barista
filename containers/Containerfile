@@ -1,24 +1,32 @@
-FROM golang:stretch as builder
+FROM fedora:latest AS base
 
-WORKDIR $GOPATH/src
+    WORKDIR /barista
 
-RUN CGO_ENABLED=0 go get -v \
-    github.com/pontaoski/barista
+    COPY start.sh .
 
-FROM fedora:latest
+    ADD https://github.com/Appadeia/QueryKit/archive/0.1.1.tar.gz .
 
-WORKDIR /barista
+    RUN tar -xvf 0.1.1.tar.gz
 
-COPY --from=builder /go/bin/barista .
+    RUN dnf -y install python3-pip python3-dnf dbus-daemon dbus-x11
 
-COPY ../start.sh .
+    RUN yes | pip3 install dbus-next
 
-ADD https://github.com/Appadeia/QueryKit/archive/0.1.1.tar.gz .
+FROM golang:stretch AS builder
 
-RUN tar -xvf 0.1.1.tar.gz
+    WORKDIR $GOPATH/src
 
-RUN dnf -y install python3-pip python3-dnf dbus-daemon dbus-x11
+    RUN CGO_ENABLED=0 go get -v \
+        github.com/pontaoski/barista
 
-RUN yes | pip3 install dbus-next
+FROM base
 
-ENTRYPOINT ["/barista/start.sh"]
+    WORKDIR /barista
+
+    RUN mkdir -p /barista/barista-go/commandlib/template/
+
+    COPY --from=builder /go/src/github.com/pontaoski/barista/barista-go/commandlib/template/* /barista/barista-go/commandlib/template/
+
+    COPY --from=builder /go/bin/barista .
+
+    ENTRYPOINT ["/barista/start.sh"]
