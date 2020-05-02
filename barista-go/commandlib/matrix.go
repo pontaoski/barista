@@ -1,6 +1,7 @@
 package commandlib
 
 import (
+	"fmt"
 	"html/template"
 	"strings"
 
@@ -87,6 +88,12 @@ func (m MatrixContext) SendMessage(_ string, content interface{}) {
 		m.SendMessage("", content.(UnionEmbed).EmbedTable)
 		return
 	}
+}
+
+func (m MatrixContext) WrapCodeBlock(code string) string {
+	return fmt.Sprintf(`<pre><code>
+%s
+</code></pre>`, code)
 }
 
 func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {

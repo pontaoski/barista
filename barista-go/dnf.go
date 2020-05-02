@@ -1,8 +1,10 @@
 package barista
 
 import (
+	"fmt"
 	"strings"
 
+	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/dustin/go-humanize"
 )
 
@@ -66,6 +68,25 @@ var Distros []Distro = []Distro{
 		iconURL:      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/CentOS_color_logo.svg/1024px-CentOS_color_logo.svg.png",
 		colour:       0x951C7A,
 	},
+	{
+		displayName:  "Packman for openSUSE Leap",
+		queryKitName: "packman-leap",
+		matches:      []string{"packman-leap", "pm-l", "pm-leap"},
+		colour:       0x2C74CC,
+	},
+	{
+		displayName:  "Packman for openSUSE Tumbleweed",
+		queryKitName: "pacman-tumbleweed",
+		matches:      []string{"packman", "pm-tw", "pm-tumbleweed"},
+		colour:       0x2C74CC,
+	},
+	{
+		displayName:  "RPMFusion",
+		queryKitName: "rpmfusion",
+		iconURL:      "https://rpmfusion.org/moin_static1910/rpmfusion/logo.png",
+		matches:      []string{"rpmfusion", "rf", "rpmf"},
+		colour:       0x0855A7,
+	},
 }
 
 func distroList() string {
@@ -89,6 +110,55 @@ func toPackageList(pkgs [][]interface{}) []Package {
 		})
 	}
 	return ret
+}
+
+func pkgListToUnionEmbed(pkgs []Package, distro Distro, c commandlib.Context) commandlib.UnionEmbed {
+	var embeds []commandlib.Embed
+	var tableData [][]string
+	for _, pkg := range pkgs {
+		embeds = append(embeds, commandlib.Embed{
+			Colour: distro.colour,
+			Title: commandlib.EmbedHeader{
+				Text: pkg.name,
+				URL:  pkg.url,
+			},
+			Header: commandlib.EmbedHeader{
+				Text: fmt.Sprintf("%s Package Search", distro.displayName),
+				Icon: distro.iconURL,
+			},
+			Body: pkg.desc,
+			Fields: []commandlib.EmbedField{
+				{
+					Title:  "Version",
+					Body:   pkg.vers,
+					Inline: true,
+				},
+				{
+					Title:  "Download Size",
+					Body:   pkg.downsize,
+					Inline: true,
+				},
+				{
+					Title:  "Install Size",
+					Body:   pkg.downsize,
+					Inline: true,
+				},
+			},
+		})
+		tableData = append(tableData, []string{pkg.name, pkg.vers, pkg.desc, pkg.downsize, pkg.installsize})
+	}
+	return commandlib.UnionEmbed{
+		EmbedList: commandlib.EmbedList{
+			ItemTypeName: "Package",
+			Embeds:       embeds,
+		},
+		EmbedTable: commandlib.EmbedTable{
+			Heading:  fmt.Sprintf("Search results for %s in %s", c.Content(), distro.displayName),
+			Subtitle: fmt.Sprintf("%d packages found", len(tableData)),
+			Headers:  []string{"Name", "Version", "Description", "Download Size", "Install Size"},
+			Data:     tableData,
+		},
+	}
 }
 
 func resolveDistro(name string) (Distro, bool) {

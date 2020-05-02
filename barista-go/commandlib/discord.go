@@ -67,6 +67,10 @@ func (d *DiscordContext) SendTags(id string, tags []Embed) {
 	}
 }
 
+func (d *DiscordContext) WrapCodeBlock(code string) string {
+	return "```\n" + code + "\n```"
+}
+
 func (d *DiscordContext) SendMessage(id string, content interface{}) {
 	if val, ok := d.pm[id]; ok {
 		switch content.(type) {

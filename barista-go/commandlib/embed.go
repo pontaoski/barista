@@ -1,5 +1,7 @@
 package commandlib
 
+import "strings"
+
 type EmbedHeader struct {
 	Icon string
 	Text string
@@ -51,8 +53,40 @@ const (
 	EmbedLimit            = 4000
 )
 
+func PaginateList(c Context, l []string) (*Embed, *[]Embed) {
+	totalLen := 0
+	for _, str := range l {
+		totalLen += len(str)
+		totalLen += 1
+	}
+	if totalLen < 1800 {
+		return &Embed{Body: c.WrapCodeBlock(strings.Join(l, "\n"))}, nil
+	} else {
+		var strs [][]string
+		var currentStr []string
+		currentChunkSize := 0
+		for _, str := range l {
+			currentStr = append(currentStr, str)
+			currentChunkSize += len(str)
+			currentChunkSize += 1
+			if currentChunkSize > 1800 {
+				strs = append(strs, currentStr)
+				currentStr = make([]string, 0)
+				currentChunkSize = 0
+			}
+		}
+		var embeds []Embed
+		for _, strarr := range strs {
+			embeds = append(embeds, Embed{
+				Body: c.WrapCodeBlock(strings.Join(strarr, "\n")),
+			})
+		}
+		return nil, &embeds
+	}
+}
+
 // Truncate truncates any embed value over the character limit.
-func (e *Embed) Truncate() *Embed {
+func (e *Embed) Truncate() {
 	if len(e.Body) > EmbedLimitDescription {
 		e.Body = e.Body[:EmbedLimitDescription]
 	}
@@ -71,5 +105,4 @@ func (e *Embed) Truncate() *Embed {
 	if len(e.Footer.Text) > EmbedLimitFooter {
 		e.Footer.Text = e.Footer.Text[:EmbedLimitFooter]
 	}
-	return e
 }

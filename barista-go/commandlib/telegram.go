@@ -150,6 +150,10 @@ func (t TelegramContext) SendTags(_ string, tags []Embed) {
 	}
 }
 
+func (t TelegramContext) WrapCodeBlock(code string) string {
+	return "<pre>\n" + code + "\n</pre>"
+}
+
 func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:

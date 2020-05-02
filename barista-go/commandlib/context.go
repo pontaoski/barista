@@ -13,11 +13,14 @@ type Context interface {
 	Arg(i int) string
 	Args() []string
 	Content() string
+	ChoiceFlags(flags ...string) string
+	AnySet(flags ...string) bool
 	IsFlagSet(name string) bool
 	NArgs() int
 	// Flags needed by implementations
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
+	WrapCodeBlock(code string) string
 }
 
 type contextImpl struct {
@@ -76,4 +79,22 @@ func (c contextImpl) Content() string {
 		return strings.Join(c.words, " ")
 	}
 	return strings.Join(c.flagSet.Args(), " ")
+}
+
+func (c contextImpl) ChoiceFlags(flags ...string) string {
+	for _, flag := range flags {
+		if c.IsFlagSet(flag) {
+			return flag
+		}
+	}
+	return ""
+}
+
+func (c contextImpl) AnySet(flags ...string) bool {
+	for _, flag := range flags {
+		if c.IsFlagSet(flag) {
+			return true
+		}
+	}
+	return false
 }

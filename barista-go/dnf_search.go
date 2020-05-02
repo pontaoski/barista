@@ -1,8 +1,6 @@
 package barista
 
 import (
-	"fmt"
-
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/util"
 	"github.com/godbus/dbus"
@@ -58,52 +56,11 @@ func DnfSearch(c commandlib.Context) {
 	if err != nil {
 		util.OutputError(err)
 		c.SendMessage("primary", commandlib.ErrorEmbed("There was an issue searching for packages: "+err.Error()))
+		return
 	}
-	packages := toPackageList(pkgs)
-	var embeds []commandlib.Embed
-	var tableData [][]string
-	for _, pkg := range packages {
-		embeds = append(embeds, commandlib.Embed{
-			Colour: distro.colour,
-			Title: commandlib.EmbedHeader{
-				Text: pkg.name,
-				URL:  pkg.url,
-			},
-			Header: commandlib.EmbedHeader{
-				Text: fmt.Sprintf("%s Package Search", distro.displayName),
-				Icon: distro.iconURL,
-			},
-			Body: pkg.desc,
-			Fields: []commandlib.EmbedField{
-				{
-					Title:  "Version",
-					Body:   pkg.vers,
-					Inline: true,
-				},
-				{
-					Title:  "Download Size",
-					Body:   pkg.downsize,
-					Inline: true,
-				},
-				{
-					Title:  "Install Size",
-					Body:   pkg.downsize,
-					Inline: true,
-				},
-			},
-		})
-		tableData = append(tableData, []string{pkg.name, pkg.vers, pkg.desc, pkg.downsize, pkg.installsize})
+	if len(pkgs) == 0 {
+		c.SendMessage("primary", commandlib.ErrorEmbed("No packages were found."))
+		return
 	}
-	c.SendMessage("primary", commandlib.UnionEmbed{
-		EmbedList: commandlib.EmbedList{
-			ItemTypeName: "Package",
-			Embeds:       embeds,
-		},
-		EmbedTable: commandlib.EmbedTable{
-			Heading:  fmt.Sprintf("Search results for %s in %s", c.Content(), distro.displayName),
-			Subtitle: fmt.Sprintf("%d packages found", len(tableData)),
-			Headers:  []string{"Name", "Version", "Description", "Download Size", "Install Size"},
-			Data:     tableData,
-		},
-	})
+	c.SendMessage("primary", pkgListToUnionEmbed(toPackageList(pkgs), distro, c))
 }
