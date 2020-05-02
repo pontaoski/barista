@@ -1,0 +1,30 @@
+{{ define "single" }}
+    {{ if .Header.Text }}
+        {{ if .Header.URL }}
+            <h3><a href="{{ .Header.URL }}">{{ .Header.Text }}</a></h3>
+            {{ else }}
+            <h3>{{ .Header.Text }}</h3>
+        {{ end }}
+        <br>
+    {{ end }}
+    {{ if .Title.Text }}
+        {{ if .Title.URL }}
+            <h3><a href="{{ .Title.URL }}">{{ .Title.Text }}</a></h3>
+        {{ else }}
+            <h3>{{ .Title.Text}}</h3>
+        {{ end }}
+    {{ end }}
+    {{ if .Body }}
+        <p>{{ .Body }}</p>
+    {{ end }}
+    {{ if .Fields }}
+        <table>
+        {{ range $val := .Fields }}
+            <tr>
+                <th> {{ $val.Title }} </th>
+                <td> {{ $val.Body }} </td>
+            </tr>
+        {{ end }}
+        </table>
+    {{ end }}
+{{ end }}

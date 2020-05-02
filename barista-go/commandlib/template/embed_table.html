@@ -1,0 +1,18 @@
+{{ define "table" }}
+<h1>{{ .Heading }}</h1>
+<h3>{{ .Subtitle }}</h3>
+<table>
+    <tr>
+        {{ range $val := .Headers }}
+            <th>{{ $val }}</th>
+        {{ end }}
+    </tr>
+    {{ range $val := .Data }}
+        <tr>
+        {{ range $col := $val }}
+            <td> {{ $col }} </td>
+        {{ end }}
+        </tr>
+    {{ end }}
+</table>
+{{ end }}

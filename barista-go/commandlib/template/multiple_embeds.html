@@ -1,0 +1,31 @@
+{{ define "multiple" }}
+    {{ if .ItemTypeName }} <h1> {{ .ItemTypeName }} </h1> {{ end }}
+    <table>
+    {{ range $embed := .Embeds }}
+        <tr>
+            <td>
+        {{ if $embed.Title.Text }}
+            {{ if $embed.Title.URL }}
+                <h3><a href="{{ $embed.Title.URL }}">{{ $embed.Title.Text }}</a></h3>
+            {{ else }}
+                <h3>{{ $embed.Title.Text}}</h3>
+            {{ end }}
+        {{ end }}
+        {{ if $embed.Body }}
+            <p>{{ $embed.Body }}</p>
+        {{ end }}
+        {{ if $embed.Fields }}
+            <table>
+            {{ range $val := $embed.Fields }}
+                <tr>
+                    <th> {{ $val.Title }} </th>
+                    <td> {{ $val.Body }} </td>
+                </tr>
+            {{ end }}
+            </table>
+        {{ end }}
+            </td>
+        </tr>
+    {{ end }}
+    </table>
+{{ end }}
