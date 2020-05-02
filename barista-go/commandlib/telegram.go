@@ -142,6 +142,14 @@ func telegramEmbed(d Embed) tgbotapi.MessageConfig {
 	return msg
 }
 
+func (t TelegramContext) SendTags(_ string, tags []Embed) {
+	for _, tag := range tags {
+		msg := telegramEmbed(tag)
+		msg.ChatID = t.tm.Chat.ID
+		t.bot.Send(msg)
+	}
+}
+
 func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:
@@ -179,5 +187,13 @@ func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
 		tg.bot = b
 		tg.tm = m
 		go cmd.Action(&tg)
+	} else {
+		for _, tc := range lexTags(m.Text) {
+			tg := TelegramContext{}
+			tg.contextImpl = tc.Context
+			tg.bot = b
+			tg.tm = m
+			go tc.Tag.Action(&tg)
+		}
 	}
 }

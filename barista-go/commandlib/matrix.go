@@ -58,6 +58,15 @@ func init() {
 	tmpl = template.Must(template.ParseGlob("barista-go/commandlib/template/*.html"))
 }
 
+func (m MatrixContext) SendTags(_ string, tags []Embed) {
+	var sb strings.Builder
+	for _, tag := range tags {
+		tmpl.ExecuteTemplate(&sb, "single", tag)
+		sb.WriteString("<br>\n")
+	}
+	sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
+}
+
 func (m MatrixContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:
@@ -87,7 +96,15 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 			mc.contextImpl = contextImpl
 			mc.client = client
 			mc.triggerEvent = ev
-			cmd.Action(&mc)
+			go cmd.Action(&mc)
+		} else {
+			for _, tc := range lexTags(val.(string)) {
+				mc := MatrixContext{}
+				mc.contextImpl = tc.Context
+				mc.client = client
+				mc.triggerEvent = ev
+				go tc.Tag.Action(&mc)
+			}
 		}
 	}
 }

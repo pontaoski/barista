@@ -14,12 +14,15 @@ type DiscordContext struct {
 	author     *discordgo.User
 	pm         map[string]*discordgo.Message
 	paginators map[string]*dgwidgets.Paginator
+	tags       map[string][]*discordgo.Message
 	s          *discordgo.Session
 	tm         *discordgo.Message
 }
 
 var discordMutex = &sync.Mutex{}
 var discordCommands map[string]*DiscordContext = map[string]*DiscordContext{}
+var tagMutex = &sync.Mutex{}
+var tagMap map[string]*DiscordContext = map[string]*DiscordContext{}
 
 func init() {
 	go Cleaner()
@@ -42,15 +45,37 @@ func Cleaner() {
 	}
 }
 
+func (d *DiscordContext) cleanID(id string) {
+	if val, ok := d.paginators[id]; ok {
+		val.Widget.Close <- true
+		delete(d.paginators, id)
+	}
+	if val, ok := d.tags[id]; ok {
+		for _, msg := range val {
+			d.s.ChannelMessageDelete(msg.ChannelID, msg.ID)
+		}
+	}
+}
+
+func (d *DiscordContext) SendTags(id string, tags []Embed) {
+	d.cleanID(id)
+	for _, tag := range tags {
+		msg, _ := d.s.ChannelMessageSendEmbed(d.tm.ChannelID, discordEmbed(tag))
+		if msg != nil {
+			d.tags[id] = append(d.tags[id], msg)
+		}
+	}
+}
+
 func (d *DiscordContext) SendMessage(id string, content interface{}) {
 	if val, ok := d.pm[id]; ok {
 		switch content.(type) {
 		case string:
 			d.pm[id], _ = d.s.ChannelMessageEdit(val.ChannelID, val.ID, content.(string))
-			goto cleanPaginator
+			goto clean
 		case Embed:
 			d.pm[id], _ = d.s.ChannelMessageEditEmbed(val.ChannelID, val.ID, discordEmbed(content.(Embed)))
-			goto cleanPaginator
+			goto clean
 		case EmbedList:
 			goto paginator
 		case UnionEmbed:
@@ -71,11 +96,8 @@ func (d *DiscordContext) SendMessage(id string, content interface{}) {
 		}
 	}
 	return
-cleanPaginator:
-	if val, ok := d.paginators[id]; ok {
-		val.Widget.Close <- true
-		delete(d.paginators, id)
-	}
+clean:
+	d.cleanID(id)
 	return
 paginator:
 	embedList := content.(EmbedList)
@@ -128,6 +150,20 @@ func discordEmbed(d Embed) *discordgo.MessageEmbed {
 	}
 }
 
+func buildContext(c contextImpl, s *discordgo.Session, m *discordgo.Message) DiscordContext {
+	dc := DiscordContext{
+		contextImpl: c,
+	}
+	dc.author = m.Author
+	dc.s = s
+	dc.tm = m
+	dc.pm = make(map[string]*discordgo.Message)
+	dc.paginators = make(map[string]*dgwidgets.Paginator)
+	dc.tags = make(map[string][]*discordgo.Message)
+	dc.lastUsed = time.Now()
+	return dc
+}
+
 func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 	discordMutex.Lock()
 	defer discordMutex.Unlock()
@@ -140,17 +176,26 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 		}
 	} else {
 		if cmd, contextImpl, ok := lexContent(m.Content); ok {
-			dc := DiscordContext{
-				contextImpl: contextImpl,
-			}
-			dc.author = m.Author
-			dc.s = s
-			dc.pm = make(map[string]*discordgo.Message)
-			dc.paginators = make(map[string]*dgwidgets.Paginator)
-			dc.tm = m
-			dc.lastUsed = time.Now()
+			dc := buildContext(contextImpl, s, m)
 			discordCommands[m.ID] = &dc
 			go cmd.Action(&dc)
+		}
+	}
+	tagMutex.Lock()
+	defer tagMutex.Unlock()
+	if val, ok := tagMap[m.ID]; ok {
+		for _, tag := range lexTags(m.Content) {
+			tmp := val
+			tmp.contextImpl = tag.Context
+			tmp.lastUsed = time.Now()
+			tagMap[m.ID] = tmp
+			go tag.Tag.Action(tmp)
+		}
+	} else {
+		for _, tag := range lexTags(m.Content) {
+			dc := buildContext(tag.Context, s, m)
+			tagMap[m.ID] = &dc
+			go tag.Tag.Action(&dc)
 		}
 	}
 }

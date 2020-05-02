@@ -1,17 +1,17 @@
 {{ define "single" }}
     {{ if .Header.Text }}
         {{ if .Header.URL }}
-            <h3><a href="{{ .Header.URL }}">{{ .Header.Text }}</a></h3>
+            <h5><a href="{{ .Header.URL }}">{{ .Header.Text }}</a></h5>
             {{ else }}
-            <h3>{{ .Header.Text }}</h3>
+            <h5>{{ .Header.Text }}</h5>
         {{ end }}
         <br>
     {{ end }}
     {{ if .Title.Text }}
         {{ if .Title.URL }}
-            <h3><a href="{{ .Title.URL }}">{{ .Title.Text }}</a></h3>
+            <h5><a href="{{ .Title.URL }}">{{ .Title.Text }}</a></h5>
         {{ else }}
-            <h3>{{ .Title.Text}}</h3>
+            <h5>{{ .Title.Text}}</h5>
         {{ end }}
     {{ end }}
     {{ if .Body }}

@@ -1,13 +1,19 @@
 package commandlib
 
 import (
+	"regexp"
 	"strings"
 )
 
 var commands []Command
+var tags []Tag
 
 func RegisterCommand(command Command) {
 	commands = append(commands, command)
+}
+
+func RegisterTag(tag Tag) {
+	tags = append(tags, tag)
 }
 
 type Action func(c Context)
@@ -21,6 +27,36 @@ type Command struct {
 
 	Flags  FlagList
 	Action Action
+}
+
+type Tag struct {
+	Name  string
+	Usage string
+	ID    string
+
+	Match  *regexp.Regexp
+	Action Action
+}
+
+type tagContext struct {
+	Tag     Tag
+	Context contextImpl
+}
+
+func lexTags(content string) []tagContext {
+	var ret []tagContext
+	for _, tag := range tags {
+		if tag.Match.Match([]byte(content)) {
+			ret = append(ret, tagContext{
+				Tag: tag,
+				Context: contextImpl{
+					words: strings.Fields(content),
+					isTag: true,
+				},
+			})
+		}
+	}
+	return ret
 }
 
 func lexContent(content string) (Command, contextImpl, bool) {

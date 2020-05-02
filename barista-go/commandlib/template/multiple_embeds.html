@@ -1,14 +1,14 @@
 {{ define "multiple" }}
-    {{ if .ItemTypeName }} <h1> {{ .ItemTypeName }} </h1> {{ end }}
+    {{ if .ItemTypeName }} <h3> {{ .ItemTypeName }} </h3> {{ end }}
     <table>
     {{ range $embed := .Embeds }}
         <tr>
             <td>
         {{ if $embed.Title.Text }}
             {{ if $embed.Title.URL }}
-                <h3><a href="{{ $embed.Title.URL }}">{{ $embed.Title.Text }}</a></h3>
+                <h5><a href="{{ $embed.Title.URL }}">{{ $embed.Title.Text }}</a></h5>
             {{ else }}
-                <h3>{{ $embed.Title.Text}}</h3>
+                <h5>{{ $embed.Title.Text}}</h5>
             {{ end }}
         {{ end }}
         {{ if $embed.Body }}
