@@ -7,5 +7,5 @@ import (
 )
 
 func OutputError(err error) {
-	fmt.Println(Sprintf("%s %s %s"), Red(Bold("Error")), Bold("==>"), err.Error())
+	fmt.Println(Sprintf("%s %s\n%s", Red(Bold("Error")), Bold("==>"), err.Error()))
 }
