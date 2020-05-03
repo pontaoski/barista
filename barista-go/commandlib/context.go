@@ -21,6 +21,7 @@ type Context interface {
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
 	WrapCodeBlock(code string) string
+	GenerateLink(text string, URL string) string
 }
 
 type contextImpl struct {

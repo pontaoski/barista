@@ -154,6 +154,10 @@ func (t TelegramContext) WrapCodeBlock(code string) string {
 	return "<pre>\n" + code + "\n</pre>"
 }
 
+func (t TelegramContext) GenerateLink(text, URL string) string {
+	return fmt.Sprintf(`<a href="%s">%s</a>`, URL, text)
+}
+
 func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:

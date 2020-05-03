@@ -96,6 +96,10 @@ func (m MatrixContext) WrapCodeBlock(code string) string {
 </code></pre>`, code)
 }
 
+func (m MatrixContext) GenerateLink(text, URL string) string {
+	return fmt.Sprintf(`<a href="%s">%s</a>`, URL, text)
+}
+
 func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 	if val, ok := ev.Content["body"]; ok {
 		if cmd, contextImpl, ok := lexContent(val.(string)); ok {

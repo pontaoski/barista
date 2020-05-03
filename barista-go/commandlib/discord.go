@@ -67,6 +67,10 @@ func (d *DiscordContext) SendTags(id string, tags []Embed) {
 	}
 }
 
+func (d *DiscordContext) GenerateLink(text, URL string) string {
+	return fmt.Sprintf("[%s](%s)", text, URL)
+}
+
 func (d *DiscordContext) WrapCodeBlock(code string) string {
 	return "```\n" + code + "\n```"
 }
