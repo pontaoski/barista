@@ -37,16 +37,29 @@ func Help(c commandlib.Context) {
 				Text: fmt.Sprintf("%s (%s)", command.Name, command.ID),
 			},
 			Body: command.Usage,
-			Fields: []commandlib.EmbedField{
-				{
-					Title: "Aliases",
-					Body:  join(command.Match),
-				},
-				{
-					Title: "Examples",
-					Body:  c.WrapCodeBlock(command.Examples),
-				},
-			},
+			Fields: func() []commandlib.EmbedField {
+				ret := []commandlib.EmbedField{
+					{
+						Title: "Aliases",
+						Body:  join(command.Match),
+					},
+				}
+				exmps := command.Examples
+				if exmps != "" {
+					ret = append(ret, commandlib.EmbedField{
+						Title: "Examples",
+						Body:  c.WrapCodeBlock(exmps),
+					})
+				}
+				flags := command.Flags.GetFlagSet().FlagUsages()
+				if flags != "" {
+					ret = append(ret, commandlib.EmbedField{
+						Title: "Flags",
+						Body:  c.WrapCodeBlock(flags),
+					})
+				}
+				return ret
+			}(),
 		})
 	}
 	for _, tag := range commandlib.Tags() {

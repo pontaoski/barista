@@ -6,13 +6,13 @@ import (
 
 type FlagList []Flag
 
-func (fl FlagList) GetFlagSet() flag.FlagSet {
+func (fl FlagList) GetFlagSet() *flag.FlagSet {
 	var fs flag.FlagSet
 	fs.Init("", flag.ContinueOnError)
 	for _, flag := range fl {
 		flag.Register(&fs)
 	}
-	return fs
+	return &fs
 }
 
 // The flag type.

@@ -103,7 +103,7 @@ func lexContent(content string) (Command, contextImpl, bool) {
 		continue
 	matched:
 		ctxt := contextImpl{}
-		ctxt.flagSet = command.Flags.GetFlagSet()
+		ctxt.flagSet = *command.Flags.GetFlagSet()
 		err := ctxt.flagSet.Parse(sliced)
 		if err != nil {
 			println(err.Error())
