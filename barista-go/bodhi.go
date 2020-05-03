@@ -47,8 +47,15 @@ type UpdateWrapper struct {
 
 func init() {
 	commandlib.RegisterTag(commandlib.Tag{
-		Name:   "Bodhi Updates",
-		Usage:  "Link to Bodhi updates",
+		Name:     "Bodhi Updates",
+		Usage:    "Link to Bodhi updates",
+		Examples: `FEDORA-2020-81f9f75f04, FEDORA-2020-217b6928cc, FEDORA-2020-06730065a6, FEDORA-EPEL-2020-a729ac8728`,
+		Samples: []commandlib.TagSample{
+			{
+				Tag:  "FEDORA-*",
+				Desc: "Fedora Bodhi Updates",
+			},
+		},
 		ID:     "bodhi-updates",
 		Match:  regexp.MustCompile("FEDORA-"),
 		Action: Bodhi,

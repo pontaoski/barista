@@ -127,7 +127,7 @@ paginator:
 		paginator.Add(discordEmbed(page))
 	}
 	paginator.DeleteMessageWhenDone = true
-	paginator.Spawn()
+	go paginator.Spawn()
 }
 
 func discordEmbed(d Embed) *discordgo.MessageEmbed {

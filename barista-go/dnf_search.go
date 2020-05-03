@@ -10,10 +10,13 @@ func init() {
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:  "DNF Package Search",
 		Usage: "Search packages with DNF",
+		ID:    "dnf-search",
 		Match: [][]string{
 			{"dnf", "search"},
 			{"dnf", "se"},
 		},
+		Examples: `dnf se -d=fedora chromium
+dnf se -d=rpmfusion nvidia`,
 		Flags: commandlib.FlagList{
 			commandlib.StringFlag{
 				LongFlag:  "distro",

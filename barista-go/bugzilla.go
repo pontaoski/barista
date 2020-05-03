@@ -122,8 +122,18 @@ func init() {
 		}
 	}
 	commandlib.RegisterTag(commandlib.Tag{
-		Name:   "Bugzilla",
-		Usage:  "Tag bugs on various Bugzilla instances",
+		Name:     "Bugzilla",
+		Usage:    "Tag bugs on various Bugzilla instances",
+		Examples: `bnc#1140570, bsc#1140570, boo#1140570, rh#1327846, mga#17400, bko#204371, rh#1327846, mga#17400, bko#204371`,
+		Samples: func() []commandlib.TagSample {
+			var ret []commandlib.TagSample
+			for _, bugzilla := range BugzillaInstances {
+				for _, match := range bugzilla.Matches {
+					ret = append(ret, commandlib.TagSample{Tag: fmt.Sprintf("%s#1234", match), Desc: bugzilla.Name})
+				}
+			}
+			return ret
+		}(),
 		ID:     "bz",
 		Match:  regexp.MustCompile("(" + strings.Join(matches, "|") + ")"),
 		Action: Bugzilla,

@@ -12,8 +12,16 @@ func RegisterCommand(command Command) {
 	commands = append(commands, command)
 }
 
+func Commands() []Command {
+	return commands
+}
+
 func RegisterTag(tag Tag) {
 	tags = append(tags, tag)
+}
+
+func Tags() []Tag {
+	return tags
 }
 
 type Action func(c Context)
@@ -22,6 +30,8 @@ type Command struct {
 	Name  string
 	Usage string
 
+	Examples string
+
 	ID    string
 	Match [][]string
 
@@ -29,10 +39,19 @@ type Command struct {
 	Action Action
 }
 
+type TagSample struct {
+	Tag  string
+	Desc string
+}
+
 type Tag struct {
 	Name  string
 	Usage string
-	ID    string
+
+	Examples string
+	Samples  []TagSample
+
+	ID string
 
 	Match  *regexp.Regexp
 	Action Action

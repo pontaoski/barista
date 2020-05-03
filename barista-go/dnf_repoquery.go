@@ -12,6 +12,10 @@ func init() {
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:  "DNF Repository Query",
 		Usage: "Query repositories with DNF",
+		ID:    "dnf-repoquery",
+		Examples: `dnf repoquery -d=opensuse --provides dnf
+dnf repoquery -d=fedora --whatprovides cmake(KF5Kirigami2)
+dnf repoquery -d=mageia -l chromium`,
 		Match: [][]string{
 			{"dnf", "rq"},
 			{"dnf", "repoquery"},

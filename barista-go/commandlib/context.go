@@ -17,6 +17,7 @@ type Context interface {
 	AnySet(flags ...string) bool
 	IsFlagSet(name string) bool
 	NArgs() int
+	Usage() string
 	// Flags needed by implementations
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
@@ -29,6 +30,10 @@ type contextImpl struct {
 	lastUsed time.Time
 	isTag    bool
 	words    []string
+}
+
+func (c contextImpl) Usage() string {
+	return c.flagSet.FlagUsages()
 }
 
 func (c contextImpl) FlagValue(name string) string {

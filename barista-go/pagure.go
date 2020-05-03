@@ -115,8 +115,20 @@ func init() {
 		matches = append(matches, instance.Matches...)
 	}
 	commandlib.RegisterTag(commandlib.Tag{
-		Name:   "Pagure",
-		Usage:  "Link to Pagure issues or pull requests",
+		Name:  "Pagure",
+		Usage: "Link to Pagure issues or pull requests",
+		Examples: `srcfpo#rpms/python-flask-babel#PR5
+pagureio/fedora-comps#492`,
+		Samples: func() []commandlib.TagSample {
+			var ret []commandlib.TagSample
+			for _, pagure := range PagureInstances {
+				for _, match := range pagure.Matches {
+					ret = append(ret, commandlib.TagSample{Tag: fmt.Sprintf("%s#repo#1234", match), Desc: pagure.Name + " Pull Requests"})
+					ret = append(ret, commandlib.TagSample{Tag: fmt.Sprintf("%s#repo#PR1234", match), Desc: pagure.Name + " Issues"})
+				}
+			}
+			return ret
+		}(),
 		ID:     "pagure",
 		Match:  regexp.MustCompile(fmt.Sprintf("(%s)", strings.Join(matches, "|"))),
 		Action: Pagure,
