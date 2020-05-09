@@ -130,6 +130,10 @@ paginator:
 	go paginator.Spawn()
 }
 
+func (d DiscordContext) RoomIdentifier() string {
+	return d.tm.ChannelID
+}
+
 func discordEmbed(d Embed) *discordgo.MessageEmbed {
 	d.Truncate()
 	var fields []*discordgo.MessageEmbedField

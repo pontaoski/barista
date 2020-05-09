@@ -68,6 +68,10 @@ func (m MatrixContext) SendTags(_ string, tags []Embed) {
 	sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
 }
 
+func (m MatrixContext) RoomIdentifier() string {
+	return m.triggerEvent.RoomID
+}
+
 func (m MatrixContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:

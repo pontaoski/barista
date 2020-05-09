@@ -76,7 +76,7 @@ var Distros []Distro = []Distro{
 	},
 	{
 		displayName:  "Packman for openSUSE Tumbleweed",
-		queryKitName: "pacman-tumbleweed",
+		queryKitName: "packman-tumbleweed",
 		matches:      []string{"packman", "pm-tw", "pm-tumbleweed"},
 		colour:       0x2C74CC,
 	},
@@ -123,23 +123,23 @@ func pkgListToUnionEmbed(pkgs []Package, distro Distro, c commandlib.Context) co
 				URL:  pkg.url,
 			},
 			Header: commandlib.EmbedHeader{
-				Text: fmt.Sprintf("%s Package Search", distro.displayName),
+				Text: fmt.Sprintf(l10n(c, "%s Package Search"), distro.displayName),
 				Icon: distro.iconURL,
 			},
 			Body: pkg.desc,
 			Fields: []commandlib.EmbedField{
 				{
-					Title:  "Version",
+					Title:  l10n(c, "Version"),
 					Body:   pkg.vers,
 					Inline: true,
 				},
 				{
-					Title:  "Download Size",
+					Title:  l10n(c, "Download Size"),
 					Body:   pkg.downsize,
 					Inline: true,
 				},
 				{
-					Title:  "Install Size",
+					Title:  l10n(c, "Install Size"),
 					Body:   pkg.downsize,
 					Inline: true,
 				},
@@ -149,13 +149,13 @@ func pkgListToUnionEmbed(pkgs []Package, distro Distro, c commandlib.Context) co
 	}
 	return commandlib.UnionEmbed{
 		EmbedList: commandlib.EmbedList{
-			ItemTypeName: "Package",
+			ItemTypeName: l10n(c, "Package"),
 			Embeds:       embeds,
 		},
 		EmbedTable: commandlib.EmbedTable{
-			Heading:  fmt.Sprintf("Search results for %s in %s", c.Content(), distro.displayName),
-			Subtitle: fmt.Sprintf("%d packages found", len(tableData)),
-			Headers:  []string{"Name", "Version", "Description", "Download Size", "Install Size"},
+			Heading:  fmt.Sprintf(l10n(c, "Search results for %s in %s"), c.Content(), distro.displayName),
+			Subtitle: fmt.Sprintf(l10n(c, "%d packages found"), len(tableData)),
+			Headers:  []string{l10n(c, "Name"), l10n(c, "Version"), l10n(c, "Description"), l10n(c, "Download Size"), l10n(c, "Install Size")},
 			Data:     tableData,
 		},
 	}

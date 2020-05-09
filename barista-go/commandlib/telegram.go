@@ -2,10 +2,12 @@ package commandlib
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
+	"github.com/appadeia/barista/barista-go/i18n"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -20,14 +22,16 @@ type telegramPaginator struct {
 	Pages []tgbotapi.MessageConfig
 	Index int
 
+	context  *TelegramContext
 	message  *tgbotapi.Message
 	bot      *tgbotapi.BotAPI
 	lastused time.Time
 }
 
-func newPaginator(bot *tgbotapi.BotAPI) telegramPaginator {
+func newPaginator(bot *tgbotapi.BotAPI, context *TelegramContext) telegramPaginator {
 	return telegramPaginator{
-		bot: bot,
+		bot:     bot,
+		context: context,
 	}
 }
 
@@ -66,17 +70,37 @@ func (p *telegramPaginator) AddPage(msg tgbotapi.MessageConfig) {
 	p.Pages = append(p.Pages, msg)
 }
 
-var keyboard = tgbotapi.NewInlineKeyboardMarkup(
-	tgbotapi.NewInlineKeyboardRow(
-		tgbotapi.NewInlineKeyboardButtonData("Previous", "previous"),
-		tgbotapi.NewInlineKeyboardButtonData("Next", "next"),
-	),
-)
+func (t TelegramContext) RoomIdentifier() string {
+	return strconv.FormatInt(t.tm.Chat.ID, 16)
+}
+
+var i18nschema = Schema{
+	Name:           "Preferred Locale",
+	Description:    "The preferred language of this channel.",
+	ID:             "locale",
+	DefaultValue:   "en",
+	PossibleValues: []string{"en", "de", "es", "fr", "it", "nl", "pl", "tpo"},
+}
+
+func (t *TelegramContext) keyboard() tgbotapi.InlineKeyboardMarkup {
+	return tgbotapi.NewInlineKeyboardMarkup(
+		tgbotapi.NewInlineKeyboardRow(
+			tgbotapi.NewInlineKeyboardButtonData(
+				i18n.I18n(i18nschema.ReadValue(t), "Previous"),
+				"previous",
+			),
+			tgbotapi.NewInlineKeyboardButtonData(
+				i18n.I18n(i18nschema.ReadValue(t), "Next"),
+				"next",
+			),
+		),
+	)
+}
 
 func (p *telegramPaginator) Send() {
 	p.Index = 0
 	send := p.Pages[p.Index]
-	send.ReplyMarkup = keyboard
+	send.ReplyMarkup = p.context.keyboard()
 	msg, err := p.bot.Send(send)
 	if err == nil {
 		p.message = &msg
@@ -91,11 +115,12 @@ func (p *telegramPaginator) Prev() {
 		p.Index = len(p.Pages) - 1
 	}
 	send := p.Pages[p.Index]
-	send.ReplyMarkup = keyboard
+	send.ReplyMarkup = p.context.keyboard()
 	edit := tgbotapi.NewEditMessageText(p.message.Chat.ID, p.message.MessageID, "")
 	edit.Text = p.Pages[p.Index].Text
 	edit.ParseMode = p.Pages[p.Index].ParseMode
-	edit.ReplyMarkup = &keyboard
+	kb := p.context.keyboard()
+	edit.ReplyMarkup = &kb
 	msg, err := p.bot.Send(edit)
 	if err != nil {
 		p.message = &msg
@@ -109,11 +134,12 @@ func (p *telegramPaginator) Next() {
 		p.Index = 0
 	}
 	send := p.Pages[p.Index]
-	send.ReplyMarkup = keyboard
+	send.ReplyMarkup = p.context.keyboard()
 	edit := tgbotapi.NewEditMessageText(p.message.Chat.ID, p.message.MessageID, "")
 	edit.Text = p.Pages[p.Index].Text
 	edit.ParseMode = p.Pages[p.Index].ParseMode
-	edit.ReplyMarkup = &keyboard
+	kb := p.context.keyboard()
+	edit.ReplyMarkup = &kb
 	msg, err := p.bot.Send(edit)
 	if err != nil {
 		p.message = &msg
@@ -170,13 +196,13 @@ func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	case EmbedList:
 		telegramMutex.Lock()
 		defer telegramMutex.Unlock()
-		paginator := newPaginator(t.bot)
+		paginator := newPaginator(t.bot, t)
 		title := "Item"
 		if content.(EmbedList).ItemTypeName != "" {
 			title = content.(EmbedList).ItemTypeName
 		}
 		for idx, page := range content.(EmbedList).Embeds {
-			page.Footer.Text = fmt.Sprintf("%s %d out of %d", title, idx+1, len(content.(EmbedList).Embeds))
+			page.Footer.Text = fmt.Sprintf(i18n.I18n(i18nschema.ReadValue(t), "%s %d out of %d"), title, idx+1, len(content.(EmbedList).Embeds))
 			msg := telegramEmbed(page)
 			msg.ChatID = t.tm.Chat.ID
 			paginator.AddPage(msg)

@@ -57,10 +57,15 @@ var whatFlags = []string{"file", "whatconflicts", "whatobsoletes", "whatprovides
 var relFlags = []string{"provides", "requires", "recommends", "suggests", "supplements", "enhances", "conflicts", "obsoletes"}
 
 func DnfRepoquery(c commandlib.Context) {
+	def := schemas["default-distro"].ReadValue(c)
+
+	if def == "" {
+		def = c.FlagValue("distro")
+	}
 
 	var distro Distro
 	var ok bool
-	if distro, ok = resolveDistro(c.FlagValue("distro")); !ok {
+	if distro, ok = resolveDistro(def); !ok {
 		c.SendMessage(
 			"primary",
 			commandlib.ErrorEmbed("Please provide a distro from the following list: `"+distroList()+"`"),

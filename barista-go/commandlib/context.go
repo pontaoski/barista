@@ -19,6 +19,7 @@ type Context interface {
 	NArgs() int
 	Usage() string
 	// Flags needed by implementations
+	RoomIdentifier() string
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
 	WrapCodeBlock(code string) string
