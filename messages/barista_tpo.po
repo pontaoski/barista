@@ -1,0 +1,385 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-05-09 23:34-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: barista-go/commandlib/telegram.go:97 barista-go/commandlib/telegram.go:96
+msgid "Previous"
+msgstr "tawa pini"
+
+#: barista-go/commandlib/telegram.go:101 barista-go/commandlib/telegram.go:100
+msgid "Next"
+msgstr "tawa kama"
+
+#: barista-go/bugzilla.go:25 barista-go/bugzilla.go:25
+msgid "Red Hat Bugzilla"
+msgstr "ilo Pasila Red Hat"
+
+#: barista-go/bugzilla.go:32 barista-go/bugzilla.go:32
+msgid "SUSE Bugzilla"
+msgstr "ilo Pasila SUSE"
+
+#: barista-go/bugzilla.go:39 barista-go/bugzilla.go:39
+msgid "openSUSE Bugzilla"
+msgstr "ilo Pasila openSUSE"
+
+#: barista-go/bugzilla.go:46 barista-go/bugzilla.go:46
+msgid "Novell Bugzilla"
+msgstr "ilo Pasila Novell"
+
+#: barista-go/bugzilla.go:53 barista-go/bugzilla.go:53
+msgid "GNOME Bugzilla"
+msgstr "ilo Pasila GNOME"
+
+#: barista-go/bugzilla.go:60 barista-go/bugzilla.go:60
+msgid "Kernel Bugzilla"
+msgstr "ilo Pasila Kernel"
+
+#: barista-go/bugzilla.go:67 barista-go/bugzilla.go:67
+msgid "Mozilla Bugzilla"
+msgstr "ilo Pasila Mozilla"
+
+#: barista-go/bugzilla.go:74 barista-go/bugzilla.go:74
+msgid "Samba Bugzilla"
+msgstr "ilo Pasila Samba"
+
+#: barista-go/bugzilla.go:81 barista-go/bugzilla.go:81
+msgid "Xfce Bugzilla"
+msgstr "ilo Pasila Xfce"
+
+#: barista-go/bugzilla.go:88 barista-go/bugzilla.go:88
+msgid "KDE Bugzilla"
+msgstr "ilo Pasila KDE"
+
+#: barista-go/bugzilla.go:95 barista-go/bugzilla.go:95
+msgid "Freedesktop Bugzilla"
+msgstr "ilo Pasila Freedesktop"
+
+#: barista-go/bugzilla.go:102 barista-go/bugzilla.go:102
+msgid "GCC Bugzilla"
+msgstr "ilo Pasila GCC"
+
+#: barista-go/bugzilla.go:109 barista-go/bugzilla.go:109
+msgid "Mageia Bugzilla"
+msgstr "ilo Pasila Mageia"
+
+#: barista-go/bugzilla.go:125 barista-go/bugzilla.go:125
+msgid "Bugzilla"
+msgstr "ilo Pasila"
+
+#: barista-go/bugzilla.go:126 barista-go/bugzilla.go:126
+msgid "Tag bugs on various Bugzilla instances"
+msgstr "lukin e ijo ike lon ilo Pasila"
+
+#: barista-go/bugzilla.go:197 barista-go/bugzilla.go:197
+msgid "Product"
+msgstr "ilo"
+
+#: barista-go/bugzilla.go:202 barista-go/dnf.go:132 barista-go/dnf.go:158
+#: barista-go/bugzilla.go:202 barista-go/dnf.go:132 barista-go/dnf.go:158
+msgid "Version"
+msgstr "nanpa"
+
+#: barista-go/bugzilla.go:207 barista-go/bugzilla.go:207
+msgid "Component"
+msgstr "insa ilo"
+
+#: barista-go/bugzilla.go:212 barista-go/bugzilla.go:212
+msgid "Priority"
+msgstr "suli ala suli"
+
+#: barista-go/bugzilla.go:217 barista-go/bugzilla.go:217
+msgid "Severity"
+msgstr "ike ala ike"
+
+#: barista-go/bugzilla.go:222 barista-go/bodhi.go:139 barista-go/pagure.go:178
+#: barista-go/pagure.go:233 barista-go/bugzilla.go:222 barista-go/bodhi.go:139
+#: barista-go/pagure.go:178 barista-go/pagure.go:233
+msgid "Status"
+msgstr "lon"
+
+#: barista-go/bodhi.go:50 barista-go/bodhi.go:50
+msgid "Bodhi Updates"
+msgstr ""
+
+#: barista-go/bodhi.go:51 barista-go/bodhi.go:51
+msgid "Link to Bodhi updates"
+msgstr ""
+
+#: barista-go/bodhi.go:56 barista-go/bodhi.go:56
+msgid "Fedora Bodhi Updates"
+msgstr ""
+
+#: barista-go/bodhi.go:119 barista-go/bodhi.go:119
+msgid "Fedora Updates System"
+msgstr ""
+
+#: barista-go/bodhi.go:124 barista-go/bodhi.go:124
+msgid "Distro"
+msgstr "ilo"
+
+#: barista-go/bodhi.go:129 barista-go/bodhi.go:129
+msgid "Karma"
+msgstr "mani pona"
+
+#: barista-go/bodhi.go:134 barista-go/bodhi.go:134
+msgid "Builds"
+msgstr ""
+
+#: barista-go/gsettings.go:12 barista-go/gsettings.go:12
+msgid "GSettings"
+msgstr "wile sina"
+
+#: barista-go/gsettings.go:13 barista-go/gsettings.go:13
+msgid "Configure the bot"
+msgstr "toki e ni: wile sina tawa ilo ni"
+
+#: barista-go/gsettings.go:25 barista-go/gsettings.go:25
+msgid "Preferred Locale"
+msgstr "toki sina"
+
+#: barista-go/gsettings.go:26 barista-go/gsettings.go:26
+msgid "The preferred language of this channel."
+msgstr "sina wile toki kepeken seme?"
+
+#: barista-go/gsettings.go:32 barista-go/gsettings.go:32
+msgid "Default Distro"
+msgstr "ilo Linu nanpa wan"
+
+#: barista-go/gsettings.go:33 barista-go/gsettings.go:33
+msgid "The default distro to use for package searches."
+msgstr "sina toki ala e ilo Linu seme la mi lukin e ni"
+
+#: barista-go/gsettings.go:50 barista-go/gsettings.go:50
+msgid "Setting reset!"
+msgstr "wile sina li lon ala!"
+
+#: barista-go/gsettings.go:62 barista-go/gsettings.go:62
+msgid "Setting updated!"
+msgstr "mi sona e wile sona!"
+
+#: barista-go/gsettings.go:71 barista-go/gsettings.go:71
+#, c-format
+msgid ""
+"%s is not an accepted value. Please use a value from the following list:\n"
+"%s"
+msgstr ""
+
+#: barista-go/gsettings.go:79 barista-go/gsettings.go:85
+#: barista-go/gsettings.go:79 barista-go/gsettings.go:85
+#, c-format
+msgid "%s is not a valid setting key"
+msgstr ""
+
+#: barista-go/gsettings.go:94 barista-go/help.go:90 barista-go/gsettings.go:94
+#: barista-go/help.go:90
+msgid "Command"
+msgstr ""
+
+#: barista-go/pagure.go:118 barista-go/pagure.go:118
+msgid "Pagure"
+msgstr ""
+
+#: barista-go/pagure.go:119 barista-go/pagure.go:119
+msgid "Link to Pagure issues or pull requests"
+msgstr ""
+
+#: barista-go/pagure.go:183 barista-go/pagure.go:183
+msgid "Pull Request"
+msgstr ""
+
+#: barista-go/pagure.go:185 barista-go/pagure.go:185
+#, c-format
+msgid "Merge [%s/%s](%s) into [%s](%s)"
+msgstr ""
+
+#: barista-go/pagure.go:226 barista-go/pagure.go:226
+#, c-format
+msgid "Issue #%s: %s - %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:13 barista-go/dnf_repoquery.go:13
+msgid "DNF Repository Query"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:14 barista-go/dnf_repoquery.go:14
+msgid "Query repositories with DNF"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:27 barista-go/dnf_repoquery.go:27
+msgid "Which distro you want to query repos for"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:71 barista-go/dnf_search.go:54
+#: barista-go/dnf_repoquery.go:71 barista-go/dnf_search.go:54
+#, c-format
+msgid "Please provide a distro from the following list: %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:79 barista-go/dnf_search.go:61
+#: barista-go/dnf_repoquery.go:79 barista-go/dnf_search.go:61
+msgid "There was an issue connecting to QueryKit, the package search service."
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:86 barista-go/dnf_repoquery.go:86
+msgid "Please provide a query with your flag."
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:101 barista-go/dnf_repoquery.go:101
+#, c-format
+msgid "There was an issue searching for packages: %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:105 barista-go/dnf_search.go:73
+#: barista-go/dnf_repoquery.go:105 barista-go/dnf_search.go:73
+msgid "No packages were found."
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:116 barista-go/dnf_repoquery.go:116
+#, c-format
+msgid "There was an error querying packages: %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:120 barista-go/dnf_repoquery.go:120
+#, c-format
+msgid "Query %s for %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:122 barista-go/dnf_repoquery.go:157
+#: barista-go/dnf_repoquery.go:122 barista-go/dnf_repoquery.go:157
+#, c-format
+msgid "%s Repoquery"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:134 barista-go/dnf_repoquery.go:169
+#: barista-go/dnf_repoquery.go:134 barista-go/dnf_repoquery.go:169
+msgid "Page"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:152 barista-go/dnf_repoquery.go:152
+#, c-format
+msgid "There was an error listing files: %s"
+msgstr ""
+
+#: barista-go/dnf_repoquery.go:183 barista-go/dnf_repoquery.go:183
+msgid "Please provide a query."
+msgstr ""
+
+#: barista-go/toki_pona.go:1975 barista-go/toki_pona.go:2005
+#: barista-go/toki_pona.go:1975 barista-go/toki_pona.go:2005
+msgid "Word"
+msgstr "nimi"
+
+#: barista-go/toki_pona.go:1986 barista-go/toki_pona.go:1986
+msgid "Please provide a word from pu to look up the etymolygy of."
+msgstr "mi wile e ni: nimi"
+
+#: barista-go/toki_pona.go:1996 barista-go/toki_pona.go:2026
+#: barista-go/toki_pona.go:1996 barista-go/toki_pona.go:2026
+msgid "Sorry, I don't think that's a word."
+msgstr "nimi ona li lon ala."
+
+#: barista-go/toki_pona.go:2016 barista-go/toki_pona.go:2016
+msgid "Please provide a word from pu to look up the meaning of."
+msgstr "mi wile e ni: nimi"
+
+#: barista-go/help.go:43 barista-go/help.go:43
+msgid "Aliases"
+msgstr ""
+
+#: barista-go/help.go:50 barista-go/help.go:83 barista-go/help.go:50
+#: barista-go/help.go:83
+msgid "Examples"
+msgstr ""
+
+#: barista-go/help.go:57 barista-go/help.go:57
+msgid "Flags"
+msgstr ""
+
+#: barista-go/help.go:73 barista-go/help.go:73
+msgid "Tags"
+msgstr ""
+
+#: barista-go/help.go:94 barista-go/help.go:94
+msgid "Tag"
+msgstr ""
+
+#: barista-go/dnf.go:126 barista-go/dnf.go:126
+#, c-format
+msgid "%s Package Search"
+msgstr ""
+
+#: barista-go/dnf.go:137 barista-go/dnf.go:158 barista-go/dnf.go:137
+#: barista-go/dnf.go:158
+msgid "Download Size"
+msgstr ""
+
+#: barista-go/dnf.go:142 barista-go/dnf.go:158 barista-go/dnf.go:142
+#: barista-go/dnf.go:158
+msgid "Install Size"
+msgstr ""
+
+#: barista-go/dnf.go:152 barista-go/dnf.go:152
+msgid "Package"
+msgstr ""
+
+#: barista-go/dnf.go:156 barista-go/dnf.go:156
+#, c-format
+msgid "Search results for %s in %s"
+msgstr ""
+
+#: barista-go/dnf.go:157 barista-go/dnf.go:157
+#, c-format
+msgid "%d packages found"
+msgstr ""
+
+#: barista-go/dnf.go:158 barista-go/dnf.go:158
+msgid "Name"
+msgstr ""
+
+#: barista-go/dnf.go:158 barista-go/dnf.go:158
+msgid "Description"
+msgstr ""
+
+#: barista-go/dnf_search.go:13 barista-go/dnf_search.go:13
+msgid "DNF Package Search"
+msgstr ""
+
+#: barista-go/dnf_search.go:14 barista-go/dnf_search.go:14
+msgid "Search packages with DNF"
+msgstr ""
+
+#: barista-go/dnf_search.go:28 barista-go/dnf_search.go:28
+msgid "Which distro you want to use."
+msgstr ""
+
+#: barista-go/dnf_search.go:39 barista-go/dnf_search.go:39
+msgid "Please provide a distro with the flag `--distro`."
+msgstr ""
+
+#: barista-go/dnf_search.go:46 barista-go/dnf_search.go:46
+msgid "Please provide a search term."
+msgstr ""
+
+#: barista-go/dnf_search.go:69 barista-go/dnf_search.go:69
+msgid "There was an issue searching for packages: "
+msgstr ""
+
+#: barista-go/commandlib/telegram.go:212
+#, c-format
+msgid "%s %d out of %d"
+msgstr ""
