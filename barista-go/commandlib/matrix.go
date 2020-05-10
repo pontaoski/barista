@@ -72,6 +72,14 @@ func (m MatrixContext) RoomIdentifier() string {
 	return m.triggerEvent.RoomID
 }
 
+func (m MatrixContext) I18n(message string) string {
+	return m.I18nInternal(i18nschema.ReadValue(&m), message)
+}
+
+func (m MatrixContext) I18nc(context, message string) string {
+	return m.I18n(message)
+}
+
 func (m MatrixContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:

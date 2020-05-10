@@ -115,8 +115,8 @@ func init() {
 		matches = append(matches, instance.Matches...)
 	}
 	commandlib.RegisterTag(commandlib.Tag{
-		Name:  "Pagure",
-		Usage: "Link to Pagure issues or pull requests",
+		Name:  I18n("Pagure"),
+		Usage: I18n("Link to Pagure issues or pull requests"),
 		Examples: `srcfpo#rpms/python-flask-babel#PR5
 pagureio/fedora-comps#492`,
 		Samples: func() []commandlib.TagSample {
@@ -175,14 +175,14 @@ func Pagure(c commandlib.Context) {
 							Colour: pagure.Colour,
 							Fields: []commandlib.EmbedField{
 								{
-									Title:  "Status",
+									Title:  c.I18n("Status"),
 									Body:   pullRequest.Status,
 									Inline: true,
 								},
 								{
-									Title: "Pull Request",
+									Title: c.I18n("Pull Request"),
 									Body: fmt.Sprintf(
-										"Merge [%s/%s](%s) into [%s](%s)",
+										c.I18n("Merge [%s/%s](%s) into [%s](%s)"),
 										pullRequest.FromRepo.Fullname,
 										pullRequest.FromBranch,
 										strings.ReplaceAll(pagure.UserPath(pullRequest.FromRepo.Fullname+"/tree/"+pullRequest.FromBranch), "forks", "fork"),
@@ -223,14 +223,14 @@ func Pagure(c commandlib.Context) {
 
 						embeds = append(embeds, commandlib.Embed{
 							Title: commandlib.EmbedHeader{
-								Text: fmt.Sprintf("Issue #%s: %s — %s", items[2], pIssue.Title, items[1]),
+								Text: fmt.Sprintf(c.I18n("Issue #%s: %s - %s"), items[2], pIssue.Title, items[1]),
 								URL:  pagure.UserPath(items[1] + "/issue/" + items[2]),
 							},
 							Body:   pIssue.Description,
 							Colour: pagure.Colour,
 							Fields: []commandlib.EmbedField{
 								{
-									Title:  "Status",
+									Title:  c.I18n("Status"),
 									Body:   pIssue.Status,
 									Inline: true,
 								},

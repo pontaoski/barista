@@ -7,7 +7,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/appadeia/barista/barista-go/i18n"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -82,15 +81,23 @@ var i18nschema = Schema{
 	PossibleValues: []string{"en", "de", "es", "fr", "it", "nl", "pl", "tpo"},
 }
 
+func (t TelegramContext) I18n(message string) string {
+	return t.I18nInternal(i18nschema.ReadValue(&t), message)
+}
+
+func (t TelegramContext) I18nc(context, message string) string {
+	return t.I18n(message)
+}
+
 func (t *TelegramContext) keyboard() tgbotapi.InlineKeyboardMarkup {
 	return tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(
-				i18n.I18n(i18nschema.ReadValue(t), "Previous"),
+				t.I18n("Previous"),
 				"previous",
 			),
 			tgbotapi.NewInlineKeyboardButtonData(
-				i18n.I18n(i18nschema.ReadValue(t), "Next"),
+				t.I18n("Next"),
 				"next",
 			),
 		),
@@ -202,7 +209,7 @@ func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 			title = content.(EmbedList).ItemTypeName
 		}
 		for idx, page := range content.(EmbedList).Embeds {
-			page.Footer.Text = fmt.Sprintf(i18n.I18n(i18nschema.ReadValue(t), "%s %d out of %d"), title, idx+1, len(content.(EmbedList).Embeds))
+			page.Footer.Text = fmt.Sprintf(t.I18n("%s %d out of %d"), title, idx+1, len(content.(EmbedList).Embeds))
 			msg := telegramEmbed(page)
 			msg.ChatID = t.tm.Chat.ID
 			paginator.AddPage(msg)

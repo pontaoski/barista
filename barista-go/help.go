@@ -32,29 +32,32 @@ func Help(c commandlib.Context) {
 	var commandEmbeds []commandlib.Embed
 	var tagEmbeds []commandlib.Embed
 	for _, command := range commandlib.Commands() {
+		if command.Hidden {
+			continue
+		}
 		commandEmbeds = append(commandEmbeds, commandlib.Embed{
 			Title: commandlib.EmbedHeader{
-				Text: fmt.Sprintf("%s (%s)", command.Name, command.ID),
+				Text: fmt.Sprintf("%s (%s)", c.I18n(command.Name), command.ID),
 			},
-			Body: command.Usage,
+			Body: c.I18n(command.Usage),
 			Fields: func() []commandlib.EmbedField {
 				ret := []commandlib.EmbedField{
 					{
-						Title: "Aliases",
+						Title: c.I18n("Aliases"),
 						Body:  join(command.Match),
 					},
 				}
 				exmps := command.Examples
 				if exmps != "" {
 					ret = append(ret, commandlib.EmbedField{
-						Title: "Examples",
+						Title: c.I18n("Examples"),
 						Body:  c.WrapCodeBlock(exmps),
 					})
 				}
 				flags := command.Flags.GetFlagSet().FlagUsages()
 				if flags != "" {
 					ret = append(ret, commandlib.EmbedField{
-						Title: "Flags",
+						Title: c.I18n("Flags"),
 						Body:  c.WrapCodeBlock(flags),
 					})
 				}
@@ -70,7 +73,7 @@ func Help(c commandlib.Context) {
 			Body: tag.Usage,
 			Fields: []commandlib.EmbedField{
 				{
-					Title: "Tags",
+					Title: c.I18n("Tags"),
 					Body: c.WrapCodeBlock(func() string {
 						var ret []string
 						for _, match := range tag.Samples {
@@ -80,18 +83,18 @@ func Help(c commandlib.Context) {
 					}()),
 				},
 				{
-					Title: "Examples",
+					Title: c.I18n("Examples"),
 					Body:  c.WrapCodeBlock(tag.Examples),
 				},
 			},
 		})
 	}
 	c.SendMessage("cmds", commandlib.EmbedList{
-		ItemTypeName: "Command",
+		ItemTypeName: c.I18n("Command"),
 		Embeds:       commandEmbeds,
 	})
 	c.SendMessage("tags", commandlib.EmbedList{
-		ItemTypeName: "Tag",
+		ItemTypeName: c.I18n("Tag"),
 		Embeds:       tagEmbeds,
 	})
 }

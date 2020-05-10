@@ -37,6 +37,7 @@ type Command struct {
 
 	Flags  FlagList
 	Action Action
+	Hidden bool
 }
 
 type TagSample struct {

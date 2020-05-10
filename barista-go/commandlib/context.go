@@ -1,9 +1,11 @@
 package commandlib
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/leonelquinteros/gotext"
 	flag "github.com/spf13/pflag"
 )
 
@@ -18,7 +20,10 @@ type Context interface {
 	IsFlagSet(name string) bool
 	NArgs() int
 	Usage() string
+	I18nInternal(locale, message string) string
 	// Flags needed by implementations
+	I18n(message string) string
+	I18nc(context, message string) string
 	RoomIdentifier() string
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
@@ -31,6 +36,26 @@ type contextImpl struct {
 	lastUsed time.Time
 	isTag    bool
 	words    []string
+}
+
+var pofiles map[string]*gotext.Po = make(map[string]*gotext.Po)
+
+func grabPo(locale string) *gotext.Po {
+	if val, ok := pofiles[locale]; ok {
+		return val
+	}
+	po := new(gotext.Po)
+	po.ParseFile(fmt.Sprintf("messages/barista_%s.po", locale))
+	pofiles[locale] = po
+	return po
+}
+
+func DropPo(locale string) {
+	delete(pofiles, locale)
+}
+
+func (c contextImpl) I18nInternal(locale, message string) string {
+	return grabPo(locale).Get(message)
 }
 
 func (c contextImpl) Usage() string {

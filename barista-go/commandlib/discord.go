@@ -134,6 +134,14 @@ func (d DiscordContext) RoomIdentifier() string {
 	return d.tm.ChannelID
 }
 
+func (d DiscordContext) I18n(message string) string {
+	return d.I18nInternal(i18nschema.ReadValue(&d), message)
+}
+
+func (d DiscordContext) I18nc(context, message string) string {
+	return d.I18n(message)
+}
+
 func discordEmbed(d Embed) *discordgo.MessageEmbed {
 	d.Truncate()
 	var fields []*discordgo.MessageEmbedField

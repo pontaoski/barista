@@ -1972,7 +1972,7 @@ func toEmbed(v interface{}) commandlib.Embed {
 func EtymologySearch(c commandlib.Context) {
 	if c.IsFlagSet("browse") {
 		embedlist := commandlib.EmbedList{
-			ItemTypeName: "Word",
+			ItemTypeName: c.I18n("Word"),
 		}
 		for _, word := range puEtym {
 			embedlist.Embeds = append(embedlist.Embeds, toEmbed(word))
@@ -1983,7 +1983,7 @@ func EtymologySearch(c commandlib.Context) {
 	if c.NArgs() < 1 {
 		c.SendMessage(
 			"primary",
-			commandlib.ErrorEmbed("Please provide a word from pu to look up the etymolygy of."),
+			commandlib.ErrorEmbed(c.I18n("Please provide a word from pu to look up the etymolygy of.")),
 		)
 		return
 	}
@@ -1993,7 +1993,7 @@ func EtymologySearch(c commandlib.Context) {
 	} else {
 		c.SendMessage(
 			"primary",
-			commandlib.ErrorEmbed("Sorry, I don't think that's a word."),
+			commandlib.ErrorEmbed(c.I18n("Sorry, I don't think that's a word.")),
 		)
 		return
 	}
@@ -2002,7 +2002,7 @@ func EtymologySearch(c commandlib.Context) {
 func PuSearch(c commandlib.Context) {
 	if c.IsFlagSet("browse") {
 		embedlist := commandlib.EmbedList{
-			ItemTypeName: "Word",
+			ItemTypeName: c.I18n("Word"),
 		}
 		for _, word := range pu {
 			embedlist.Embeds = append(embedlist.Embeds, toEmbed(word))
@@ -2013,7 +2013,7 @@ func PuSearch(c commandlib.Context) {
 	if c.NArgs() < 1 {
 		c.SendMessage(
 			"primary",
-			commandlib.ErrorEmbed("Please provide a word from pu to look up the meaning of."),
+			commandlib.ErrorEmbed(c.I18n("Please provide a word from pu to look up the meaning of.")),
 		)
 		return
 	}
@@ -2023,7 +2023,7 @@ func PuSearch(c commandlib.Context) {
 	} else {
 		c.SendMessage(
 			"primary",
-			commandlib.ErrorEmbed("Sorry, I don't think that's a word."),
+			commandlib.ErrorEmbed(c.I18n("Sorry, I don't think that's a word.")),
 		)
 		return
 	}

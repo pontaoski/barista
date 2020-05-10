@@ -10,8 +10,8 @@ import (
 
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:  "DNF Repository Query",
-		Usage: "Query repositories with DNF",
+		Name:  I18n("DNF Repository Query"),
+		Usage: I18n("Query repositories with DNF"),
 		ID:    "dnf-repoquery",
 		Examples: `dnf repoquery -d=opensuse --provides dnf
 dnf repoquery -d=fedora --whatprovides cmake(KF5Kirigami2)
@@ -24,7 +24,7 @@ dnf repoquery -d=mageia -l chromium`,
 			commandlib.StringFlag{
 				LongFlag:  "distro",
 				ShortFlag: "d",
-				FlagUsage: "Which distro you want to query repos for",
+				FlagUsage: I18n("Which distro you want to query repos for"),
 				Value:     "",
 			},
 			// What does X flags
@@ -68,7 +68,7 @@ func DnfRepoquery(c commandlib.Context) {
 	if distro, ok = resolveDistro(def); !ok {
 		c.SendMessage(
 			"primary",
-			commandlib.ErrorEmbed("Please provide a distro from the following list: `"+distroList()+"`"),
+			commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("Please provide a distro from the following list: %s"), distroList())),
 		)
 		return
 	}
@@ -76,14 +76,14 @@ func DnfRepoquery(c commandlib.Context) {
 	conn, err := dbus.SessionBus()
 	if err != nil {
 		util.OutputError(err)
-		c.SendMessage("primary", commandlib.ErrorEmbed("There was an issue connecting to QueryKit, the package search service."))
+		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an issue connecting to QueryKit, the package search service.")))
 		return
 	}
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
 
 	if c.AnySet(relFlags...) || c.IsFlagSet("list") {
 		if c.Content() == "" {
-			c.SendMessage("primary", commandlib.ErrorEmbed("Please provide a query with your flag."))
+			c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("Please provide a query with your flag.")))
 			return
 		}
 	}
@@ -98,11 +98,11 @@ func DnfRepoquery(c commandlib.Context) {
 		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, queries, distro.queryKitName).Store(&pkgs)
 		if err != nil {
 			util.OutputError(err)
-			c.SendMessage("primary", commandlib.ErrorEmbed("There was an issue searching for packages: "+err.Error()))
+			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an issue searching for packages: %s"), err.Error())))
 			return
 		}
 		if len(pkgs) == 0 {
-			c.SendMessage("primary", commandlib.ErrorEmbed("No packages were found."))
+			c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("No packages were found.")))
 			return
 		}
 		c.SendMessage("primary", pkgListToUnionEmbed(toPackageList(pkgs), distro, c))
@@ -113,13 +113,13 @@ func DnfRepoquery(c commandlib.Context) {
 		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepoPackage", 0, c.Content(), qkAction, distro.queryKitName).Store(&reldeps)
 		if err != nil {
 			util.OutputError(err)
-			c.SendMessage("primary", commandlib.ErrorEmbed("There was an error querying packages: "+err.Error()))
+			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an error querying packages: %s"), err.Error())))
 			return
 		}
 
-		titleText := fmt.Sprintf("Query %s for %s", qkAction, c.Content())
+		titleText := fmt.Sprintf(c.I18n("Query %s for %s"), qkAction, c.Content())
 		header := commandlib.EmbedHeader{
-			Text: fmt.Sprintf("%s Repoquery", distro.displayName),
+			Text: fmt.Sprintf(c.I18n("%s Repoquery"), distro.displayName),
 			Icon: distro.iconURL,
 		}
 
@@ -131,7 +131,7 @@ func DnfRepoquery(c commandlib.Context) {
 			c.SendMessage("primary", *embed)
 		} else {
 			var embedList commandlib.EmbedList
-			embedList.ItemTypeName = "Page"
+			embedList.ItemTypeName = c.I18n("Page")
 			for _, embed := range *list {
 				embedList.Embeds = append(embedList.Embeds, commandlib.Embed{
 					Title: commandlib.EmbedHeader{
@@ -149,12 +149,12 @@ func DnfRepoquery(c commandlib.Context) {
 		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, c.Content(), distro.queryKitName).Store(&files)
 		if err != nil {
 			util.OutputError(err)
-			c.SendMessage("primary", commandlib.ErrorEmbed("There was an issue listing files: "+err.Error()))
+			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an error listing files: %s"), err.Error())))
 			return
 		}
 		titleText := fmt.Sprintf("Filelist for %s", c.Content())
 		header := commandlib.EmbedHeader{
-			Text: fmt.Sprintf("%s Repoquery", distro.displayName),
+			Text: fmt.Sprintf(c.I18n("%s Repoquery"), distro.displayName),
 			Icon: distro.iconURL,
 		}
 
@@ -166,7 +166,7 @@ func DnfRepoquery(c commandlib.Context) {
 			c.SendMessage("primary", *embed)
 		} else {
 			var embedList commandlib.EmbedList
-			embedList.ItemTypeName = "Page"
+			embedList.ItemTypeName = c.I18n("Page")
 			for _, embed := range *list {
 				embedList.Embeds = append(embedList.Embeds, commandlib.Embed{
 					Title: commandlib.EmbedHeader{
@@ -180,7 +180,7 @@ func DnfRepoquery(c commandlib.Context) {
 			c.SendMessage("primary", embedList)
 		}
 	} else {
-		c.SendMessage("primary", commandlib.ErrorEmbed("Please provide a query."))
+		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("Please provide a query.")))
 		return
 	}
 }

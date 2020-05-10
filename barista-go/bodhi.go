@@ -47,13 +47,13 @@ type UpdateWrapper struct {
 
 func init() {
 	commandlib.RegisterTag(commandlib.Tag{
-		Name:     "Bodhi Updates",
-		Usage:    "Link to Bodhi updates",
+		Name:     I18n("Bodhi Updates"),
+		Usage:    I18n("Link to Bodhi updates"),
 		Examples: `FEDORA-2020-81f9f75f04, FEDORA-2020-217b6928cc, FEDORA-2020-06730065a6, FEDORA-EPEL-2020-a729ac8728`,
 		Samples: []commandlib.TagSample{
 			{
 				Tag:  "FEDORA-*",
-				Desc: "Fedora Bodhi Updates",
+				Desc: I18n("Fedora Bodhi Updates"),
 			},
 		},
 		ID:     "bodhi-updates",
@@ -116,27 +116,27 @@ func Bodhi(c commandlib.Context) {
 				Icon: update.Author.Avatar,
 			},
 			Footer: commandlib.EmbedHeader{
-				Text: "Fedora Updates System",
+				Text: c.I18n("Fedora Updates System"),
 				Icon: "https://bodhi.fedoraproject.org/static/v5.1.0/ico/favicon.ico",
 			},
 			Fields: []commandlib.EmbedField{
 				{
-					Title:  "Distro",
+					Title:  c.I18n("Distro"),
 					Body:   update.Release.Display,
 					Inline: true,
 				},
 				{
-					Title:  "Karma",
+					Title:  c.I18n("Karma"),
 					Body:   karmamsg,
 					Inline: true,
 				},
 				{
-					Title:  "Builds",
+					Title:  c.I18n("Builds"),
 					Body:   strings.Join(builds, ", "),
 					Inline: true,
 				},
 				{
-					Title: "Status",
+					Title: c.I18n("Status"),
 					Body:  strings.Title(update.Status),
 				},
 			},

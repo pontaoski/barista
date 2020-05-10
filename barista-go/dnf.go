@@ -123,23 +123,23 @@ func pkgListToUnionEmbed(pkgs []Package, distro Distro, c commandlib.Context) co
 				URL:  pkg.url,
 			},
 			Header: commandlib.EmbedHeader{
-				Text: fmt.Sprintf(l10n(c, "%s Package Search"), distro.displayName),
+				Text: fmt.Sprintf(c.I18n("%s Package Search"), distro.displayName),
 				Icon: distro.iconURL,
 			},
 			Body: pkg.desc,
 			Fields: []commandlib.EmbedField{
 				{
-					Title:  l10n(c, "Version"),
+					Title:  c.I18n("Version"),
 					Body:   pkg.vers,
 					Inline: true,
 				},
 				{
-					Title:  l10n(c, "Download Size"),
+					Title:  c.I18n("Download Size"),
 					Body:   pkg.downsize,
 					Inline: true,
 				},
 				{
-					Title:  l10n(c, "Install Size"),
+					Title:  c.I18n("Install Size"),
 					Body:   pkg.downsize,
 					Inline: true,
 				},
@@ -149,13 +149,13 @@ func pkgListToUnionEmbed(pkgs []Package, distro Distro, c commandlib.Context) co
 	}
 	return commandlib.UnionEmbed{
 		EmbedList: commandlib.EmbedList{
-			ItemTypeName: l10n(c, "Package"),
+			ItemTypeName: c.I18n("Package"),
 			Embeds:       embeds,
 		},
 		EmbedTable: commandlib.EmbedTable{
-			Heading:  fmt.Sprintf(l10n(c, "Search results for %s in %s"), c.Content(), distro.displayName),
-			Subtitle: fmt.Sprintf(l10n(c, "%d packages found"), len(tableData)),
-			Headers:  []string{l10n(c, "Name"), l10n(c, "Version"), l10n(c, "Description"), l10n(c, "Download Size"), l10n(c, "Install Size")},
+			Heading:  fmt.Sprintf(c.I18n("Search results for %s in %s"), c.Content(), distro.displayName),
+			Subtitle: fmt.Sprintf(c.I18n("%d packages found"), len(tableData)),
+			Headers:  []string{c.I18n("Name"), c.I18n("Version"), c.I18n("Description"), c.I18n("Download Size"), c.I18n("Install Size")},
 			Data:     tableData,
 		},
 	}

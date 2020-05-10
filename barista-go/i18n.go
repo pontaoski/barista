@@ -1,10 +1,9 @@
 package barista
 
-import (
-	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/i18n"
-)
+func I18n(m string) string {
+	return m
+}
 
-func l10n(c commandlib.Context, text string) string {
-	return i18n.I18n(schemas["locale"].ReadValue(c), text)
+func I18nc(c, m string) string {
+	return m
 }

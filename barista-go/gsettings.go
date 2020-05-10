@@ -9,8 +9,8 @@ import (
 
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:  "GSettings",
-		Usage: "Configure the bot",
+		Name:  I18n("GSettings"),
+		Usage: I18n("Configure the bot"),
 		ID:    "gsettings",
 		Match: [][]string{
 			{"sudo", "gsettings"},
@@ -22,15 +22,15 @@ func init() {
 
 var schemas = map[string]commandlib.Schema{
 	"locale": {
-		Name:           "Preferred Locale",
-		Description:    "The preferred language of this channel.",
+		Name:           I18n("Preferred Locale"),
+		Description:    I18n("The preferred language of this channel."),
 		ID:             "locale",
 		DefaultValue:   "en",
 		PossibleValues: []string{"en", "de", "es", "fr", "it", "nl", "pl", "tpo"},
 	},
 	"default-distro": {
-		Name:           "Default Distro",
-		Description:    "The default distro to use for package searches.",
+		Name:           I18n("Default Distro"),
+		Description:    I18n("The default distro to use for package searches."),
 		ID:             "default-distro",
 		DefaultValue:   "",
 		PossibleValues: []string{"tumbleweed", "leap", "fedora", "mageia", "openmandriva", "centos", "packman-leap", "packman-tumbleweed", "rpmfusion"},
@@ -47,7 +47,7 @@ func GSettings(c commandlib.Context) {
 						"primary",
 						commandlib.Embed{
 							Title: commandlib.EmbedHeader{
-								Text: "Setting reset!",
+								Text: c.I18n("Setting reset!"),
 							},
 						},
 					)
@@ -59,7 +59,7 @@ func GSettings(c commandlib.Context) {
 						"primary",
 						commandlib.Embed{
 							Title: commandlib.EmbedHeader{
-								Text: "Setting updated!",
+								Text: c.I18n("Setting updated!"),
 							},
 						},
 					)
@@ -68,7 +68,7 @@ func GSettings(c commandlib.Context) {
 						"primary",
 						commandlib.ErrorEmbed(
 							fmt.Sprintf(
-								"%s is not an accepted value. Please use a value from the following list:\n%s",
+								c.I18n("%s is not an accepted value. Please use a value from the following list:\n%s"),
 								value,
 								c.WrapCodeBlock(strings.Join(schema.PossibleValues, ", ")),
 							),
@@ -76,13 +76,13 @@ func GSettings(c commandlib.Context) {
 					)
 				}
 			} else {
-				c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf("%s is not a valid setting key", key)))
+				c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("%s is not a valid setting key"), key)))
 			}
 		} else {
 			if schema, ok := schemas[key]; ok {
 				c.SendMessage("primary", schema.ToEmbed(c))
 			} else {
-				c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf("%s is not a valid setting key", key)))
+				c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("%s is not a valid setting key"), key)))
 			}
 		}
 	} else {
@@ -91,7 +91,7 @@ func GSettings(c commandlib.Context) {
 			schemaEmbeds = append(schemaEmbeds, schema.ToEmbed(c))
 		}
 		c.SendMessage("primary", commandlib.EmbedList{
-			ItemTypeName: "Command",
+			ItemTypeName: c.I18n("Command"),
 			Embeds:       schemaEmbeds,
 		})
 	}
