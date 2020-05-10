@@ -16,7 +16,10 @@ FROM golang:stretch AS builder
 
     WORKDIR $GOPATH/src
 
-    RUN CGO_ENABLED=0 go get -v \
+    RUN go get -v \
+        github.com/pontaoski/barista
+
+    RUN go get -u \
         github.com/pontaoski/barista
 
 FROM base
@@ -26,6 +29,8 @@ FROM base
     RUN mkdir -p /barista/barista-go/commandlib/template/
 
     COPY --from=builder /go/src/github.com/pontaoski/barista/barista-go/commandlib/template/* /barista/barista-go/commandlib/template/
+
+    COPY --from=builder /go/src/github.com/pontaoski/barista/messages/* /barista/messages/
 
     COPY --from=builder /go/bin/barista .
 

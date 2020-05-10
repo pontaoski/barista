@@ -43,7 +43,7 @@ func HiddenI18n(c commandlib.Context) {
 	}
 	in := fmt.Sprintf("https://raw.githubusercontent.com/pontaoski/barista/master/messages/barista_%s.po", c.Arg(0))
 	println(in)
-	err := DownloadFile(fmt.Sprintf("messages/barista_%s.po"), in)
+	err := DownloadFile(fmt.Sprintf("messages/barista_%s.po", c.Arg(0)), in)
 	if err != nil {
 		c.SendMessage("primary", commandlib.ErrorEmbed("Failed to download: "+err.Error()))
 	} else {
