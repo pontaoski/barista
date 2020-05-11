@@ -15,6 +15,7 @@ type Context interface {
 	Arg(i int) string
 	Args() []string
 	Content() string
+	RawContent() string
 	ChoiceFlags(flags ...string) string
 	AnySet(flags ...string) bool
 	IsFlagSet(name string) bool
@@ -32,10 +33,11 @@ type Context interface {
 }
 
 type contextImpl struct {
-	flagSet  flag.FlagSet
-	lastUsed time.Time
-	isTag    bool
-	words    []string
+	flagSet    flag.FlagSet
+	lastUsed   time.Time
+	isTag      bool
+	words      []string
+	rawContent string
 }
 
 var pofiles map[string]*gotext.Po = make(map[string]*gotext.Po)
@@ -52,6 +54,10 @@ func grabPo(locale string) *gotext.Po {
 
 func DropPo(locale string) {
 	delete(pofiles, locale)
+}
+
+func (c contextImpl) RawContent() string {
+	return c.rawContent
 }
 
 func (c contextImpl) I18nInternal(locale, message string) string {

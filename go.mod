@@ -24,5 +24,6 @@ require (
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/spf13/pflag v1.0.3
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
+	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 	gopkg.in/ini.v1 v1.51.0
 )

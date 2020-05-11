@@ -2,11 +2,13 @@ package commandlib
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
 	"github.com/Necroforger/dgwidgets"
 	"github.com/bwmarrin/discordgo"
+	stripmd "github.com/writeas/go-strip-markdown"
 )
 
 type DiscordContext struct {
@@ -187,15 +189,16 @@ func buildContext(c contextImpl, s *discordgo.Session, m *discordgo.Message) Dis
 func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 	discordMutex.Lock()
 	defer discordMutex.Unlock()
+	strip := strings.TrimSuffix(stripmd.Strip(m.Content), "`")
 	if val, ok := discordCommands[m.ID]; ok {
-		if cmd, contextImpl, ok := lexContent(m.Content); ok {
+		if cmd, contextImpl, ok := lexContent(strip); ok {
 			tmp := val
 			tmp.contextImpl = contextImpl
 			tmp.lastUsed = time.Now()
 			go cmd.Action(tmp)
 		}
 	} else {
-		if cmd, contextImpl, ok := lexContent(m.Content); ok {
+		if cmd, contextImpl, ok := lexContent(strip); ok {
 			dc := buildContext(contextImpl, s, m)
 			discordCommands[m.ID] = &dc
 			go cmd.Action(&dc)
@@ -204,7 +207,7 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 	tagMutex.Lock()
 	defer tagMutex.Unlock()
 	if val, ok := tagMap[m.ID]; ok {
-		for _, tag := range lexTags(m.Content) {
+		for _, tag := range lexTags(strip) {
 			tmp := val
 			tmp.contextImpl = tag.Context
 			tmp.lastUsed = time.Now()
@@ -212,7 +215,7 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 			go tag.Tag.Action(tmp)
 		}
 	} else {
-		for _, tag := range lexTags(m.Content) {
+		for _, tag := range lexTags(strip) {
 			dc := buildContext(tag.Context, s, m)
 			tagMap[m.ID] = &dc
 			go tag.Tag.Action(&dc)

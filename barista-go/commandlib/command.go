@@ -85,6 +85,7 @@ func lexContent(content string) (Command, contextImpl, bool) {
 	}
 	for _, command := range commands {
 		var sliced []string
+		var matchedMatch []string
 		fields := strings.Fields(content)
 		fieldsLen := len(fields)
 	outerLoop:
@@ -99,12 +100,18 @@ func lexContent(content string) (Command, contextImpl, bool) {
 				}
 			}
 			sliced = fields[matchLen:]
+			matchedMatch = match
 			goto matched
 		}
 		continue
 	matched:
 		ctxt := contextImpl{}
 		ctxt.flagSet = *command.Flags.GetFlagSet()
+		rawContext := strings.TrimSpace(content)
+		for _, word := range matchedMatch {
+			rawContext = strings.TrimSpace(strings.TrimPrefix(rawContext, word))
+		}
+		ctxt.rawContent = rawContext
 		err := ctxt.flagSet.Parse(sliced)
 		if err != nil {
 			println(err.Error())
