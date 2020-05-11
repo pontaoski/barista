@@ -221,7 +221,75 @@ func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	}
 }
 
+func (t *TelegramContext) NextResponse() (out chan string) {
+	out = make(chan string)
+	go func() {
+		for {
+			select {
+			case usermsg := <-waitForTelegramMessage():
+				if usermsg.Chat.ID == t.tm.Chat.ID && usermsg.From.ID == t.tm.From.ID {
+					out <- usermsg.Text
+					return
+				}
+			}
+		}
+	}()
+	return out
+}
+
+func (t *TelegramContext) AwaitResponse(tenpo time.Duration) (response string, ok bool) {
+	timeoutChan := make(chan struct{})
+	go func() {
+		time.Sleep(tenpo)
+		timeoutChan <- struct{}{}
+	}()
+	for {
+		select {
+		case msg := <-t.NextResponse():
+			return msg, true
+		case <-timeoutChan:
+			return "", false
+		}
+	}
+}
+
+var tgHandlers []*tgEventHandlerInstance
+var tgHandlerMutex = sync.Mutex{}
+
+type tgEventHandlerInstance struct {
+	handler func(m *tgbotapi.Message)
+}
+
+func removeTelegramHandler(ehi *tgEventHandlerInstance) {
+	tgHandlerMutex.Lock()
+	defer tgHandlerMutex.Unlock()
+	for idx, handler := range tgHandlers {
+		if handler == ehi {
+			tgHandlers = append(tgHandlers[:idx], tgHandlers[idx+1:]...)
+		}
+	}
+}
+
+func addTelegramHandlerOnce(input func(m *tgbotapi.Message)) {
+	tgHandlerMutex.Lock()
+	defer tgHandlerMutex.Unlock()
+	ehi := tgEventHandlerInstance{input}
+	tgHandlers = append(tgHandlers, &ehi)
+}
+
+func waitForTelegramMessage() chan *tgbotapi.Message {
+	channel := make(chan *tgbotapi.Message)
+	addTelegramHandlerOnce(func(m *tgbotapi.Message) {
+		channel <- m
+	})
+	return channel
+}
+
 func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
+	for _, handler := range tgHandlers {
+		handler.handler(m)
+		removeTelegramHandler(handler)
+	}
 	if cmd, contextImpl, ok := lexContent(m.Text); ok {
 		tg := TelegramContext{}
 		tg.contextImpl = contextImpl

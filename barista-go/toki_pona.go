@@ -2,6 +2,11 @@ package barista
 
 import (
 	"encoding/json"
+	"fmt"
+	"math/rand"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
 )
@@ -1919,6 +1924,15 @@ func init() {
 		},
 		Action: EtymologySearch,
 	})
+	commandlib.RegisterCommand(commandlib.Command{
+		Name:  "toki pona quiz",
+		Usage: "Quiz yourself on toki pona",
+		ID:    "tpo-quiz",
+		Match: [][]string{
+			{"o", "quiz"},
+		},
+		Action: Quiz,
+	})
 }
 
 func lookupPu(word string) (puWord, bool) {
@@ -2027,4 +2041,92 @@ func PuSearch(c commandlib.Context) {
 		)
 		return
 	}
+}
+
+const nextRespDuration = 3 * time.Second
+
+type meaningWordList []string
+
+func (m meaningWordList) contains(s string) bool {
+	lower := strings.ToLower(s)
+	for _, word := range strings.Fields(lower) {
+		for _, meaning := range m {
+			if strings.TrimSpace(word) == strings.TrimSpace(meaning) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (p puWord) toMeaningWordList() (ret meaningWordList) {
+	for _, meaning := range p.Meanings {
+		for _, split := range strings.Fields(strings.ReplaceAll(strings.ReplaceAll(meaning[1], ",", " "), "!", " ")) {
+			ret = append(ret, strings.ToLower(split))
+		}
+	}
+	return
+}
+
+func Quiz(c commandlib.Context) {
+	score := 0
+	rand.Seed(time.Now().Unix())
+	c.SendMessage("starting", fmt.Sprintf(c.I18n("Starting quiz... Type '%s' to cancel"), c.I18n("cancel")))
+Wait:
+	for i := 0; i < 10; i++ {
+		word := pu[rand.Intn(len(pu))]
+		c.SendMessage(fmt.Sprintf("primary-%d", i), commandlib.Embed{
+			Title: commandlib.EmbedHeader{
+				Text: word.Word,
+			},
+			Body: c.I18n("What does this word mean?"),
+			Footer: commandlib.EmbedHeader{
+				Text: fmt.Sprintf("Word %d out of %d", i+1, 10),
+			},
+		})
+		timeoutChan := make(chan struct{})
+		go func() {
+			time.Sleep(7 * time.Second)
+			timeoutChan <- struct{}{}
+		}()
+		for {
+			select {
+			case msg := <-c.NextResponse():
+				if strings.Contains(msg, c.I18n("cancel")) {
+					c.SendMessage(fmt.Sprintf("primary-%d", i), commandlib.ErrorEmbed(c.I18n("Quiz cancelled.")))
+					return
+				}
+				if word.toMeaningWordList().contains(msg) {
+					grats := toEmbed(word)
+					grats.Colour = 0x00ff00
+					c.SendMessage(fmt.Sprintf("primary-%d", i), grats)
+					c.SendMessage(fmt.Sprintf("congrats-%d", i), "Correct!")
+					score++
+					time.Sleep(nextRespDuration)
+					continue Wait
+				}
+			case <-timeoutChan:
+				wrong := toEmbed(word)
+				wrong.Colour = 0xff0000
+				c.SendMessage(fmt.Sprintf("primary-%d", i), wrong)
+				time.Sleep(nextRespDuration)
+				continue Wait
+			}
+		}
+	}
+	c.SendMessage("primary", commandlib.Embed{
+		Title: commandlib.EmbedHeader{
+			Text: c.I18n("Quiz Results"),
+		},
+		Fields: []commandlib.EmbedField{
+			{
+				Title: c.I18n("Correct Results"),
+				Body:  strconv.Itoa(score),
+			},
+			{
+				Title: c.I18n("Incorrect Results"),
+				Body:  strconv.Itoa(10 - score),
+			},
+		},
+	})
 }

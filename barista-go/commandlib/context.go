@@ -30,6 +30,8 @@ type Context interface {
 	SendTags(id string, tags []Embed)
 	WrapCodeBlock(code string) string
 	GenerateLink(text string, URL string) string
+	NextResponse() chan string
+	AwaitResponse(time time.Duration) (content string, ok bool)
 }
 
 type contextImpl struct {

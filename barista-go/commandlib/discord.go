@@ -144,6 +144,46 @@ func (d DiscordContext) I18nc(context, message string) string {
 	return d.I18n(message)
 }
 
+func waitForMessage(s *discordgo.Session) chan *discordgo.MessageCreate {
+	channel := make(chan *discordgo.MessageCreate)
+	s.AddHandlerOnce(func(_ *discordgo.Session, e *discordgo.MessageCreate) {
+		channel <- e
+	})
+	return channel
+}
+
+func (d *DiscordContext) NextResponse() (out chan string) {
+	out = make(chan string)
+	go func() {
+		for {
+			select {
+			case usermsg := <-waitForMessage(d.s):
+				if usermsg.Author.ID == d.tm.Author.ID && usermsg.ChannelID == d.tm.ChannelID {
+					out <- stripmd.Strip(usermsg.Content)
+					return
+				}
+			}
+		}
+	}()
+	return out
+}
+
+func (d *DiscordContext) AwaitResponse(tenpo time.Duration) (response string, ok bool) {
+	timeoutChan := make(chan struct{})
+	go func() {
+		time.Sleep(tenpo)
+		timeoutChan <- struct{}{}
+	}()
+	for {
+		select {
+		case msg := <-d.NextResponse():
+			return msg, true
+		case <-timeoutChan:
+			return "", false
+		}
+	}
+}
+
 func discordEmbed(d Embed) *discordgo.MessageEmbed {
 	d.Truncate()
 	var fields []*discordgo.MessageEmbedField

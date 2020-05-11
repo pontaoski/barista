@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/matrix-org/gomatrix"
 )
@@ -76,6 +78,40 @@ func (m MatrixContext) I18n(message string) string {
 	return m.I18nInternal(i18nschema.ReadValue(&m), message)
 }
 
+func (m MatrixContext) NextResponse() (out chan string) {
+	out = make(chan string)
+	go func() {
+		for {
+			select {
+			case usermsg := <-waitForMatrixMessage():
+				if val, ok := usermsg.Content["body"]; ok {
+					if usermsg.Sender == m.triggerEvent.Sender && usermsg.RoomID == m.triggerEvent.RoomID {
+						out <- val.(string)
+						return
+					}
+				}
+			}
+		}
+	}()
+	return out
+}
+
+func (m *MatrixContext) AwaitResponse(tenpo time.Duration) (response string, ok bool) {
+	timeoutChan := make(chan struct{})
+	go func() {
+		time.Sleep(tenpo)
+		timeoutChan <- struct{}{}
+	}()
+	for {
+		select {
+		case msg := <-m.NextResponse():
+			return msg, true
+		case <-timeoutChan:
+			return "", false
+		}
+	}
+}
+
 func (m MatrixContext) I18nc(context, message string) string {
 	return m.I18n(message)
 }
@@ -112,7 +148,43 @@ func (m MatrixContext) GenerateLink(text, URL string) string {
 	return fmt.Sprintf(`<a href="%s">%s</a>`, URL, text)
 }
 
+var handlers []*eventHandlerInstance
+var handlerMutex = sync.Mutex{}
+
+type eventHandlerInstance struct {
+	handler func(ev *gomatrix.Event)
+}
+
+func removeMatrixHandler(ehi *eventHandlerInstance) {
+	handlerMutex.Lock()
+	defer handlerMutex.Unlock()
+	for idx, handler := range handlers {
+		if handler == ehi {
+			handlers = append(handlers[:idx], handlers[idx+1:]...)
+		}
+	}
+}
+
+func addMatrixHandlerOnce(input func(ev *gomatrix.Event)) {
+	handlerMutex.Lock()
+	defer handlerMutex.Unlock()
+	ehi := eventHandlerInstance{input}
+	handlers = append(handlers, &ehi)
+}
+
+func waitForMatrixMessage() chan *gomatrix.Event {
+	channel := make(chan *gomatrix.Event)
+	addMatrixHandlerOnce(func(ev *gomatrix.Event) {
+		channel <- ev
+	})
+	return channel
+}
+
 func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
+	for _, handler := range handlers {
+		handler.handler(ev)
+		removeMatrixHandler(handler)
+	}
 	if val, ok := ev.Content["body"]; ok {
 		if cmd, contextImpl, ok := lexContent(val.(string)); ok {
 			mc := MatrixContext{}
