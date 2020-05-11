@@ -12,6 +12,7 @@ import (
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
 		Match:  [][]string{{"o", "kama", "e", "sitelen", "toki", "ni:"}},
+		Hidden: true,
 		Action: HiddenI18n,
 	})
 }

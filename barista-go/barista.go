@@ -7,27 +7,11 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/appadeia/barista/barista-go/commandlib"
 	"gopkg.in/ini.v1"
 )
 
 // Barista's config
 var Cfg *ini.File
-
-func init() {
-	commandlib.RegisterCommand(commandlib.Command{
-		Match: [][]string{{"o", "test"}},
-		Action: func(c commandlib.Context) {
-			c.SendMessage("primary", "send a thing...")
-			content, valid := c.AwaitResponse(time.Second * 5)
-			if valid {
-				c.SendMessage("secondary", content)
-			} else {
-				c.SendMessage("secondary", "timeout")
-			}
-		},
-	})
-}
 
 // Main : Call this function to start the bot's main loop.
 func Main() {
