@@ -22,6 +22,9 @@ type Context interface {
 	NArgs() int
 	Usage() string
 	I18nInternal(locale, message string) string
+	Type() ContextType
+	RecallData(key string) (interface{}, bool)
+	SetData(key string, v interface{})
 	// Flags needed by implementations
 	I18n(message string) string
 	I18nc(context, message string) string
@@ -35,14 +38,39 @@ type Context interface {
 }
 
 type contextImpl struct {
-	flagSet    flag.FlagSet
-	lastUsed   time.Time
-	isTag      bool
-	words      []string
-	rawContent string
+	flagSet     flag.FlagSet
+	lastUsed    time.Time
+	isTag       bool
+	words       []string
+	rawContent  string
+	contextType ContextType
+	command     Command
+	data        map[string]interface{}
 }
 
+type ContextType int
+
+const (
+	InvalidContextType ContextType = iota
+	CreateCommand
+	EditCommand
+	DeleteCommand
+)
+
 var pofiles map[string]*gotext.Po = make(map[string]*gotext.Po)
+
+func (c *contextImpl) SetData(key string, v interface{}) {
+	c.data[key] = v
+}
+
+func (c *contextImpl) RecallData(key string) (val interface{}, ok bool) {
+	val, ok = c.data[key]
+	return
+}
+
+func (c contextImpl) Type() ContextType {
+	return c.contextType
+}
 
 func grabPo(locale string) *gotext.Po {
 	if val, ok := pofiles[locale]; ok {

@@ -17,7 +17,7 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Message.WebhookID != "" {
 		return
 	}
-	commandlib.DiscordMessage(s, m.Message)
+	commandlib.DiscordMessage(s, m.Message, m)
 }
 
 func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
@@ -29,7 +29,11 @@ func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if msg.Author.ID == s.State.User.ID {
 		return
 	}
-	commandlib.DiscordMessage(s, m.Message)
+	commandlib.DiscordMessage(s, m.Message, m)
+}
+
+func discordMessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
+	commandlib.DeleteDiscordMessage(s, m)
 }
 
 func DiscordMain() {
@@ -43,6 +47,7 @@ func DiscordMain() {
 
 	discord.AddHandler(discordMessageCreate)
 	discord.AddHandler(discordMessageEdit)
+	discord.AddHandler(discordMessageDelete)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = discord.Open()

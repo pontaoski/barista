@@ -189,6 +189,7 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 		if cmd, contextImpl, ok := lexContent(val.(string)); ok {
 			mc := MatrixContext{}
 			mc.contextImpl = contextImpl
+			mc.contextImpl.contextType = CreateCommand
 			mc.client = client
 			mc.triggerEvent = ev
 			go cmd.Action(&mc)

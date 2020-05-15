@@ -293,6 +293,7 @@ func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
 	if cmd, contextImpl, ok := lexContent(m.Text); ok {
 		tg := TelegramContext{}
 		tg.contextImpl = contextImpl
+		tg.contextImpl.contextType = CreateCommand
 		tg.bot = b
 		tg.tm = m
 		go cmd.Action(&tg)

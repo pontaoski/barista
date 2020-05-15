@@ -35,9 +35,10 @@ type Command struct {
 	ID    string
 	Match [][]string
 
-	Flags  FlagList
-	Action Action
-	Hidden bool
+	Flags        FlagList
+	Action       Action
+	DeleteAction Action
+	Hidden       bool
 }
 
 type TagSample struct {
@@ -106,6 +107,8 @@ func lexContent(content string) (Command, contextImpl, bool) {
 		continue
 	matched:
 		ctxt := contextImpl{}
+		ctxt.command = command
+		ctxt.data = make(map[string]interface{})
 		ctxt.flagSet = *command.Flags.GetFlagSet()
 		rawContext := strings.TrimSpace(content)
 		for _, word := range matchedMatch {

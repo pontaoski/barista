@@ -226,12 +226,30 @@ func buildContext(c contextImpl, s *discordgo.Session, m *discordgo.Message) Dis
 	return dc
 }
 
-func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
+func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
+	if val, ok := discordCommands[m.ID]; ok {
+		tmp := val
+		tmp.contextImpl.contextType = DeleteCommand
+		if tmp.command.DeleteAction != nil {
+			tmp.command.DeleteAction(tmp)
+		}
+		for _, paginator := range val.paginators {
+			paginator.DeleteMessageWhenDone = true
+			paginator.Widget.Close <- true
+		}
+		for _, message := range val.pm {
+			s.ChannelMessageDelete(message.ChannelID, message.ID)
+		}
+	}
+}
+
+func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) {
 	discordMutex.Lock()
 	defer discordMutex.Unlock()
 	strip := strings.TrimSuffix(stripmd.Strip(m.Content), "`")
 	if val, ok := discordCommands[m.ID]; ok {
 		if cmd, contextImpl, ok := lexContent(strip); ok {
+			contextImpl.contextType = EditCommand
 			tmp := val
 			tmp.contextImpl = contextImpl
 			tmp.lastUsed = time.Now()
@@ -240,6 +258,7 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message) {
 	} else {
 		if cmd, contextImpl, ok := lexContent(strip); ok {
 			dc := buildContext(contextImpl, s, m)
+			contextImpl.contextType = CreateCommand
 			discordCommands[m.ID] = &dc
 			go cmd.Action(&dc)
 		}
