@@ -14,11 +14,14 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/godbus/dbus v4.1.0+incompatible
 	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
+	github.com/hashicorp/go-immutable-radix v1.2.0
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kylelemons/godebug v1.1.0 // indirect
 	github.com/leonelquinteros/gotext v1.4.0
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
+	github.com/mattn/anko v0.1.8 // indirect
 	github.com/olekukonko/tablewriter v0.0.4
 	github.com/sahilm/fuzzy v0.1.0
 	github.com/smartystreets/goconvey v1.6.4 // indirect

@@ -3,7 +3,7 @@ package barista
 import (
 	"fmt"
 
-	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/commandlib/telegram"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -24,10 +24,10 @@ func TelegramMain() {
 	fmt.Println("Barista Telegram is now running.")
 	for update := range updates {
 		if update.CallbackQuery != nil && update.CallbackQuery.Message != nil {
-			commandlib.TelegramPaginatorHandler(update.CallbackQuery.Message.MessageID, update.CallbackQuery.Data)
+			telegram.TelegramPaginatorHandler(update.CallbackQuery.Message.MessageID, update.CallbackQuery.Data)
 		}
 		if update.Message != nil {
-			commandlib.TelegramMessage(bot, update.Message)
+			telegram.TelegramMessage(bot, update.Message)
 		}
 	}
 }

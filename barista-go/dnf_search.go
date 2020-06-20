@@ -13,11 +13,11 @@ func init() {
 		Name:  I18n("DNF Package Search"),
 		Usage: I18n("Search packages with DNF"),
 		ID:    "dnf-search",
-		Match: [][]string{
-			{"dnf", "search"},
-			{"dnf", "se"},
-			{"zypper", "search"},
-			{"zypper", "se"},
+		Matches: []string{
+			"dnf search",
+			"dnf se",
+			"zypper search",
+			"zypper se",
 		},
 		Examples: `dnf se -d=fedora chromium
 dnf se -d=rpmfusion nvidia`,

@@ -1,4 +1,4 @@
-package commandlib
+package matrix
 
 import (
 	"fmt"
@@ -7,11 +7,12 @@ import (
 	"sync"
 	"time"
 
+	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/matrix-org/gomatrix"
 )
 
 type MatrixContext struct {
-	contextImpl
+	commandlib.ContextMixin
 
 	client       *gomatrix.Client
 	triggerEvent *gomatrix.Event
@@ -61,7 +62,7 @@ func init() {
 	tmpl = template.Must(template.ParseGlob("barista-go/commandlib/template/*.html"))
 }
 
-func (m MatrixContext) SendTags(_ string, tags []Embed) {
+func (m MatrixContext) SendTags(_ string, tags []commandlib.Embed) {
 	var sb strings.Builder
 	for _, tag := range tags {
 		tmpl.ExecuteTemplate(&sb, "single", tag)
@@ -70,12 +71,28 @@ func (m MatrixContext) SendTags(_ string, tags []Embed) {
 	sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
 }
 
+func (m MatrixContext) AuthorName() string {
+	resp, _ := m.client.GetDisplayName(m.triggerEvent.Sender)
+	if resp == nil {
+		return m.triggerEvent.Sender
+	}
+	return resp.DisplayName
+}
+
+func (m MatrixContext) AuthorIdentifier() string {
+	return m.triggerEvent.Sender
+}
+
 func (m MatrixContext) RoomIdentifier() string {
 	return m.triggerEvent.RoomID
 }
 
+func (m MatrixContext) CommunityIdentifier() string {
+	return m.triggerEvent.RoomID
+}
+
 func (m MatrixContext) I18n(message string) string {
-	return m.I18nInternal(i18nschema.ReadValue(&m), message)
+	return m.I18nInternal(commandlib.GetLanguage(&m), message)
 }
 
 func (m MatrixContext) NextResponse() (out chan string) {
@@ -120,20 +137,20 @@ func (m MatrixContext) SendMessage(_ string, content interface{}) {
 	switch content.(type) {
 	case string:
 		sendMessage(m.client, m.triggerEvent.RoomID, content.(string))
-	case Embed:
+	case commandlib.Embed:
 		var sb strings.Builder
-		tmpl.ExecuteTemplate(&sb, "single", content.(Embed))
+		tmpl.ExecuteTemplate(&sb, "single", content.(commandlib.Embed))
 		sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
-	case EmbedList:
+	case commandlib.EmbedList:
 		var sb strings.Builder
-		tmpl.ExecuteTemplate(&sb, "multiple", content.(EmbedList))
+		tmpl.ExecuteTemplate(&sb, "multiple", content.(commandlib.EmbedList))
 		sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
-	case EmbedTable:
+	case commandlib.EmbedTable:
 		var sb strings.Builder
-		tmpl.ExecuteTemplate(&sb, "table", content.(EmbedTable))
+		tmpl.ExecuteTemplate(&sb, "table", content.(commandlib.EmbedTable))
 		sendHTMLMessage(m.client, m.triggerEvent.RoomID, sb.String(), "")
-	case UnionEmbed:
-		m.SendMessage("", content.(UnionEmbed).EmbedTable)
+	case commandlib.UnionEmbed:
+		m.SendMessage("", content.(commandlib.UnionEmbed).EmbedTable)
 		return
 	}
 }
@@ -186,17 +203,17 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 		removeMatrixHandler(handler)
 	}
 	if val, ok := ev.Content["body"]; ok {
-		if cmd, contextImpl, ok := lexContent(val.(string)); ok {
+		if cmd, ContextMixin, ok := commandlib.LexCommand(val.(string)); ok {
 			mc := MatrixContext{}
-			mc.contextImpl = contextImpl
-			mc.contextImpl.contextType = CreateCommand
+			mc.ContextMixin = ContextMixin
+			mc.ContextMixin.ContextType = commandlib.CreateCommand
 			mc.client = client
 			mc.triggerEvent = ev
 			go cmd.Action(&mc)
 		} else {
-			for _, tc := range lexTags(val.(string)) {
+			for _, tc := range commandlib.LexTags(val.(string)) {
 				mc := MatrixContext{}
-				mc.contextImpl = tc.Context
+				mc.ContextMixin = tc.Context
 				mc.client = client
 				mc.triggerEvent = ev
 				go tc.Tag.Action(&mc)

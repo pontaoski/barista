@@ -59,11 +59,11 @@ var languages = map[string]int{
 
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:   I18n("Programming"),
-		Usage:  I18n("Program in a language."),
-		ID:     "programming",
-		Match:  [][]string{{"go", "build"}},
-		Action: Programming,
+		Name:    I18n("Programming"),
+		Usage:   I18n("Program in a language."),
+		ID:      "programming",
+		Matches: []string{"go build"},
+		Action:  Programming,
 	})
 }
 

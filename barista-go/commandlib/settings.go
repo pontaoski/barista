@@ -18,7 +18,7 @@ var DB *gorm.DB
 
 func init() {
 	var err error
-	DB, err = gorm.Open("sqlite3", "storage/data.db")
+	DB, err = gorm.Open("sqlite3", "storage/settings.db")
 	if err != nil {
 		panic(err.Error())
 	}

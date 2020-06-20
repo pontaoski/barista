@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/commandlib/matrix"
 	"github.com/matrix-org/gomatrix"
 )
 
@@ -34,7 +34,7 @@ func MatrixMain() {
 
 	syncer := client.Syncer.(*gomatrix.DefaultSyncer)
 	syncer.OnEventType("m.room.message", func(ev *gomatrix.Event) {
-		commandlib.MatrixMessage(client, ev)
+		matrix.MatrixMessage(client, ev)
 	})
 	syncer.OnEventType("m.room.member", func(ev *gomatrix.Event) {
 		if val, ok := ev.Content["membership"]; ok {

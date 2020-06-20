@@ -1,27 +1,23 @@
 package commandlib
 
 import (
-	"regexp"
 	"strings"
+
+	iradix "github.com/hashicorp/go-immutable-radix"
 )
 
-var commands []Command
-var tags []Tag
+var commandRadix = iradix.New()
+var commandList []Command
 
 func RegisterCommand(command Command) {
-	commands = append(commands, command)
+	for _, match := range command.Matches {
+		commandRadix, _, _ = commandRadix.Insert([]byte(match), command)
+	}
+	commandList = append(commandList, command)
 }
 
 func Commands() []Command {
-	return commands
-}
-
-func RegisterTag(tag Tag) {
-	tags = append(tags, tag)
-}
-
-func Tags() []Tag {
-	return tags
+	return commandList
 }
 
 type Action func(c Context)
@@ -32,8 +28,8 @@ type Command struct {
 
 	Examples string
 
-	ID    string
-	Match [][]string
+	ID      string
+	Matches []string
 
 	Flags        FlagList
 	Action       Action
@@ -41,85 +37,21 @@ type Command struct {
 	Hidden       bool
 }
 
-type TagSample struct {
-	Tag  string
-	Desc string
-}
-
-type Tag struct {
-	Name  string
-	Usage string
-
-	Examples string
-	Samples  []TagSample
-
-	ID string
-
-	Match  *regexp.Regexp
-	Action Action
-}
-
-type tagContext struct {
-	Tag     Tag
-	Context contextImpl
-}
-
-func lexTags(content string) []tagContext {
-	var ret []tagContext
-	for _, tag := range tags {
-		if tag.Match.Match([]byte(content)) {
-			ret = append(ret, tagContext{
-				Tag: tag,
-				Context: contextImpl{
-					words: strings.Fields(content),
-					isTag: true,
-				},
-			})
-		}
-	}
-	return ret
-}
-
-func lexContent(content string) (Command, contextImpl, bool) {
+func LexCommand(content string) (Command, ContextMixin, bool) {
 	if content == "" {
-		return Command{}, contextImpl{}, false
+		return Command{}, ContextMixin{}, false
 	}
-	for _, command := range commands {
-		var sliced []string
-		var matchedMatch []string
-		fields := strings.Fields(content)
-		fieldsLen := len(fields)
-	outerLoop:
-		for _, match := range command.Match {
-			matchLen := len(match)
-			if fieldsLen < matchLen {
-				continue
-			}
-			for i := 0; i < matchLen; i++ {
-				if fields[i] != match[i] {
-					continue outerLoop
-				}
-			}
-			sliced = fields[matchLen:]
-			matchedMatch = match
-			goto matched
-		}
-		continue
-	matched:
-		ctxt := contextImpl{}
-		ctxt.command = command
-		ctxt.data = make(map[string]interface{})
-		ctxt.flagSet = *command.Flags.GetFlagSet()
-		rawContext := strings.TrimSpace(content)
-		for _, word := range matchedMatch {
-			rawContext = strings.TrimSpace(strings.TrimPrefix(rawContext, word))
-		}
-		ctxt.rawContent = rawContext
-		err := ctxt.flagSet.Parse(sliced)
-		if err != nil {
-			println(err.Error())
-		}
-		return command, ctxt, true
+	prefix, value, ok := commandRadix.Root().LongestPrefix([]byte(content))
+	if !ok {
+		return Command{}, ContextMixin{}, false
 	}
-	return Command{}, contextImpl{}, false
+	content = strings.TrimSpace(strings.TrimPrefix(content, string(prefix)))
+	cmd := value.(Command)
+	ctx := ContextMixin{}
+	ctx.Action = cmd
+	ctx.Data = make(map[string]interface{})
+	ctx.FlagSet = *cmd.Flags.GetFlagSet()
+	ctx.RawData = content
+	ctx.FlagSet.Parse(strings.Fields(content))
+	return cmd, ctx, true
 }

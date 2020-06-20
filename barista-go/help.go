@@ -12,20 +12,44 @@ func init() {
 		Name:  "Help",
 		Usage: "See help for commands.",
 		ID:    "help",
-		Match: [][]string{
-			{"sudo", "help"},
-			{"o", "help"},
+		Matches: []string{
+			"sudo help",
+			"o help",
 		},
 		Action: Help,
 	})
 }
 
-func join(strs [][]string) string {
-	var ret []string
-	for _, str := range strs {
-		ret = append(ret, strings.Join(str, " "))
+func CommandHelp(c commandlib.Context, command commandlib.Command) commandlib.Embed {
+	return commandlib.Embed{
+		Title: commandlib.EmbedHeader{
+			Text: fmt.Sprintf("%s (%s)", c.I18n(command.Name), command.ID),
+		},
+		Body: c.I18n(command.Usage),
+		Fields: func() []commandlib.EmbedField {
+			ret := []commandlib.EmbedField{
+				{
+					Title: c.I18n("Aliases"),
+					Body:  strings.Join(command.Matches, ", "),
+				},
+			}
+			exmps := command.Examples
+			if exmps != "" {
+				ret = append(ret, commandlib.EmbedField{
+					Title: c.I18n("Examples"),
+					Body:  c.WrapCodeBlock(exmps),
+				})
+			}
+			flags := command.Flags.GetFlagSet().FlagUsages()
+			if flags != "" {
+				ret = append(ret, commandlib.EmbedField{
+					Title: c.I18n("Flags"),
+					Body:  c.WrapCodeBlock(flags),
+				})
+			}
+			return ret
+		}(),
 	}
-	return strings.Join(ret, ", ")
 }
 
 func Help(c commandlib.Context) {
@@ -35,35 +59,7 @@ func Help(c commandlib.Context) {
 		if command.Hidden {
 			continue
 		}
-		commandEmbeds = append(commandEmbeds, commandlib.Embed{
-			Title: commandlib.EmbedHeader{
-				Text: fmt.Sprintf("%s (%s)", c.I18n(command.Name), command.ID),
-			},
-			Body: c.I18n(command.Usage),
-			Fields: func() []commandlib.EmbedField {
-				ret := []commandlib.EmbedField{
-					{
-						Title: c.I18n("Aliases"),
-						Body:  join(command.Match),
-					},
-				}
-				exmps := command.Examples
-				if exmps != "" {
-					ret = append(ret, commandlib.EmbedField{
-						Title: c.I18n("Examples"),
-						Body:  c.WrapCodeBlock(exmps),
-					})
-				}
-				flags := command.Flags.GetFlagSet().FlagUsages()
-				if flags != "" {
-					ret = append(ret, commandlib.EmbedField{
-						Title: c.I18n("Flags"),
-						Body:  c.WrapCodeBlock(flags),
-					})
-				}
-				return ret
-			}(),
-		})
+		commandEmbeds = append(commandEmbeds, CommandHelp(c, command))
 	}
 	for _, tag := range commandlib.Tags() {
 		tagEmbeds = append(tagEmbeds, commandlib.Embed{

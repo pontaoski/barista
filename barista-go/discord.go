@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/commandlib/discord"
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -17,7 +17,7 @@ func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if m.Message.WebhookID != "" {
 		return
 	}
-	commandlib.DiscordMessage(s, m.Message, m)
+	discord.DiscordMessage(s, m.Message, m)
 }
 
 func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
@@ -29,11 +29,11 @@ func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if msg.Author.ID == s.State.User.ID {
 		return
 	}
-	commandlib.DiscordMessage(s, m.Message, m)
+	discord.DiscordMessage(s, m.Message, m)
 }
 
 func discordMessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
-	commandlib.DeleteDiscordMessage(s, m)
+	discord.DeleteDiscordMessage(s, m)
 }
 
 func DiscordMain() {

@@ -16,9 +16,9 @@ func init() {
 		Examples: `dnf repoquery -d=opensuse --provides dnf
 dnf repoquery -d=fedora --whatprovides cmake(KF5Kirigami2)
 dnf repoquery -d=mageia -l chromium`,
-		Match: [][]string{
-			{"dnf", "rq"},
-			{"dnf", "repoquery"},
+		Matches: []string{
+			"dnf rq",
+			"dnf repoquery",
 		},
 		Flags: commandlib.FlagList{
 			commandlib.StringFlag{

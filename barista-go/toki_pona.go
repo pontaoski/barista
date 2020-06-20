@@ -1897,12 +1897,10 @@ func init() {
 		panic(err)
 	}
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:  "toki pona vocabulary lookup",
-		Usage: "Look up words in pu",
-		ID:    "pu-lookup",
-		Match: [][]string{
-			{"o", "pu"},
-		},
+		Name:    "toki pona vocabulary lookup",
+		Usage:   "Look up words in pu",
+		ID:      "pu-lookup",
+		Matches: []string{"o pu"},
 		Flags: []commandlib.Flag{
 			commandlib.BoolFlag{
 				LongFlag: "browse",
@@ -1911,12 +1909,10 @@ func init() {
 		Action: PuSearch,
 	})
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:  "toki pona etymolygy lookup",
-		Usage: "Look up words in etymolygy",
-		ID:    "ety-lookup",
-		Match: [][]string{
-			{"o", "ety"},
-		},
+		Name:    "toki pona etymolygy lookup",
+		Usage:   "Look up words in etymolygy",
+		ID:      "ety-lookup",
+		Matches: []string{"o ety"},
 		Flags: []commandlib.Flag{
 			commandlib.BoolFlag{
 				LongFlag: "browse",
@@ -1925,13 +1921,11 @@ func init() {
 		Action: EtymologySearch,
 	})
 	commandlib.RegisterCommand(commandlib.Command{
-		Name:  "toki pona quiz",
-		Usage: "Quiz yourself on toki pona",
-		ID:    "tpo-quiz",
-		Match: [][]string{
-			{"o", "quiz"},
-		},
-		Action: Quiz,
+		Name:    "toki pona quiz",
+		Usage:   "Quiz yourself on toki pona",
+		ID:      "tpo-quiz",
+		Matches: []string{"o quiz"},
+		Action:  Quiz,
 	})
 }
 

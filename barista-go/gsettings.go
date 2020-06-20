@@ -12,9 +12,9 @@ func init() {
 		Name:  I18n("GSettings"),
 		Usage: I18n("Configure the bot"),
 		ID:    "gsettings",
-		Match: [][]string{
-			{"sudo", "gsettings"},
-			{"o", "gsettings"},
+		Matches: []string{
+			"sudo gsettings",
+			"o gsettings",
 		},
 		Action: GSettings,
 	})
