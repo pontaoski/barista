@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/log"
 	"github.com/matrix-org/gomatrix"
 )
 
@@ -37,7 +38,7 @@ func sendHTMLMessage(client *gomatrix.Client, roomID, html, text string) {
 	}
 	_, err := client.SendMessageEvent(roomID, "m.room.message", message)
 	if err != nil {
-		println(err.Error())
+		log.Error(err.Error())
 	}
 }
 
@@ -48,7 +49,7 @@ func sendMessage(client *gomatrix.Client, roomID, text string) {
 	}
 	_, err := client.SendMessageEvent(roomID, "m.room.message", message)
 	if err != nil {
-		println(err.Error())
+		log.Error(err.Error())
 	}
 }
 

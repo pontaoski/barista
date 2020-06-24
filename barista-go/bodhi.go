@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/util"
+	"github.com/appadeia/barista/barista-go/log"
 )
 
 type Release struct {
@@ -67,20 +67,20 @@ func Bodhi(c commandlib.Context) {
 	for _, word := range c.Args() {
 		resp, err := http.Get(fmt.Sprintf("https://bodhi.fedoraproject.org/updates/%s", word))
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			continue
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			continue
 		}
 
 		var updateWrapper UpdateWrapper
 		err = json.Unmarshal(body, &updateWrapper)
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			continue
 		}
 

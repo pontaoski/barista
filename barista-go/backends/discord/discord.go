@@ -10,6 +10,7 @@ import (
 	stripmd "github.com/writeas/go-strip-markdown"
 )
 
+// DiscordContext is a Discord context
 type DiscordContext struct {
 	commandlib.ContextMixin
 	author     *discordgo.User

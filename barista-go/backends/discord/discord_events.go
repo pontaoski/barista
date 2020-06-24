@@ -8,6 +8,7 @@ import (
 	stripmd "github.com/writeas/go-strip-markdown"
 )
 
+// DeleteDiscordMessage handles a deleted Discord message
 func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 	if val, ok := commandCache.Get(m.ID); ok {
 		tmp := val.(*DiscordContext)
@@ -25,6 +26,7 @@ func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 	}
 }
 
+// DiscordMessage handles a created or edited Discord message
 func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) {
 	strip := strings.TrimSuffix(stripmd.Strip(m.Content), "`")
 	if val, ok := commandCache.Get(m.ID); ok {

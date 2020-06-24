@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/util"
+	"github.com/appadeia/barista/barista-go/log"
 	"github.com/godbus/dbus"
 )
 
@@ -75,7 +75,7 @@ func DnfRepoquery(c commandlib.Context) {
 
 	conn, err := dbus.SessionBus()
 	if err != nil {
-		util.OutputError(err)
+		log.Error("%+v", err)
 		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an issue connecting to QueryKit, the package search service.")))
 		return
 	}
@@ -97,7 +97,7 @@ func DnfRepoquery(c commandlib.Context) {
 		}
 		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepo", 0, queries, distro.queryKitName).Store(&pkgs)
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an issue searching for packages: %s"), err.Error())))
 			return
 		}
@@ -112,7 +112,7 @@ func DnfRepoquery(c commandlib.Context) {
 
 		err = obj.Call("com.github.Appadeia.QueryKit.QueryRepoPackage", 0, c.Content(), qkAction, distro.queryKitName).Store(&reldeps)
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an error querying packages: %s"), err.Error())))
 			return
 		}
@@ -148,7 +148,7 @@ func DnfRepoquery(c commandlib.Context) {
 		var files []string
 		err = obj.Call("com.github.Appadeia.QueryKit.ListFiles", 0, c.Content(), distro.queryKitName).Store(&files)
 		if err != nil {
-			util.OutputError(err)
+			log.Error("%+v", err)
 			c.SendMessage("primary", commandlib.ErrorEmbed(fmt.Sprintf(c.I18n("There was an error listing files: %s"), err.Error())))
 			return
 		}

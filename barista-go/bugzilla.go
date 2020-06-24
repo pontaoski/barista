@@ -9,7 +9,7 @@ import (
 
 	"github.com/antchfx/xmlquery"
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/util"
+	"github.com/appadeia/barista/barista-go/log"
 )
 
 type BugzillaInstance struct {
@@ -150,24 +150,24 @@ func Bugzilla(c commandlib.Context) {
 					tag := strings.TrimPrefix(word, match+"#")
 					bug, err := http.Get(fmt.Sprintf("%s/show_bug.cgi?id=%s&ctype=xml", bugzilla.URL, tag))
 					if err != nil {
-						util.OutputError(err)
+						log.Error("%+v", err)
 						continue InstanceLoop
 					}
 					body, err := ioutil.ReadAll(bug.Body)
 					if err != nil {
-						util.OutputError(err)
+						log.Error("%+v", err)
 						continue InstanceLoop
 					}
 
 					doc, err := xmlquery.Parse(strings.NewReader(string(body)))
 					if err != nil {
-						util.OutputError(err)
+						log.Error("%+v", err)
 						continue InstanceLoop
 					}
 
 					bugs, err := xmlquery.QueryAll(doc, "/bugzilla/bug")
 					if err != nil {
-						util.OutputError(err)
+						log.Error("%+v", err)
 						continue InstanceLoop
 					}
 

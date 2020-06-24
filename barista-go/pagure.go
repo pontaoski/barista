@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/util"
+	"github.com/appadeia/barista/barista-go/log"
 )
 
 type PagureUser struct {
@@ -149,20 +149,20 @@ func Pagure(c commandlib.Context) {
 						id := strings.TrimPrefix(strings.ToLower(items[2]), "pr")
 						pr, err := http.Get(pagure.Path(items[1] + "/pull-request/" + id))
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 						defer pr.Body.Close()
 						body, err := ioutil.ReadAll(pr.Body)
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 
 						var pullRequest PagurePullRequest
 						err = json.Unmarshal(body, &pullRequest)
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 
@@ -204,20 +204,20 @@ func Pagure(c commandlib.Context) {
 					} else {
 						issue, err := http.Get(pagure.Path(items[1] + "/issue/" + items[2]))
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 						defer issue.Body.Close()
 						body, err := ioutil.ReadAll(issue.Body)
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 
 						var pIssue PagureIssue
 						err = json.Unmarshal(body, &pIssue)
 						if err != nil {
-							util.OutputError(err)
+							log.Error("%+v", err)
 							continue
 						}
 

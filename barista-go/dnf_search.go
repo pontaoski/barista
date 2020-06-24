@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/util"
+	"github.com/appadeia/barista/barista-go/log"
 	"github.com/godbus/dbus"
 )
 
@@ -57,7 +57,7 @@ func DnfSearch(c commandlib.Context) {
 	}
 	conn, err := dbus.SessionBus()
 	if err != nil {
-		util.OutputError(err)
+		log.Error("%+v", err)
 		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an issue connecting to QueryKit, the package search service.")))
 		return
 	}
@@ -65,7 +65,7 @@ func DnfSearch(c commandlib.Context) {
 	obj := conn.Object("com.github.Appadeia.QueryKit", "/com/github/Appadeia/QueryKit")
 	err = obj.Call("com.github.Appadeia.QueryKit.SearchPackages", 0, c.Content(), distro.queryKitName).Store(&pkgs)
 	if err != nil {
-		util.OutputError(err)
+		log.Error("%+v", err)
 		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an issue searching for packages: ")+err.Error()))
 		return
 	}

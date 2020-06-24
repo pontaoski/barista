@@ -36,11 +36,16 @@ type Context interface {
 	AwaitResponse(time time.Duration) (content string, ok bool)
 }
 
+// ContextType represents the type of a Contex
 type ContextType int
 
 const (
+	// InvalidContextType is an invalid context
 	InvalidContextType ContextType = iota
+	// CreateCommand is invoked when a message is created
 	CreateCommand
+	// EditCommand is invoked when a message is edited
 	EditCommand
+	// DeleteCommand is invoked when a message is deleted
 	DeleteCommand
 )

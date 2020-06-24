@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/log"
 )
 
 func init() {
@@ -43,7 +44,7 @@ func HiddenI18n(c commandlib.Context) {
 		c.SendMessage("primary", commandlib.ErrorEmbed("Please provide a language to download."))
 	}
 	in := fmt.Sprintf("https://raw.githubusercontent.com/pontaoski/barista/master/messages/barista_%s.po", c.Arg(0))
-	println(in)
+	log.Info(in)
 	err := DownloadFile(fmt.Sprintf("messages/barista_%s.po", c.Arg(0)), in)
 	if err != nil {
 		c.SendMessage("primary", commandlib.ErrorEmbed("Failed to download: "+err.Error()))
