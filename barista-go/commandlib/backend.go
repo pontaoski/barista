@@ -13,6 +13,7 @@ import (
 type Backend interface {
 	Name() string
 	Start(chan struct{}) error
+	IsBotOwner(c Context) bool
 }
 
 var backends []Backend

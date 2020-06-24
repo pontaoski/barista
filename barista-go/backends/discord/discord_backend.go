@@ -8,15 +8,25 @@ import (
 )
 
 // The DiscordBackend handles Discord connections
-type DiscordBackend struct{}
+type DiscordBackend struct {
+	s *discordgo.Session
+}
+
+var backend = DiscordBackend{}
 
 func init() {
-	commandlib.RegisterBackend(DiscordBackend{})
+	commandlib.RegisterBackend(&backend)
 }
 
 // Name is the name of the Discord backend
 func (d DiscordBackend) Name() string {
 	return "Discord"
+}
+
+func (d DiscordBackend) IsBotOwner(c commandlib.Context) bool {
+	var ctx interface{} = c
+	casted := ctx.(*DiscordContext)
+	return casted.tm.Author.ID == config.BotConfig.Owner.Discord
 }
 
 // Start starts the Discord backend
@@ -27,6 +37,7 @@ func (d DiscordBackend) Start(cancel chan struct{}) error {
 		return err
 	}
 
+	backend.s = discord
 	err = discord.Open()
 	if err != nil {
 		return err

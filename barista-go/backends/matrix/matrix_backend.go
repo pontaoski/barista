@@ -9,14 +9,22 @@ import (
 	"github.com/matrix-org/gomatrix"
 )
 
+var backend = MatrixBackend{}
+
 func init() {
-	commandlib.RegisterBackend(MatrixBackend{})
+	commandlib.RegisterBackend(&backend)
 }
 
 type MatrixBackend struct{}
 
 func (m MatrixBackend) Name() string {
 	return "Matrix"
+}
+
+func (m MatrixBackend) IsBotOwner(c commandlib.Context) bool {
+	var ctx interface{} = c
+	casted := ctx.(*MatrixContext)
+	return casted.triggerEvent.Sender == config.BotConfig.Owner.Matrix
 }
 
 func (m MatrixBackend) Start(cancel chan struct{}) error {

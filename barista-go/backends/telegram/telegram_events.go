@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/log"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -26,14 +27,18 @@ func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
 		tg.ContextMixin.ContextType = commandlib.CreateCommand
 		tg.bot = b
 		tg.tm = m
-		go cmd.Action(&tg)
+		go log.CanPanic(func() {
+			cmd.Action(&tg)
+		})
 	} else {
 		for _, tc := range commandlib.LexTags(m.Text) {
 			tg := TelegramContext{}
 			tg.ContextMixin = tc.Context
 			tg.bot = b
 			tg.tm = m
-			go tc.Tag.Action(&tg)
+			go log.CanPanic(func() {
+				tc.Tag.Action(&tg)
+			})
 		}
 	}
 }

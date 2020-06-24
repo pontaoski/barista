@@ -77,6 +77,10 @@ func (t *TelegramContext) keyboard() tgbotapi.InlineKeyboardMarkup {
 	)
 }
 
+func (t TelegramContext) Backend() commandlib.Backend {
+	return backend
+}
+
 func telegramEmbed(d commandlib.Embed) tgbotapi.MessageConfig {
 	d.Truncate()
 	var fields []string

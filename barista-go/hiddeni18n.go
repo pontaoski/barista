@@ -40,6 +40,9 @@ func DownloadFile(filepath string, url string) error {
 }
 
 func HiddenI18n(c commandlib.Context) {
+	if !c.Backend().IsBotOwner(c) {
+		c.SendMessage("primary", commandlib.ErrorEmbed("You are not the bot owner."))
+	}
 	if c.Arg(0) == "" {
 		c.SendMessage("primary", commandlib.ErrorEmbed("Please provide a language to download."))
 	}

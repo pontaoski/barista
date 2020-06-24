@@ -63,6 +63,10 @@ func init() {
 	tmpl = template.Must(template.ParseGlob("barista-go/commandlib/template/*.html"))
 }
 
+func (m MatrixContext) Backend() commandlib.Backend {
+	return backend
+}
+
 func (m MatrixContext) SendTags(_ string, tags []commandlib.Embed) {
 	var sb strings.Builder
 	for _, tag := range tags {
@@ -210,14 +214,18 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 			mc.ContextMixin.ContextType = commandlib.CreateCommand
 			mc.client = client
 			mc.triggerEvent = ev
-			go cmd.Action(&mc)
+			go log.CanPanic(func() {
+				cmd.Action(&mc)
+			})
 		} else {
 			for _, tc := range commandlib.LexTags(val.(string)) {
 				mc := MatrixContext{}
 				mc.ContextMixin = tc.Context
 				mc.client = client
 				mc.triggerEvent = ev
-				go tc.Tag.Action(&mc)
+				go log.CanPanic(func() {
+					tc.Tag.Action(&mc)
+				})
 			}
 		}
 	}

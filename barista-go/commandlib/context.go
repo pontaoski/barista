@@ -34,6 +34,7 @@ type Context interface {
 	GenerateLink(text string, URL string) string
 	NextResponse() chan string
 	AwaitResponse(time time.Duration) (content string, ok bool)
+	Backend() Backend
 }
 
 // ContextType represents the type of a Contex

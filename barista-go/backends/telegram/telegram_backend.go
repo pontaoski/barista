@@ -7,11 +7,19 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
+var backend = TelegramBackend{}
+
 func init() {
-	commandlib.RegisterBackend(TelegramBackend{})
+	commandlib.RegisterBackend(&backend)
 }
 
 type TelegramBackend struct{}
+
+func (t TelegramBackend) IsBotOwner(c commandlib.Context) bool {
+	var ctx interface{} = c
+	casted := ctx.(*TelegramContext)
+	return casted.tm.From.ID == config.BotConfig.Owner.Telegram
+}
 
 func (t TelegramBackend) Name() string {
 	return "Telegram"

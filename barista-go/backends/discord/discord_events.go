@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
+	"github.com/appadeia/barista/barista-go/log"
 	"github.com/bwmarrin/discordgo"
 	stripmd "github.com/writeas/go-strip-markdown"
 )
@@ -14,7 +15,9 @@ func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 		tmp := val.(*DiscordContext)
 		tmp.ContextMixin.ContextType = commandlib.DeleteCommand
 		if tmp.Action.DeleteAction != nil {
-			tmp.Action.DeleteAction(tmp)
+			log.CanPanic(func() {
+				tmp.Action.DeleteAction(tmp)
+			})
 		}
 		for _, paginator := range tmp.paginators {
 			paginator.DeleteMessageWhenDone = true
@@ -34,14 +37,18 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) 
 			contextMixin.ContextType = commandlib.EditCommand
 			tmp := val.(*DiscordContext)
 			tmp.ContextMixin = contextMixin
-			go cmd.Action(tmp)
+			go log.CanPanic(func() {
+				cmd.Action(tmp)
+			})
 		}
 	} else {
 		if cmd, contextMixin, ok := commandlib.LexCommand(strip); ok {
 			dc := buildContext(contextMixin, s, m)
 			contextMixin.ContextType = commandlib.CreateCommand
 			commandCache.Add(m.ID, &dc)
-			go cmd.Action(&dc)
+			go log.CanPanic(func() {
+				cmd.Action(&dc)
+			})
 		}
 	}
 
@@ -49,13 +56,17 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) 
 		for _, tag := range commandlib.LexTags(strip) {
 			tmp := val.(*DiscordContext)
 			tmp.ContextMixin = tag.Context
-			go tag.Tag.Action(tmp)
+			go log.CanPanic(func() {
+				tag.Tag.Action(tmp)
+			})
 		}
 	} else {
 		for _, tag := range commandlib.LexTags(strip) {
 			dc := buildContext(tag.Context, s, m)
 			tagCache.Add(m.ID, &dc)
-			go tag.Tag.Action(&dc)
+			go log.CanPanic(func() {
+				tag.Tag.Action(&dc)
+			})
 		}
 	}
 }

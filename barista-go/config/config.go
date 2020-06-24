@@ -20,6 +20,11 @@ type Config struct {
 			Password   string `toml:"password"`
 		} `toml:"matrix"`
 	} `toml:"services"`
+	Owner struct {
+		Discord  string `toml:"discord"`
+		Matrix   string `toml:"matrix"`
+		Telegram int    `toml:"telegram"`
+	} `toml:"owner"`
 }
 
 // BotConfig holds an instance of Config with values loaded

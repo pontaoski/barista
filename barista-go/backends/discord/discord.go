@@ -21,6 +21,10 @@ type DiscordContext struct {
 	tm         *discordgo.Message
 }
 
+func (d *DiscordContext) Backend() commandlib.Backend {
+	return backend
+}
+
 func (d *DiscordContext) cleanID(id string) {
 	if val, ok := d.paginators[id]; ok {
 		val.Widget.Close <- true
