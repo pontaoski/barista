@@ -22,19 +22,19 @@ type Context interface {
 	SetData(key string, v interface{})
 	Command() Command
 	// Flags needed by implementations
+	AuthorIdentifier() string
+	AuthorName() string
+	AwaitResponse(time time.Duration) (content string, ok bool)
+	Backend() Backend
+	CommunityIdentifier() string
+	GenerateLink(text string, URL string) string
 	I18n(message string) string
 	I18nc(context, message string) string
-	AuthorName() string
-	AuthorIdentifier() string
+	NextResponse() chan string
 	RoomIdentifier() string
-	CommunityIdentifier() string
 	SendMessage(id string, content interface{})
 	SendTags(id string, tags []Embed)
 	WrapCodeBlock(code string) string
-	GenerateLink(text string, URL string) string
-	NextResponse() chan string
-	AwaitResponse(time time.Duration) (content string, ok bool)
-	Backend() Backend
 }
 
 // ContextType represents the type of a Contex

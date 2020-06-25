@@ -19,6 +19,7 @@ require (
 	github.com/jinzhu/gorm v1.9.12
 	github.com/leonelquinteros/gotext v1.4.0
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
+	github.com/lrstanley/girc v0.0.0-20190801035559-4fc93959e1a7
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
 	github.com/spf13/pflag v1.0.3
 	github.com/stretchr/testify v1.3.0 // indirect

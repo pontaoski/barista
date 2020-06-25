@@ -19,6 +19,12 @@ type Config struct {
 			Username   string `toml:"username"`
 			Password   string `toml:"password"`
 		} `toml:"matrix"`
+		IRC struct {
+			Server   string   `toml:"server"`
+			Nickname string   `toml:"nickname"`
+			Username string   `toml:"username"`
+			Channels []string `toml:"channels"`
+		} `toml:"irc"`
 	} `toml:"services"`
 	Owner struct {
 		Discord  string `toml:"discord"`
