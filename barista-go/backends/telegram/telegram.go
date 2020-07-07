@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"text/template"
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
@@ -81,6 +82,44 @@ func (t TelegramContext) Backend() commandlib.Backend {
 	return backend
 }
 
+type templater map[string]string
+
+func (t templater) eval() *template.Template {
+	tmpl := template.Must(template.New("").Parse(t[""]))
+	delete(t, "")
+	for key, val := range t {
+		template.Must(tmpl.New(key).Parse(val))
+	}
+	return tmpl
+}
+
+var (
+	embedTemplate = templater{
+		"header-strong": `{{ if .URL }}<a href="{{ .URL }}"><b><u>{{ .Text }}</u></b></a>{{ else }}<b>{{ .Text }}</b>{{ end }}`,
+		//
+		//
+		//
+		"header": `{{ if .URL }}<a href="{{ .URL }}"><i><u>{{ .Text }}</u></i></a>{{ else }}<i>{{ .Text }}</i>{{ end }}`,
+		//
+		//
+		//
+		"field": `<u>{{ .Title }}</u>
+{{ .Body }}`,
+		//
+		//
+		//
+		"": `{{ if .Header }}{{ template "header" .Header }}
+{{ end }}
+{{ template "header-strong" .Title }}
+
+{{ .Body }}
+{{ if .Fields }}
+{{ range .Fields }}{{ template "field" . }}
+
+{{ end }}{{ end }}{{ if .Footer }}{{ template "header" .Footer }}{{ end }}`,
+	}.eval()
+)
+
 func telegramEmbed(d commandlib.Embed) tgbotapi.MessageConfig {
 	d.Truncate()
 	var fields []string
@@ -88,13 +127,9 @@ func telegramEmbed(d commandlib.Embed) tgbotapi.MessageConfig {
 		fields = append(fields, fmt.Sprintf("%s: %s", field.Title, field.Body))
 	}
 	msg := tgbotapi.NewMessage(0, "")
-	msg.Text = fmt.Sprintf(`<i>%s</i>
-
-<b>%s</b>
-<i>%s</i>
-%s
-
-%s`, d.Header.Text, d.Title.Text, d.Body, strings.Join(fields, "\n"), d.Footer.Text)
+	var sb strings.Builder
+	embedTemplate.Execute(&sb, d)
+	msg.Text = sb.String()
 	msg.ParseMode = tgbotapi.ModeHTML
 	return msg
 }

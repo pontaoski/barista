@@ -182,12 +182,15 @@ func Pagure(c commandlib.Context) {
 								{
 									Title: c.I18n("Pull Request"),
 									Body: fmt.Sprintf(
-										c.I18n("Merge [%s/%s](%s) into [%s](%s)"),
-										pullRequest.FromRepo.Fullname,
-										pullRequest.FromBranch,
-										strings.ReplaceAll(pagure.UserPath(pullRequest.FromRepo.Fullname+"/tree/"+pullRequest.FromBranch), "forks", "fork"),
-										pullRequest.ToBranch,
-										pagure.UserPath(items[1]+"/tree/"+pullRequest.ToBranch),
+										c.I18n("Merge %s into %s"),
+										c.GenerateLink(
+											fmt.Sprintf("%s/%s", pullRequest.FromRepo.Fullname, pullRequest.FromBranch),
+											strings.ReplaceAll(pagure.UserPath(pullRequest.FromRepo.Fullname+"/tree/"+pullRequest.FromBranch), "forks", "fork"),
+										),
+										c.GenerateLink(
+											pullRequest.ToBranch,
+											pagure.UserPath(items[1]+"/tree/"+pullRequest.ToBranch),
+										),
 									),
 									Inline: true,
 								},
