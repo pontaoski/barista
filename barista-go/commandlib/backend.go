@@ -9,11 +9,19 @@ import (
 	"github.com/appadeia/barista/barista-go/log"
 )
 
+// BackendStats represents the stats a backend can provide
+type BackendStats struct {
+	Communities uint64
+	Users       uint64
+}
+
 // A Backend represents a service that Barista can chat on
 type Backend interface {
 	Name() string
 	Start(chan struct{}) error
 	IsBotOwner(c Context) bool
+	CanGiveStats() bool
+	Stats() *BackendStats
 }
 
 var backends []Backend

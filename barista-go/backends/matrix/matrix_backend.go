@@ -15,6 +15,14 @@ func init() {
 	commandlib.RegisterBackend(&backend)
 }
 
+func (m MatrixBackend) Stats() (r *commandlib.BackendStats) {
+	return
+}
+
+func (m MatrixBackend) CanGiveStats() bool {
+	return false
+}
+
 type MatrixBackend struct{}
 
 func (m MatrixBackend) Name() string {

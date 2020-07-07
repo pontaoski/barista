@@ -18,6 +18,30 @@ func init() {
 	commandlib.RegisterBackend(&backend)
 }
 
+func (d DiscordBackend) Stats() (r *commandlib.BackendStats) {
+	r = &commandlib.BackendStats{}
+	r.Communities = uint64(len(d.s.State.Guilds))
+	var users uint64
+	var all map[string]struct{}
+	for _, guild := range d.s.State.Guilds {
+		var allGuildUsers []*discordgo.Member
+		guildUsers, _ := d.s.GuildMembers(guild.ID, "", 1000)
+		for len(guildUsers) == 1000 {
+			guildUsers, _ = d.s.GuildMembers(guild.ID, guildUsers[len(guildUsers)-1].User.ID, 1000)
+		}
+		for _, user := range allGuildUsers {
+			all[user.User.ID] = struct{}{}
+		}
+	}
+	users = uint64(len(all))
+	r.Users = users
+	return
+}
+
+func (d DiscordBackend) CanGiveStats() bool {
+	return true
+}
+
 // Name is the name of the Discord backend
 func (d DiscordBackend) Name() string {
 	return "Discord"

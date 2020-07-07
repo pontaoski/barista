@@ -15,6 +15,14 @@ func init() {
 
 type TelegramBackend struct{}
 
+func (t TelegramBackend) Stats() (r *commandlib.BackendStats) {
+	return
+}
+
+func (t TelegramBackend) CanGiveStats() bool {
+	return false
+}
+
 func (t TelegramBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
 	casted := ctx.(*TelegramContext)

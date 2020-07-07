@@ -19,6 +19,14 @@ func init() {
 	commandlib.RegisterBackend(&backend)
 }
 
+func (i IRCBackend) Stats() (r *commandlib.BackendStats) {
+	return
+}
+
+func (i IRCBackend) CanGiveStats() bool {
+	return false
+}
+
 // Name is the name of the Discord backend
 func (i IRCBackend) Name() string {
 	return "IRC"
