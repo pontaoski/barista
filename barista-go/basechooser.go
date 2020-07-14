@@ -43,7 +43,7 @@ var sarcasm = map[bases.Base]string{
 	18:     I18n("i'm pretty thirsy"),
 	19:     I18n("base 19, the 19th base!"),
 	20:     I18n("a decent base for decent people."),
-	24:     I18n("only takes a single digit to write a day"),
+	24:     I18n("only takes a single digit to write a day!"),
 	36:     I18n("6 * 6 gets you this?"),
 	42:     I18n("the lojban word for 42 is vore."),
 	48:     I18n("1/3 gross, 100% inefficient"),
@@ -157,7 +157,7 @@ postSmallest:
 		best := pool.Smallest()
 		c.SendMessage("farewell", fmt.Sprintf(c.I18n("oh my, looks like base %d, %s, is the best base for your needs!"), best, best.Name()))
 		if val, ok := sarcasm[best]; ok {
-			c.SendMessage("sarcasm", fmt.Sprintf(c.I18n(val), best, best.Name()))
+			c.SendMessage("sarcasm", c.I18n(val))
 		}
 	} else {
 		c.SendMessage("farewell", c.I18n("unfortunately no bases meet your needs. what a shame!"))
