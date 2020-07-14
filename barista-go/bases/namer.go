@@ -1,69 +1,52 @@
 package bases
 
 import (
-	"fmt"
-	"math"
+	"math/big"
 	"strings"
+
+	lru "github.com/hashicorp/golang-lru"
 )
 
 var names = map[Base]string{
-	0:   "nullary",
-	1:   "unary",
-	2:   "binary",
-	3:   "trinary",
-	4:   "quaternary",
-	5:   "quinary",
-	10:  "seximal",
-	11:  "septimal",
-	12:  "octal",
-	13:  "nonary",
-	14:  "decimal",
-	15:  "elevenary",
-	20:  "dozenal",
-	21:  "baker's dozenal",
-	22:  "biseptimal",
-	23:  "triquinary",
-	24:  "hex",
-	25:  "suboptimal",
-	30:  "triseximal",
-	31:  "untriseximal",
-	32:  "vigesimal",
-	33:  "triseptimal",
-	34:  "bielevenary",
-	35:  "unbielevenary",
-	40:  "tetraseximal",
-	41:  "pentaquinary",
-	42:  "biker's dozenal",
-	43:  "trinonary",
-	44:  "tetraseptimal",
-	45:  "untetraseptimal",
-	50:  "pentaseximal",
-	51:  "unpentaseximal",
-	52:  "tetroctal",
-	53:  "trielevenary",
-	54:  "bisuboptimal",
-	55:  "pentaseptimal",
-	100: "niftimal",
+	0:  "nullary",
+	1:  "unary",
+	2:  "binary",
+	3:  "trinary",
+	4:  "quaternary",
+	5:  "quinary",
+	6:  "seximal",
+	7:  "septimal",
+	8:  "octal",
+	9:  "nonary",
+	10: "decimal",
+	11: "elevenary",
+	12: "dozenal",
+	13: "baker's dozenal",
+	14: "biseptimal",
+	15: "triquinary",
+	16: "hex",
+	17: "suboptimal",
+	18: "triseximal",
+	19: "untriseximal",
+	20: "vigesimal",
+	21: "triseptimal",
+	22: "bielevenary",
+	23: "unbielevenary",
+	24: "tetraseximal",
+	25: "pentaquinary",
+	26: "biker's dozenal",
+	27: "trinonary",
+	28: "tetraseptimal",
+	29: "untetraseptimal",
+	30: "pentaseximal",
+	31: "unpentaseximal",
+	32: "tetroctal",
+	33: "trielevenary",
+	34: "bisuboptimal",
+	35: "pentaseptimal",
+	36: "niftimal",
 }
-var suffixes = map[Base]string{
-	2:   "binary",
-	3:   "trinary",
-	4:   "quaternary",
-	5:   "quinary",
-	6:   "seximal",
-	7:   "septimal",
-	8:   "octal",
-	9:   "nonary",
-	10:  "gesimal",
-	11:  "elevenary",
-	12:  "dozenal",
-	13:  "dozenal",
-	16:  "hex",
-	17:  "suboptimal",
-	20:  "vigesimal",
-	36:  "niftimal",
-	100: "centesimal",
-}
+
 var prefixes = map[Base]string{
 	2:   "bi",
 	3:   "tri",
@@ -83,49 +66,115 @@ var prefixes = map[Base]string{
 	36:  "feta",
 	100: "hecto",
 }
+var prefixList = []Base{100, 36, 20, 17, 16, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}
 
-var replacer = strings.NewReplacer(
-	"ii", "i",
-	"iu", "i",
-	"oi", "i",
-	"ou", "u",
-	"oe", "e",
-	"oo", "o",
-	"ai", "i",
-	"au", "u",
-	"ae", "e",
-	"ao", "o",
-)
+var suffixes = map[Base]string{
+	2:   "binary",
+	3:   "trinary",
+	4:   "tetra",
+	5:   "quinary",
+	6:   "seximal",
+	7:   "septimal",
+	8:   "octal",
+	9:   "nonary",
+	10:  "gesimal",
+	11:  "elevenary",
+	12:  "dozenal",
+	13:  "ker's dozenal",
+	16:  "hex",
+	17:  "suboptimal",
+	20:  "vigesimal",
+	36:  "niftimal",
+	100: "centesimal",
+}
+var suffixList = []Base{100, 36, 20, 17, 16, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2}
 
-func factorize(n Base) Base {
-	for i := Base(math.Ceil(math.Sqrt(float64(n)))); i < n; i++ {
-		if n%1 == 0 {
-			return i
+type factor struct {
+	lower  Base
+	larger Base
+}
+
+var factorCache, _ = lru.New(1 << 16)
+
+func factors(base Base) (lower Base, larger Base) {
+	if val, ok := factorCache.Get(base); ok {
+		a := val.(factor)
+		return a.lower, a.larger
+	}
+	lower = -1
+	larger = -1
+	for _, prime := range primes {
+		if prime > base {
+			break
+		}
+		if prime == base {
+			lower = 1
+			larger = base
+			return
+		}
+		if base%prime == 0 {
+			lower = prime
+			larger = base / prime
+			return
 		}
 	}
-	return 1
+	if big.NewInt(int64(base)).ProbablyPrime(0) {
+		lower = 1
+		larger = base
+		return
+	}
+	for i := Base(1); i < base; i++ {
+		if base%i == 0 {
+			if lower > base/i {
+				factorCache.Add(base, factor{lower, larger})
+				return
+			}
+			lower = i
+			larger = base / i
+		}
+	}
+	factorCache.Add(base, factor{lower, larger})
+	return
 }
 
-func suffix(base Base) string {
-	if val, ok := suffixes[base]; ok {
-		return val
-	}
-
-	factor := factorize(base)
-	if factor == 1 {
-		return "un" + suffix(base-1)
-	}
-	return prefix(base/factor) + suffix(factor)
-}
-
-func prefix(base Base) string {
+func multPrefixForm(base Base) []string {
 	if val, ok := prefixes[base]; ok {
-		return val
+		return []string{val}
 	}
+	retArr := []string{}
+	if base > 17 && big.NewInt(int64(base)).ProbablyPrime(0) {
+		return append(append([]string{"hen"}, multPrefixForm(base-1)...), "sna")
+	}
+	for base > 1 {
+		pre := base
+		for _, item := range prefixList {
+			if base%item == 0 {
+				retArr = append(retArr, prefixes[item])
+				base = base / item
+			}
+		}
+		if pre == base {
+			smaller, greater := factors(base)
+			return append(multPrefixForm(greater), multPrefixForm(smaller)...)
+		}
+	}
+	return retArr
+}
 
-	factor := factorize(base)
-	if factor == 1 {
-		return fmt.Sprintf("hen%ssna", prefix(base-1))
+func suffixForm(base Base) []string {
+	if val, ok := suffixes[base]; ok {
+		return []string{val}
 	}
-	return prefix(base/factor) + prefix(factor)
+	if base > 17 && big.NewInt(int64(base)).ProbablyPrime(0) {
+		return append([]string{"un"}, suffixForm(base-1)...)
+	}
+	smaller, greater := factors(base)
+	return append(multPrefixForm(greater), suffixForm(smaller)...)
+}
+
+func NameBase(base Base) (ret string) {
+	if base < 0 {
+		return "nega" + NameBase(-1*base)
+	}
+	return strings.Join(suffixForm(base), "-")
 }

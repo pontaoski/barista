@@ -3,6 +3,8 @@ package bases
 import (
 	"strconv"
 	"strings"
+
+	lru "github.com/hashicorp/golang-lru"
 )
 
 type Base int64
@@ -97,12 +99,30 @@ func (b Base) DecimalFor(denominator int) (string, string) {
 	return result.String(), ""
 }
 
+var baseCache, _ = lru.New(1024)
+var tidier = strings.NewReplacer(
+	"aa", "a",
+	"ae", "e",
+	"ai", "i",
+	"ao", "o",
+	"au", "u",
+	"oa", "a",
+	"oe", "e",
+	"oi", "i",
+	"oo", "o",
+	"ou", "u",
+	"ii", "i",
+	"iu", "u",
+)
+
 func (b Base) Name() string {
 	if val, ok := names[b]; ok {
 		return val
 	}
-	if b < 0 {
-		return "nega" + (-1 * b).Name()
+	if val, ok := baseCache.Get(b); ok {
+		return val.(string)
 	}
-	return replacer.Replace(suffix(b))
+	ret := tidier.Replace(strings.ReplaceAll(NameBase(b), "-", ""))
+	baseCache.Add(b, ret)
+	return ret
 }
