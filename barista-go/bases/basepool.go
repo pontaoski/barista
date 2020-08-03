@@ -1,5 +1,9 @@
 package bases
 
+import (
+	"sort"
+)
+
 type BasePool map[Base]struct{}
 
 func PoolForRange(from, to int64) BasePool {
@@ -18,6 +22,24 @@ func (b BasePool) Smallest() Base {
 		}
 	}
 	return min
+}
+
+func (b BasePool) SmallestSampling(targetLen int) []Base {
+	keys := []Base{}
+	for val := range b {
+		keys = append(keys, val)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		return keys[i] < keys[j]
+	})
+	ret := []Base{}
+	for _, val := range keys {
+		ret = append(ret, val)
+		if len(ret) >= targetLen {
+			break
+		}
+	}
+	return ret
 }
 
 func (b BasePool) LargestExpansionFor(denominator int) ([]Base, int64, bool) {

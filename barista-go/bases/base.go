@@ -66,6 +66,15 @@ func (b Base) DigitsFor(denominator int) int64 {
 	return ret
 }
 
+func (b Base) Matches(nonRepeating, repeating string) (ret string) {
+	ret = nonRepeating
+	for _, character := range repeating {
+		ret += "̅"
+		ret += string(character)
+	}
+	return
+}
+
 func (b Base) DecimalFor(denominator int) (string, string) {
 	num := int64(1)
 	den := int64(denominator)

@@ -131,10 +131,11 @@ postSmallest:
 			status = fmt.Sprintf(c.I18n("%d bases in your pool represent 1/%d with %d digit(s)"), len(amt), denom, length)
 		}
 		smallest := pool.Smallest()
+	retry:
 		c.SendMessage(
 			fmt.Sprintf("base-count-%d", denom),
 			fmt.Sprintf(
-				c.I18n("there are %d bases in your pool. the smallest base in your pool is base %d, %s.\n %s.\ndo you want to remove these? (Y/n)"),
+				c.I18n("there are %d bases in your pool. the smallest base in your pool is base %d, %s.\n %s.\ndo you want to remove these? (Y/n/p to peek at digits)"),
 				len(pool),
 				smallest,
 				smallest.Name(),
@@ -148,6 +149,31 @@ postSmallest:
 		} else if strings.HasPrefix(strings.ToLower(resp), "y") {
 			c.SendMessage(fmt.Sprintf("base-yes-%d", denom), c.I18n("aight, removed that. next base!"))
 			pool.RemoveLongestExpansionFor(denom)
+		} else if strings.HasPrefix(strings.ToLower(resp), "p") {
+			c.SendMessage(
+				fmt.Sprintf("base-peek-%d", denom),
+				fmt.Sprintf(
+					c.I18n("the smallest base in your pool writes 1/%d as %s. the next few smallest bases in your pool write it like this:\n%s"),
+					denom,
+					pool.Smallest().Matches(pool.Smallest().DecimalFor(denom)),
+					func() string {
+						mins := pool.SmallestSampling(5)
+						var sb strings.Builder
+						for _, min := range mins {
+							sb.WriteString(
+								fmt.Sprintf(
+									c.I18n("base %d (%s): %s\n"),
+									min,
+									min.Name(),
+									min.Matches(min.DecimalFor(denom)),
+								),
+							)
+						}
+						return sb.String()
+					}(),
+				),
+			)
+			goto retry
 		} else {
 			c.SendMessage(fmt.Sprintf("base-no-%d", denom), c.I18n("ok then, next base!"))
 		}
