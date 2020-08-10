@@ -2,13 +2,12 @@ package pkgman
 
 import "errors"
 
-// ErrNotSupported represents an unsupported operation
-var ErrNotSupported = errors.New("This operation is not supported")
-
-// Distro represents a distro
-type Distro interface {
-	isDistro()
-}
+var (
+	// ErrNotSupported represents an unsupported operation
+	ErrNotSupported = errors.New("This operation is not supported")
+	// ErrBadDistro represents a distro that doesn't exist
+	ErrBadDistro = errors.New("This distro doesn't exist")
+)
 
 type PackageDataKind int
 
@@ -47,7 +46,11 @@ type Pkg struct {
 
 // Backend represents a backend that can search packages
 type Backend interface {
-	Distros() []Distro
-	Refresh(distro Distro) error
+	Distros() []string
+	Refresh(string) error
 	Search(query string) (packages []Pkg, err error)
+	GetData(pkg string, kind PackageDataKind) (data []string, err error)
+	GetRelation(pkg string, relation PackageRelationKind) (pkgs []Pkg, err error)
 }
+
+var backends = []Backend{}

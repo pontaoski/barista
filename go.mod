@@ -25,6 +25,7 @@ require (
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
 	github.com/spf13/pflag v1.0.3
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
+	github.com/urfave/cli/v2 v2.2.0
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 	github.com/xo/dburl v0.0.0-20200727080105-4a02649c2fea // indirect
 	github.com/xo/xo v0.0.0-20200425011923-7818603ff52b // indirect
