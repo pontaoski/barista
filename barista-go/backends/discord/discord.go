@@ -22,7 +22,7 @@ type DiscordContext struct {
 }
 
 func (d *DiscordContext) Backend() commandlib.Backend {
-	return backend
+	return backends[d.s.State.User.ID]
 }
 
 func (d *DiscordContext) cleanID(id string) {

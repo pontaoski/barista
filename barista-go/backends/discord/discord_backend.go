@@ -1,6 +1,8 @@
 package discord
 
 import (
+	"fmt"
+
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/config"
 	"github.com/appadeia/barista/barista-go/log"
@@ -9,16 +11,23 @@ import (
 
 // The DiscordBackend handles Discord connections
 type DiscordBackend struct {
-	s *discordgo.Session
+	token string
+	name  string
+	s     *discordgo.Session
 }
 
-var backend = DiscordBackend{}
+var backends = map[string]*DiscordBackend{}
 
 func init() {
-	commandlib.RegisterBackend(&backend)
+	for _, token := range config.BotConfig.Services.Discord {
+		backend := new(DiscordBackend)
+		backend.token = token.Token
+		backend.name = token.Name
+		commandlib.RegisterBackend(backend)
+	}
 }
 
-func (d DiscordBackend) Stats() (r *commandlib.BackendStats) {
+func (d *DiscordBackend) Stats() (r *commandlib.BackendStats) {
 	r = &commandlib.BackendStats{}
 	r.Communities = uint64(len(d.s.State.Guilds))
 	var users uint64
@@ -38,36 +47,39 @@ func (d DiscordBackend) Stats() (r *commandlib.BackendStats) {
 	return
 }
 
-func (d DiscordBackend) CanGiveStats() bool {
+func (d *DiscordBackend) CanGiveStats() bool {
 	return true
 }
 
 // Name is the name of the Discord backend
-func (d DiscordBackend) Name() string {
-	return "Discord"
+func (d *DiscordBackend) Name() string {
+	return fmt.Sprintf("Discord (%s)", d.name)
 }
 
-func (d DiscordBackend) IsBotOwner(c commandlib.Context) bool {
+func (d *DiscordBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
 	casted := ctx.(*DiscordContext)
 	return casted.tm.Author.ID == config.BotConfig.Owner.Discord
 }
 
 // Start starts the Discord backend
-func (d DiscordBackend) Start(cancel chan struct{}) error {
-	discord, err := discordgo.New("Bot " + config.BotConfig.Services.Discord.Token)
+func (d *DiscordBackend) Start(cancel chan struct{}) error {
+	discord, err := discordgo.New("Bot " + d.token)
 	defer discord.Close()
 	if err != nil {
 		return err
 	}
 
-	backend.s = discord
+	d.s = discord
 	err = discord.Open()
 	if err != nil {
 		return err
 	}
 
-	log.Info("Discord session started")
+	d.token = ""
+	backends[discord.State.User.ID] = d
+
+	log.Info("Discord (%s) session started", d.name)
 	discord.AddHandler(discordMessageCreate)
 	discord.AddHandler(discordMessageEdit)
 	discord.AddHandler(discordMessageDelete)
