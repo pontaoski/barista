@@ -6,23 +6,29 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Barista 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-19 13:08-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2020-08-16 20:11-0400\n"
+"PO-Revision-Date: 2020-08-16 20:21-0400\n"
+"Last-Translator: Carson Black <uhhadd@gmail.com>\n"
+"Language-Team: Carson Black <uhhadd@gmail.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Language: tpo_TPO\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 3.36.0\n"
+
 
 #: barista-go/commandlib/telegram.go:97 barista-go/commandlib/telegram.go:96
+#: barista-go/backends/telegram/telegram.go:70
 #: barista-go/backends/telegram/telegram.go:70
 msgid "Previous"
 msgstr ""
 
 #: barista-go/commandlib/telegram.go:101 barista-go/commandlib/telegram.go:100
+#: barista-go/backends/telegram/telegram.go:74
 #: barista-go/backends/telegram/telegram.go:74
 msgid "Next"
 msgstr ""
@@ -109,8 +115,8 @@ msgid "Severity"
 msgstr ""
 
 #: barista-go/bugzilla.go:222 barista-go/bodhi.go:139 barista-go/pagure.go:178
-#: barista-go/pagure.go:233 barista-go/bugzilla.go:222 barista-go/bodhi.go:139
-#: barista-go/pagure.go:178 barista-go/pagure.go:236
+#: barista-go/pagure.go:233 barista-go/pagure.go:236 barista-go/bugzilla.go:222
+#: barista-go/bodhi.go:139 barista-go/pagure.go:178 barista-go/pagure.go:236
 msgid "Status"
 msgstr ""
 
@@ -187,8 +193,8 @@ msgstr ""
 msgid "%s is not a valid setting key"
 msgstr ""
 
-#: barista-go/gsettings.go:94 barista-go/help.go:90 barista-go/gsettings.go:94
-#: barista-go/help.go:89
+#: barista-go/gsettings.go:94 barista-go/help.go:90 barista-go/help.go:89
+#: barista-go/gsettings.go:94 barista-go/help.go:89
 msgid "Command"
 msgstr ""
 
@@ -209,7 +215,7 @@ msgstr ""
 msgid "Merge [%s/%s](%s) into [%s](%s)"
 msgstr ""
 
-#: barista-go/pagure.go:226 barista-go/pagure.go:229
+#: barista-go/pagure.go:226 barista-go/pagure.go:229 barista-go/pagure.go:229
 #, c-format
 msgid "Issue #%s: %s - %s"
 msgstr ""
@@ -283,40 +289,44 @@ msgstr ""
 
 #: barista-go/toki_pona.go:1975 barista-go/toki_pona.go:2005
 #: barista-go/toki_pona.go:1983 barista-go/toki_pona.go:2013
+#: barista-go/toki_pona.go:1983 barista-go/toki_pona.go:2013
 msgid "Word"
 msgstr ""
 
 #: barista-go/toki_pona.go:1986 barista-go/toki_pona.go:1994
+#: barista-go/toki_pona.go:1994
 msgid "Please provide a word from pu to look up the etymolygy of."
 msgstr ""
 
 #: barista-go/toki_pona.go:1996 barista-go/toki_pona.go:2026
 #: barista-go/toki_pona.go:2004 barista-go/toki_pona.go:2034
+#: barista-go/toki_pona.go:2004 barista-go/toki_pona.go:2034
 msgid "Sorry, I don't think that's a word."
 msgstr ""
 
 #: barista-go/toki_pona.go:2016 barista-go/toki_pona.go:2024
+#: barista-go/toki_pona.go:2024
 msgid "Please provide a word from pu to look up the meaning of."
 msgstr ""
 
-#: barista-go/help.go:43 barista-go/help.go:32
+#: barista-go/help.go:43 barista-go/help.go:32 barista-go/help.go:32
 msgid "Aliases"
 msgstr ""
 
 #: barista-go/help.go:50 barista-go/help.go:83 barista-go/help.go:39
-#: barista-go/help.go:82
+#: barista-go/help.go:82 barista-go/help.go:39 barista-go/help.go:82
 msgid "Examples"
 msgstr ""
 
-#: barista-go/help.go:57 barista-go/help.go:46
+#: barista-go/help.go:57 barista-go/help.go:46 barista-go/help.go:46
 msgid "Flags"
 msgstr ""
 
-#: barista-go/help.go:73 barista-go/help.go:72
+#: barista-go/help.go:73 barista-go/help.go:72 barista-go/help.go:72
 msgid "Tags"
 msgstr ""
 
-#: barista-go/help.go:94 barista-go/help.go:93
+#: barista-go/help.go:94 barista-go/help.go:93 barista-go/help.go:93
 msgid "Tag"
 msgstr ""
 
@@ -383,306 +393,309 @@ msgstr ""
 
 #: barista-go/commandlib/telegram.go:212
 #: barista-go/backends/telegram/telegram.go:169
+#: barista-go/backends/telegram/telegram.go:169
 #, c-format
 msgid "%s %d out of %d"
 msgstr ""
 
-#: barista-go/programming.go:62
+#: barista-go/programming.go:62 barista-go/programming.go:62
 msgid "Programming"
 msgstr ""
 
-#: barista-go/programming.go:63
+#: barista-go/programming.go:63 barista-go/programming.go:63
 msgid "Program in a language."
 msgstr ""
 
-#: barista-go/programming.go:82
+#: barista-go/programming.go:82 barista-go/programming.go:82
 #, c-format
 msgid "There was an error accessing the API: %s"
 msgstr ""
 
-#: barista-go/programming.go:88
+#: barista-go/programming.go:88 barista-go/programming.go:88
 #, c-format
 msgid "There was an error accessing data from the API: %s"
 msgstr ""
 
-#: barista-go/programming.go:100
+#: barista-go/programming.go:100 barista-go/programming.go:100
 msgid "Program Results"
 msgstr ""
 
-#: barista-go/programming.go:111
+#: barista-go/programming.go:111 barista-go/programming.go:111
 msgid "Output"
 msgstr ""
 
-#: barista-go/programming.go:112
+#: barista-go/programming.go:112 barista-go/programming.go:112
 msgid "Warnings"
 msgstr ""
 
-#: barista-go/programming.go:113
+#: barista-go/programming.go:113 barista-go/programming.go:113
 msgid "Errors"
 msgstr ""
 
-#: barista-go/programming.go:116
+#: barista-go/programming.go:116 barista-go/programming.go:116
 msgid "Your program produced no output."
 msgstr ""
 
-#: barista-go/programming.go:120
+#: barista-go/programming.go:120 barista-go/programming.go:120
 #, c-format
 msgid ""
 "%s is not a valid programming language. Use go build list to see a list of "
 "programming languages."
 msgstr ""
 
-#: barista-go/pagure.go:185
+#: barista-go/pagure.go:185 barista-go/pagure.go:185
 #, c-format
 msgid "Merge %s into %s"
 msgstr ""
 
-#: barista-go/toki_pona.go:2068
+#: barista-go/toki_pona.go:2068 barista-go/toki_pona.go:2068
 #, c-format
 msgid "Starting quiz... Type '%s' to cancel"
 msgstr ""
 
 #: barista-go/toki_pona.go:2068 barista-go/toki_pona.go:2089
+#: barista-go/toki_pona.go:2068 barista-go/toki_pona.go:2089
 msgid "cancel"
 msgstr ""
 
-#: barista-go/toki_pona.go:2076
+#: barista-go/toki_pona.go:2076 barista-go/toki_pona.go:2076
 msgid "What does this word mean?"
 msgstr ""
 
-#: barista-go/toki_pona.go:2090
+#: barista-go/toki_pona.go:2090 barista-go/toki_pona.go:2090
 msgid "Quiz cancelled."
 msgstr ""
 
-#: barista-go/toki_pona.go:2113
+#: barista-go/toki_pona.go:2113 barista-go/toki_pona.go:2113
 msgid "Quiz Results"
 msgstr ""
 
-#: barista-go/toki_pona.go:2117
+#: barista-go/toki_pona.go:2117 barista-go/toki_pona.go:2117
 msgid "Correct Results"
 msgstr ""
 
-#: barista-go/toki_pona.go:2121
+#: barista-go/toki_pona.go:2121 barista-go/toki_pona.go:2121
 msgid "Incorrect Results"
 msgstr ""
 
-#: barista-go/basechooser.go:27
+#: barista-go/basechooser.go:27 barista-go/basechooser.go:27
 msgid ""
 "this is very simple. very, very simple. takes a lot of digits to write stuff."
 msgstr ""
 
-#: barista-go/basechooser.go:28
+#: barista-go/basechooser.go:28 barista-go/basechooser.go:28
 msgid ""
 "some math says this is the most economic base out there? dunno what that "
 "means."
 msgstr ""
 
-#: barista-go/basechooser.go:29
+#: barista-go/basechooser.go:29 barista-go/basechooser.go:29
 msgid "better binary, i guess."
 msgstr ""
 
-#: barista-go/basechooser.go:30
+#: barista-go/basechooser.go:30 barista-go/basechooser.go:30
 msgid "base five, for five-fingered creatures."
 msgstr ""
 
-#: barista-go/basechooser.go:31
+#: barista-go/basechooser.go:31 barista-go/basechooser.go:31
 msgid ""
 "this is the favourite of the guy who became a meme for a rant on rjienrlwey."
 msgstr ""
 
-#: barista-go/basechooser.go:32
+#: barista-go/basechooser.go:32 barista-go/basechooser.go:32
 msgid "wow, you look like you're into weird numbers."
 msgstr ""
 
-#: barista-go/basechooser.go:33
+#: barista-go/basechooser.go:33 barista-go/basechooser.go:33
 msgid ""
 "octal, the base that people only know because of UNIX. my favourite, though."
 msgstr ""
 
-#: barista-go/basechooser.go:34
+#: barista-go/basechooser.go:34 barista-go/basechooser.go:34
 msgid "weirdly fine."
 msgstr ""
 
-#: barista-go/basechooser.go:35
+#: barista-go/basechooser.go:35 barista-go/basechooser.go:35
 msgid "well uh, it's decimal. booring."
 msgstr ""
 
-#: barista-go/basechooser.go:36
+#: barista-go/basechooser.go:36 barista-go/basechooser.go:36
 msgid "not decimal."
 msgstr ""
 
-#: barista-go/basechooser.go:37
+#: barista-go/basechooser.go:37 barista-go/basechooser.go:37
 msgid "apparently people really like this."
 msgstr ""
 
-#: barista-go/basechooser.go:38
+#: barista-go/basechooser.go:38 barista-go/basechooser.go:38
 msgid "only takes one digit to represent a baker's dozen of bread."
 msgstr ""
 
-#: barista-go/basechooser.go:39
+#: barista-go/basechooser.go:39 barista-go/basechooser.go:39
 msgid "how do you even get to these bases?!"
 msgstr ""
 
-#: barista-go/basechooser.go:40
+#: barista-go/basechooser.go:40 barista-go/basechooser.go:40
 msgid "great base if you have a third hand. does anyone have a third hand?"
 msgstr ""
 
-#: barista-go/basechooser.go:41
+#: barista-go/basechooser.go:41 barista-go/basechooser.go:41
 msgid "what is this bases's job? being less ugly binary."
 msgstr ""
 
-#: barista-go/basechooser.go:42
+#: barista-go/basechooser.go:42 barista-go/basechooser.go:42
 msgid "the suboptimal base for suboptimal people."
 msgstr ""
 
-#: barista-go/basechooser.go:43
+#: barista-go/basechooser.go:43 barista-go/basechooser.go:43
 msgid "i'm pretty thirsy"
 msgstr ""
 
-#: barista-go/basechooser.go:44
+#: barista-go/basechooser.go:44 barista-go/basechooser.go:44
 msgid "base 19, the 19th base!"
 msgstr ""
 
-#: barista-go/basechooser.go:45
+#: barista-go/basechooser.go:45 barista-go/basechooser.go:45
 msgid "a decent base for decent people."
 msgstr ""
 
-#: barista-go/basechooser.go:46
+#: barista-go/basechooser.go:46 barista-go/basechooser.go:46
 msgid "only takes a single digit to write a day!"
 msgstr ""
 
-#: barista-go/basechooser.go:47
+#: barista-go/basechooser.go:47 barista-go/basechooser.go:47
 msgid "6 * 6 gets you this?"
 msgstr ""
 
-#: barista-go/basechooser.go:48
+#: barista-go/basechooser.go:48 barista-go/basechooser.go:48
 msgid "the lojban word for 42 is vore."
 msgstr ""
 
-#: barista-go/basechooser.go:49
+#: barista-go/basechooser.go:49 barista-go/basechooser.go:49
 #, c-format
 msgid "1/3 gross, 100% inefficient"
 msgstr ""
 
-#: barista-go/basechooser.go:50
+#: barista-go/basechooser.go:50 barista-go/basechooser.go:50
 msgid "the seconds are ticking"
 msgstr ""
 
-#: barista-go/basechooser.go:51
+#: barista-go/basechooser.go:51 barista-go/basechooser.go:51
 msgid "jajajaja sex number kkk kekeke"
 msgstr ""
 
-#: barista-go/basechooser.go:52
+#: barista-go/basechooser.go:52 barista-go/basechooser.go:52
 msgid "quite a gross base."
 msgstr ""
 
-#: barista-go/basechooser.go:53
+#: barista-go/basechooser.go:53 barista-go/basechooser.go:53
 msgid ""
 "if you need to write all possible integer degrees with only one number..."
 msgstr ""
 
-#: barista-go/basechooser.go:54
+#: barista-go/basechooser.go:54 barista-go/basechooser.go:54
 msgid "smonk weed everyday"
 msgstr ""
 
-#: barista-go/basechooser.go:55
+#: barista-go/basechooser.go:55 barista-go/basechooser.go:55
 msgid "l33t speak is annoying ngl"
 msgstr ""
 
-#: barista-go/basechooser.go:56
+#: barista-go/basechooser.go:56 barista-go/basechooser.go:56
 msgid "a superior highly composite numbers"
 msgstr ""
 
-#: barista-go/basechooser.go:57
+#: barista-go/basechooser.go:57 barista-go/basechooser.go:57
 msgid "plato time"
 msgstr ""
 
-#: barista-go/basechooser.go:58
+#: barista-go/basechooser.go:58 barista-go/basechooser.go:58
 msgid "well, you could have gone over 9000..."
 msgstr ""
 
-#: barista-go/basechooser.go:59
+#: barista-go/basechooser.go:59 barista-go/basechooser.go:59
 msgid "you went over 9000!"
 msgstr ""
 
-#: barista-go/basechooser.go:60
+#: barista-go/basechooser.go:60 barista-go/basechooser.go:60
 msgid "plato, you're drunk."
 msgstr ""
 
-#: barista-go/basechooser.go:61
+#: barista-go/basechooser.go:61 barista-go/basechooser.go:61
 msgid "you should learn how to say no."
 msgstr ""
 
-#: barista-go/basechooser.go:68
+#: barista-go/basechooser.go:68 barista-go/basechooser.go:68
 msgid ""
 "welcome to the baseinator, the tool that will help you figure out the best "
 "base for your needs!"
 msgstr ""
 
-#: barista-go/basechooser.go:69
+#: barista-go/basechooser.go:69 barista-go/basechooser.go:69
 msgid ""
 "before we begin, let's set some boundaries. what is the largest base you'd "
 "be fine with using?"
 msgstr ""
 
-#: barista-go/basechooser.go:72
+#: barista-go/basechooser.go:72 barista-go/basechooser.go:72
 msgid "give me a better base"
 msgstr ""
 
 #: barista-go/basechooser.go:76 barista-go/basechooser.go:98
+#: barista-go/basechooser.go:76 barista-go/basechooser.go:98
 msgid "mmm, sorry, but you were too slow. see you next time!"
 msgstr ""
 
-#: barista-go/basechooser.go:81
+#: barista-go/basechooser.go:81 barista-go/basechooser.go:81
 msgid "that's not a number, you bonk"
 msgstr ""
 
-#: barista-go/basechooser.go:85
+#: barista-go/basechooser.go:85 barista-go/basechooser.go:85
 msgid ""
 "i mean, it's nice that you want to use bases that large, but seriously. do "
 "you really want to use that many digits?"
 msgstr ""
 
-#: barista-go/basechooser.go:88
+#: barista-go/basechooser.go:88 barista-go/basechooser.go:88
 msgid "i said largest"
 msgstr ""
 
-#: barista-go/basechooser.go:91
+#: barista-go/basechooser.go:91 barista-go/basechooser.go:91
 msgid "now, let's see what the smallest base for you would be"
 msgstr ""
 
-#: barista-go/basechooser.go:94
+#: barista-go/basechooser.go:94 barista-go/basechooser.go:94
 msgid "got a better base than that?"
 msgstr ""
 
-#: barista-go/basechooser.go:103
+#: barista-go/basechooser.go:103 barista-go/basechooser.go:103
 msgid "ain't a number, twat"
 msgstr ""
 
-#: barista-go/basechooser.go:107
+#: barista-go/basechooser.go:107 barista-go/basechooser.go:107
 msgid "y tho"
 msgstr ""
 
-#: barista-go/basechooser.go:110
+#: barista-go/basechooser.go:110 barista-go/basechooser.go:110
 msgid "i said smallest, mate"
 msgstr ""
 
-#: barista-go/basechooser.go:113
+#: barista-go/basechooser.go:113 barista-go/basechooser.go:113
 msgid ""
 "really? i guess it's good that you like that base, but seriously. pick a "
 "smaller base than your maximum."
 msgstr ""
 
-#: barista-go/basechooser.go:116
+#: barista-go/basechooser.go:116 barista-go/basechooser.go:116
 msgid "how do you even use a base that small"
 msgstr ""
 
-#: barista-go/basechooser.go:129
+#: barista-go/basechooser.go:129 barista-go/basechooser.go:129
 #, c-format
 msgid "%d bases in your pool represent 1/%d with a repeating decimal"
 msgstr ""
 
-#: barista-go/basechooser.go:131
+#: barista-go/basechooser.go:131 barista-go/basechooser.go:131
 #, c-format
 msgid "%d bases in your pool represent 1/%d with %d digit(s)"
 msgstr ""
@@ -696,47 +709,69 @@ msgid ""
 "do you want to remove these? (Y/n)"
 msgstr ""
 
-#: barista-go/basechooser.go:146
+#: barista-go/basechooser.go:146 barista-go/basechooser.go:147
 msgid "i guess you do, then. next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:149
+#: barista-go/basechooser.go:149 barista-go/basechooser.go:150
 msgid "aight, removed that. next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:152
+#: barista-go/basechooser.go:152 barista-go/basechooser.go:178
 msgid "ok then, next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:158
+#: barista-go/basechooser.go:158 barista-go/basechooser.go:184
 #, c-format
 msgid "oh my, looks like base %d, %s, is the best base for your needs!"
 msgstr ""
 
-#: barista-go/basechooser.go:163
+#: barista-go/basechooser.go:163 barista-go/basechooser.go:189
 msgid "unfortunately no bases meet your needs. what a shame!"
 msgstr ""
 
-#: barista-go/notes.go:11
+#: barista-go/notes.go:11 barista-go/notes.go:11
 msgid "Notes"
 msgstr ""
 
-#: barista-go/notes.go:12
+#: barista-go/notes.go:12 barista-go/notes.go:12
 msgid "Store and recall notes."
 msgstr ""
 
-#: barista-go/cointoss.go:12
+#: barista-go/cointoss.go:12 barista-go/cointoss.go:12
 msgid "Coin Toss"
 msgstr ""
 
-#: barista-go/cointoss.go:13
+#: barista-go/cointoss.go:13 barista-go/cointoss.go:13
 msgid "Flip a coin."
 msgstr ""
 
-#: barista-go/cointoss.go:25
+#: barista-go/cointoss.go:25 barista-go/cointoss.go:25
 msgid "You got some head!"
 msgstr ""
 
-#: barista-go/cointoss.go:27
+#: barista-go/cointoss.go:27 barista-go/cointoss.go:27
 msgid "You got Tails The Fox!"
+msgstr ""
+
+#: barista-go/basechooser.go:138
+#, c-format
+msgid ""
+"there are %d bases in your pool. the smallest base in your pool is base %d, "
+"%s.\n"
+" %s.\n"
+"do you want to remove these? (Y/n/p to peek at digits)"
+msgstr ""
+
+#: barista-go/basechooser.go:156
+#, c-format
+msgid ""
+"the smallest base in your pool writes 1/%d as %s. the next few smallest "
+"bases in your pool write it like this:\n"
+"%s"
+msgstr ""
+
+#: barista-go/basechooser.go:165
+#, c-format
+msgid "base %d (%s): %s\n"
 msgstr ""

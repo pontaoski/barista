@@ -6,16 +6,19 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Barista 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-19 13:08-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2020-08-16 20:11-0400\n"
+"PO-Revision-Date: 2020-08-16 20:21-0400\n"
+"Last-Translator: Carson Black <uhhadd@gmail.com>\n"
+"Language-Team: Carson Black <uhhadd@gmail.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.8.0\n"
+"Language: tpo_TPO\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 3.36.0\n"
 
 #: barista-go/commandlib/telegram.go:97 barista-go/commandlib/telegram.go:96
 #: barista-go/backends/telegram/telegram.go:70
@@ -685,24 +688,24 @@ msgid ""
 "do you want to remove these? (Y/n)"
 msgstr ""
 
-#: barista-go/basechooser.go:146
+#: barista-go/basechooser.go:146 barista-go/basechooser.go:147
 msgid "i guess you do, then. next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:149
+#: barista-go/basechooser.go:149 barista-go/basechooser.go:150
 msgid "aight, removed that. next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:152
+#: barista-go/basechooser.go:152 barista-go/basechooser.go:178
 msgid "ok then, next base!"
 msgstr ""
 
-#: barista-go/basechooser.go:158
+#: barista-go/basechooser.go:158 barista-go/basechooser.go:184
 #, c-format
 msgid "oh my, looks like base %d, %s, is the best base for your needs!"
 msgstr ""
 
-#: barista-go/basechooser.go:163
+#: barista-go/basechooser.go:163 barista-go/basechooser.go:189
 msgid "unfortunately no bases meet your needs. what a shame!"
 msgstr ""
 
@@ -728,4 +731,26 @@ msgstr ""
 
 #: barista-go/cointoss.go:27
 msgid "You got Tails The Fox!"
+msgstr ""
+
+#: barista-go/basechooser.go:138
+#, c-format
+msgid ""
+"there are %d bases in your pool. the smallest base in your pool is base %d, "
+"%s.\n"
+" %s.\n"
+"do you want to remove these? (Y/n/p to peek at digits)"
+msgstr ""
+
+#: barista-go/basechooser.go:156
+#, c-format
+msgid ""
+"the smallest base in your pool writes 1/%d as %s. the next few smallest "
+"bases in your pool write it like this:\n"
+"%s"
+msgstr ""
+
+#: barista-go/basechooser.go:165
+#, c-format
+msgid "base %d (%s): %s\n"
 msgstr ""
