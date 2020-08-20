@@ -241,3 +241,22 @@ func waitForTelegramMessage() chan *tgbotapi.Message {
 	})
 	return channel
 }
+
+func (t *TelegramContext) Mentions() (ret []string) {
+	if t.tm.Entities == nil {
+		return
+	}
+	for _, item := range *t.tm.Entities {
+		switch item.Type {
+		case "mention":
+			ret = append(ret, commandlib.RecallData(t, "__telegram_user"+t.tm.Text[item.Offset : item.Length+item.Offset][1:], commandlib.Global))
+		case "text_mention":
+			ret = append(ret, strconv.FormatInt(int64(item.User.ID), 10))
+		}
+	}
+	return
+}
+
+func (t *TelegramContext) DisplayNameForID(id string) string {
+	return commandlib.RecallData(t, "__telegram_id"+id, commandlib.Global)
+}

@@ -25,6 +25,8 @@ type Context interface {
 	AuthorIdentifier() string
 	AuthorName() string
 	AwaitResponse(time time.Duration) (content string, ok bool)
+	Mentions() []string
+	DisplayNameForID(id string) string
 	Backend() Backend
 	CommunityIdentifier() string
 	GenerateLink(text string, URL string) string

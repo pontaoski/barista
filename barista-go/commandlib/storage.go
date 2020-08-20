@@ -31,6 +31,7 @@ const (
 	User
 	Channel
 	Community
+	Global
 )
 
 func StoreData(c Context, key string, value string, scope Scope) {
@@ -42,6 +43,8 @@ func StoreData(c Context, key string, value string, scope Scope) {
 		id = c.RoomIdentifier()
 	case Community:
 		id = c.CommunityIdentifier()
+	case Global:
+		id = "__global__"
 	}
 
 	var data Data

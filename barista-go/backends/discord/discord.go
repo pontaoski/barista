@@ -134,6 +134,21 @@ func (d DiscordContext) I18nc(context, message string) string {
 	return d.I18n(message)
 }
 
+func (d DiscordContext) Mentions() (ret []string) {
+	for _, user := range d.tm.Mentions {
+		ret = append(ret, user.ID)
+	}
+	return
+}
+
+func (d DiscordContext) DisplayNameForID(id string) string {
+	mem, _ := d.s.GuildMember(d.tm.GuildID, id)
+	if mem.Nick != "" {
+		return mem.Nick
+	}
+	return mem.User.Username
+}
+
 func waitForMessage(s *discordgo.Session) chan *discordgo.MessageCreate {
 	channel := make(chan *discordgo.MessageCreate)
 	s.AddHandlerOnce(func(_ *discordgo.Session, e *discordgo.MessageCreate) {

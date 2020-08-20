@@ -1,6 +1,8 @@
 package telegram
 
 import (
+	"strconv"
+
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
@@ -13,6 +15,13 @@ func TelegramPaginatorHandler(messageID int, direction string) {
 		} else {
 			val.(*telegramPaginator).Next()
 		}
+	}
+}
+
+func Stalk(tg *TelegramContext) {
+	commandlib.StoreData(tg, "__telegram_id"+strconv.FormatInt(int64(tg.tm.From.ID), 10), tg.tm.From.String(), commandlib.Global)
+	if tg.tm.From.UserName != "" {
+		commandlib.StoreData(tg, "__telegram_user"+tg.tm.From.UserName, strconv.FormatInt(int64(tg.tm.From.ID), 10), commandlib.Global)
 	}
 }
 

@@ -1,6 +1,7 @@
 package irc
 
 import (
+	"strings"
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
@@ -108,6 +109,22 @@ func (i IRCContext) SendTags(_ string, tags []commandlib.Embed) {
 			i.cl.Cmd.ReplyTo(i.ev, str)
 		}
 	}
+}
+
+func (i IRCContext) Mentions() (ret []string) {
+	channel := i.cl.LookupChannel(i.ev.Params[len(i.ev.Params)-2])
+	for _, mem := range channel.UserList {
+		for _, word := range strings.Fields(i.RawData) {
+			if mem == word {
+				ret = append(ret, mem)
+			}
+		}
+	}
+	return
+}
+
+func (i IRCContext) DisplayNameForID(id string) string {
+	return id
 }
 
 func (i IRCContext) WrapCodeBlock(code string) string {

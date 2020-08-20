@@ -3,6 +3,7 @@ package matrix
 import (
 	"fmt"
 	"html/template"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -229,4 +230,25 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 			}
 		}
 	}
+}
+
+var (
+	singleQuotes = regexp.MustCompile(`'https:\/\/matrix.to\/#\/@(.*)'`)
+	doubleQuotes = regexp.MustCompile(`"https:\/\/matrix.to\/#\/@(.*)"`)
+)
+
+func (m MatrixContext) Mentions() (ret []string) {
+	if val, _ := m.triggerEvent.Content["format"]; val != "org.matrix.custom.html" {
+		return
+	}
+	body, _ := m.triggerEvent.Content["formatted_body"]
+	bodyStr, _ := body.(string)
+	for _, str := range singleQuotes.FindAllString(bodyStr, 1000) {
+		ret = append(ret, strings.TrimPrefix(strings.TrimSuffix(strings.TrimSuffix(str, `"`), `'`), `https://matrix.to/#/@`))
+	}
+	return
+}
+
+func (m MatrixContext) DisplayNameForID(id string) string {
+	return id
 }
