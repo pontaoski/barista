@@ -1,12 +1,24 @@
 package pkgman
 
 import (
+	"bytes"
+	"compress/gzip"
 	"encoding/xml"
 	"fmt"
+	"io"
 	"io/ioutil"
-	"net/http"
+	"runtime"
+	"strings"
 
-	"github.com/alecthomas/repr"
+	"github.com/adrg/xdg"
+	"github.com/appadeia/barista/barista-go/log"
+	"github.com/gregjones/httpcache"
+	"github.com/gregjones/httpcache/diskcache"
+	"github.com/ulikunitz/xz"
+)
+
+var (
+	chttp = httpcache.NewTransport(diskcache.New(xdg.CacheHome)).Client()
 )
 
 type RPMRepo struct {
@@ -26,6 +38,104 @@ type RepoMD struct {
 			URL string `xml:"href,attr"`
 		} `xml:"location"`
 	} `xml:"data"`
+}
+
+type RPMEntry struct {
+	Name    string `xml:"name,attr"`
+	Kind    string `xml:"kind,attr"`
+	Flags   string `xml:"flags,attr"`
+	Epoch   string `xml:"epoch,attr"`
+	Version string `xml:"ver,attr"`
+	Release string `xml:"rel,attr"`
+}
+
+type Version struct {
+	Epoch   string `xml:"epoch,attr"`
+	Version string `xml:"ver,attr"`
+	Release string `xml:"rel,attr"`
+}
+
+type RPMSize struct {
+	Package   uint64 `xml:"package,attr"`
+	Installed uint64 `xml:"installed,attr"`
+	Archive   uint64 `xml:"archive,attr"`
+}
+
+type RPMLocation struct {
+	URL string `xml:"href,attr"`
+}
+
+type RPMEntryList struct {
+	Entries []RPMEntry `xml:"rpm__entry"`
+}
+
+type RPMFormat struct {
+	License     string       `xml:"rpm__license"`
+	Requires    RPMEntryList `xml:"rpm__requires"`
+	Obsoletes   RPMEntryList `xml:"rpm__obsoletes"`
+	Provides    RPMEntryList `xml:"rpm__provides"`
+	Recommends  RPMEntryList `xml:"rpm__recommends"`
+	Supplements RPMEntryList `xml:"rpm__supplements"`
+	Conflicts   RPMEntryList `xml:"rpm__conflicts"`
+	Enhances    RPMEntryList `xml:"rpm__enhances"`
+	Suggests    RPMEntryList `xml:"rpm__suggests"`
+}
+
+type RPMPackage struct {
+	Name string `xml:"name"`
+	Arch string `xml:"arch"`
+
+	Version Version `xml:"version"`
+
+	Summary     string `xml:"summary"`
+	Description string `xml:"description"`
+	URL         string `xml:"url"`
+
+	Size RPMSize `xml:"size"`
+
+	Location RPMLocation `xml:"location"`
+
+	Data RPMFormat `xml:"format"`
+}
+
+type Primary struct {
+	Package []RPMPackage `xml:"package"`
+}
+
+func Get(url string) (data []byte, err error) {
+	resp, err := chttp.Get(url)
+	if err != nil {
+		return
+	}
+	data, err = ioutil.ReadAll(resp.Body)
+
+	log.Info("Fetching %s...", url)
+
+	var reader io.Reader
+	switch {
+	case strings.HasSuffix(url, "gz"):
+		reader, err = gzip.NewReader(bytes.NewReader(data))
+		if err != nil {
+			return
+		}
+	case strings.HasSuffix(url, "xz"):
+		reader, err = xz.NewReader(bytes.NewReader((data)))
+		if err != nil {
+			return
+		}
+	}
+
+	if reader != nil {
+		log.Info("Decompressing %s...", url)
+		data, err = ioutil.ReadAll(reader)
+	}
+
+	data = []byte(strings.ReplaceAll(string(data), "<rpm:", "<rpm__"))
+	runtime.GC()
+	data = []byte(strings.ReplaceAll(string(data), "</rpm:", "</rpm__"))
+	runtime.GC()
+
+	return
 }
 
 type PrimaryList struct {
@@ -51,21 +161,43 @@ func (r *RPMBackend) Refresh(target string) error {
 		return ErrBadDistro
 	}
 	for _, repo := range distro.Repos {
-		repomd, err := http.Get(fmt.Sprintf("%s/repodata/repomd.xml", repo.BaseURL))
+		data, err := Get(fmt.Sprintf("%s/repodata/repomd.xml", repo.BaseURL))
 		if err != nil {
 			return err
 		}
-		data, err := ioutil.ReadAll(repomd.Body)
-		if err != nil {
-			return err
-		}
+
 		var md RepoMD
-		println(string(data))
 		err = xml.Unmarshal(data, &md)
 		if err != nil {
 			return err
 		}
-		repr.Println(md)
+
+		var primaryURL, filelistURL string
+		for _, item := range md.Datas {
+			switch item.Type {
+			case "primary":
+				primaryURL = item.Location.URL
+			case "filelists":
+				filelistURL = item.Location.URL
+			}
+		}
+
+		primaryData, err := Get(fmt.Sprintf("%s/%s", repo.BaseURL, primaryURL))
+		if err != nil {
+			return err
+		}
+
+		var pd Primary
+		err = xml.Unmarshal(primaryData, &pd)
+		if err != nil {
+			return err
+		}
+
+		filelistData, err := Get(fmt.Sprintf("%s/%s", repo.BaseURL, filelistURL))
+		if err != nil {
+			return err
+		}
+		_ = filelistData
 	}
 	return nil
 }
