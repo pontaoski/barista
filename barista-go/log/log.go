@@ -17,6 +17,7 @@ const (
 	UnknownReason ExitCode = iota
 	ConfigFailure
 	BackendFailure
+	DatabaseFailure
 )
 
 func loc() aurora.Value {

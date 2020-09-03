@@ -24,8 +24,7 @@ const (
 type PackageRelationKind int
 
 const (
-	WhatOwnsFile PackageRelationKind = iota
-	WhatConflicts
+	WhatConflicts PackageRelationKind = iota
 	WhatRequires
 	WhatObsoletes
 	WhatProvides
@@ -39,8 +38,8 @@ type Pkg struct {
 	Name         string
 	Description  string
 	Version      string
-	DownloadSize string
-	InstallSize  string
+	DownloadSize uint64
+	InstallSize  uint64
 	URL          string
 }
 
@@ -48,9 +47,6 @@ type Pkg struct {
 type Backend interface {
 	Distros() []string
 	Refresh(string) error
-	Search(query string) (packages []Pkg, err error)
-	GetData(pkg string, kind PackageDataKind) (data []string, err error)
-	GetRelation(pkg string, relation PackageRelationKind) (pkgs []Pkg, err error)
 }
 
 var backends = []Backend{}
