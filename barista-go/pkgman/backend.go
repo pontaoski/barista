@@ -12,7 +12,8 @@ var (
 type PackageDataKind int
 
 const (
-	Provides PackageDataKind = iota
+	Conflicts PackageDataKind = iota
+	Provides
 	Requires
 	Recommends
 	Suggests
@@ -25,13 +26,13 @@ type PackageRelationKind int
 
 const (
 	WhatConflicts PackageRelationKind = iota
-	WhatRequires
-	WhatObsoletes
 	WhatProvides
+	WhatRequires
 	WhatRecommends
-	WhatEnhances
-	WhatSupplements
 	WhatSuggests
+	WhatSupplements
+	WhatEnhances
+	WhatObsoletes
 )
 
 type Pkg struct {

@@ -55,6 +55,10 @@ type Version struct {
 	Release string `xml:"rel,attr"`
 }
 
+func (v Version) String() string {
+	return fmt.Sprintf("%s:%s-%s", v.Epoch, v.Version, v.Release)
+}
+
 type RPMSize struct {
 	Package   uint64 `xml:"package,attr"`
 	Installed uint64 `xml:"installed,attr"`
@@ -67,6 +71,13 @@ type RPMLocation struct {
 
 type RPMEntryList struct {
 	Entries []RPMEntry `xml:"rpm__entry"`
+}
+
+func (r RPMEntryList) ToNames() (ret []string) {
+	for _, ent := range r.Entries {
+		ret = append(ret, ent.Name)
+	}
+	return
 }
 
 type RPMFormat struct {
@@ -100,6 +111,15 @@ type RPMPackage struct {
 
 type Primary struct {
 	Package []RPMPackage `xml:"package"`
+}
+
+type PackageFileList struct {
+	Name string   `xml:"name,attr"`
+	File []string `xml:"file"`
+}
+
+type FileList struct {
+	Packages []PackageFileList `xml:"package"`
 }
 
 func Get(url string) (data []byte, err error) {
@@ -188,6 +208,7 @@ func (r *RPMBackend) Refresh(target string) error {
 		}
 
 		var pd Primary
+		log.Info("Unmarshalling primary data...")
 		err = xml.Unmarshal(primaryData, &pd)
 		if err != nil {
 			return err
@@ -197,7 +218,52 @@ func (r *RPMBackend) Refresh(target string) error {
 		if err != nil {
 			return err
 		}
-		_ = filelistData
+		var fl FileList
+
+		log.Info("Unmarshalling file lists...")
+		err = xml.Unmarshal(filelistData, &fl)
+		if err != nil {
+			return err
+		}
+
+		log.Info("Clearing distro %s...", target)
+		err = ClearDistro(target)
+		if err != nil {
+			return err
+		}
+		log.Info("Inserting packages...")
+		for _, pkg := range pd.Package {
+			err := InsertPackage(DBPackage{
+				Distro:       target,
+				Name:         pkg.Name,
+				Description:  pkg.Description,
+				Version:      pkg.Version.String(),
+				DownloadSize: pkg.Size.Archive,
+				InstallSize:  pkg.Size.Installed,
+				Relations: map[string][]string{
+					"Conflicts":   pkg.Data.Conflicts.ToNames(),
+					"Provides":    pkg.Data.Provides.ToNames(),
+					"Requires":    pkg.Data.Requires.ToNames(),
+					"Recommends":  pkg.Data.Recommends.ToNames(),
+					"Suggests":    pkg.Data.Suggests.ToNames(),
+					"Supplements": pkg.Data.Supplements.ToNames(),
+					"Enhances":    pkg.Data.Enhances.ToNames(),
+					"Obsoletes":   pkg.Data.Obsoletes.ToNames(),
+				},
+				Files: func() (ret []string) {
+					for _, file := range fl.Packages {
+						if file.Name == pkg.Name {
+							return file.File
+						}
+					}
+					return
+				}(),
+			})
+			if err != nil {
+				return err
+			}
+		}
 	}
+	log.Info("Refreshed distro %s", target)
 	return nil
 }

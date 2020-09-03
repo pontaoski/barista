@@ -26,7 +26,7 @@ var (
 const (
 	createTable = `
 BEGIN TRANSACTION;
-	CREATE TABLE Packages IF NOT EXISTS (
+	CREATE TABLE IF NOT EXISTS Packages (
 		Distro       string NOT NULL,
 		Name         string NOT NULL,
 		Description  string NOT NULL,
@@ -35,13 +35,13 @@ BEGIN TRANSACTION;
 		InstallSize  uint64 NOT NULL,
 		DownloadURL  string NOT NULL,
 	);
-	CREATE TABLE Relations IF NOT EXISTS (
+	CREATE TABLE IF NOT EXISTS Relations (
 		Distro string NOT NULL,
 		Name   string NOT NULL,
-		Kind   string IN ("Provides", "Requires", "Recommends", "Suggests", "Supplements", "Enhances", "Obsoletes"),
+		Kind   string Kind IN ("Provides", "Requires", "Recommends", "Suggests", "Supplements", "Enhances", "Obsoletes"),
 		Value  string NOT NULL,
 	);
-	CREATE TABLE Files IF NOT EXISTS (
+	CREATE TABLE IF NOT EXISTS Files (
 		Distro string NOT NULL,
 		Name   string NOT NULL,
 		File   string NOT NULL,
@@ -115,6 +115,13 @@ SELECT * FROM Packages WHERE
 SELECT File FROM Files WHERE
 	Distro == $1 &&
 	Name == $2;
+	`
+
+	getRelation = `
+SELECT Name FROM Relations WHERE
+	Distro == $1 &&
+	Kind == $2 &&
+	Value == $3;
 	`
 )
 
@@ -197,6 +204,7 @@ func Search(distro, query string) (packages []Pkg, err error) {
 
 func GetData(distro, pkg string, kind PackageDataKind) (data []string, err error) {
 	val := map[PackageDataKind]string{
+		Conflicts:   "Conflicts",
 		Provides:    "Provides",
 		Requires:    "Requires",
 		Recommends:  "Recommends",
@@ -251,4 +259,85 @@ func WhatOwnsFile(distro, file string) (pkg Pkg, err error) {
 		retpkg[5].(uint64),
 		retpkg[6].(string),
 	}, nil
+}
+
+func GetFiles(distro, pkg string) (files []string, err error) {
+	ctx := ql.NewRWCtx()
+
+	ret, _, err := db.Run(ctx, getFiles, distro, pkg)
+	if err != nil {
+		return
+	}
+
+	for _, row := range ret {
+		err = row.Do(false, func(data []interface{}) (bool, error) {
+			files = append(files, data[0].(string))
+			return true, nil
+		})
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func GetPackagesWithRelation(distro string, kind PackageRelationKind, value string) (pkgs []Pkg, err error) {
+	ctx := ql.NewRWCtx()
+
+	kindString := map[PackageRelationKind]string{
+		WhatConflicts:   "Conflicts",
+		WhatProvides:    "Provides",
+		WhatRequires:    "Requires",
+		WhatRecommends:  "Recommends",
+		WhatSuggests:    "Suggests",
+		WhatSupplements: "Supplements",
+		WhatEnhances:    "Enhances",
+		WhatObsoletes:   "Obsoletes",
+	}[kind]
+
+	ret, _, err := db.Run(ctx, getRelation, distro, kindString, value)
+	if err != nil {
+		return
+	}
+
+	var names []string
+
+	for _, row := range ret {
+		err = row.Do(false, func(data []interface{}) (bool, error) {
+			names = append(names, data[0].(string))
+			return true, nil
+		})
+		if err != nil {
+			return
+		}
+	}
+
+	for _, name := range names {
+		var data []ql.Recordset
+
+		data, _, err = db.Run(ctx, getPackage, distro, name)
+		if err != nil {
+			return
+		}
+
+		for _, row := range data {
+			err = row.Do(false, func(data []interface{}) (bool, error) {
+				pkgs = append(pkgs, Pkg{
+					data[1].(string),
+					data[2].(string),
+					data[3].(string),
+					data[4].(uint64),
+					data[5].(uint64),
+					data[6].(string),
+				})
+				return true, nil
+			})
+			if err != nil {
+				return
+			}
+		}
+	}
+
+	return
 }

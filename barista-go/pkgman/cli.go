@@ -1,6 +1,9 @@
 package pkgman
 
-import "github.com/urfave/cli/v2"
+import (
+	"github.com/alecthomas/repr"
+	"github.com/urfave/cli/v2"
+)
 
 func Cli(c *cli.Context) {
 	data := RPMBackend{
@@ -20,4 +23,9 @@ func Cli(c *cli.Context) {
 	if err != nil {
 		panic(err)
 	}
+	items, err := Search("fedora", "dnf")
+	if err != nil {
+		panic(err)
+	}
+	repr.Println(items)
 }
