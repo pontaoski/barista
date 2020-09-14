@@ -2,6 +2,8 @@ github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
 github.com/Necroforger/dgwidgets v0.0.0-20190131052008-56c8c1ca33e0 h1:x09GwpB1wwKc1o2TBcDP3uR5qPiOVo6Lh79dv2WdX3g=
 github.com/Necroforger/dgwidgets v0.0.0-20190131052008-56c8c1ca33e0/go.mod h1:3aFNgGdU2RT4mNS7ExVL2BGPsKa14bkOPOjrT9s9oR8=
+github.com/agext/levenshtein v1.2.3 h1:YB2fHEn0UJagG8T1rrWknE3ZQzWM06O8AMAatNn7lmo=
+github.com/agext/levenshtein v1.2.3/go.mod h1:JEDfjyjHDjOF/1e4FlBE/PkbqA9OfWu2ki2W0IB5558=
 github.com/alecthomas/repr v0.0.0-20200325044227-4184120f674c h1:MVVbswUlqicyj8P/JljoocA7AyCo62gzD0O7jfvrhtE=
 github.com/alecthomas/repr v0.0.0-20200325044227-4184120f674c/go.mod h1:xTS7Pm1pD1mvyM075QCDSRqH6qRLXylzS24ZTpRiSzQ=
 github.com/antchfx/xmlquery v1.2.1 h1:wE4xjHrqOScP440wdv23Xkg0Gr8JryW0ptqodPH+y2U=

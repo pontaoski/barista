@@ -5,6 +5,7 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Necroforger/dgwidgets v0.0.0-20190131052008-56c8c1ca33e0
+	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/repr v0.0.0-20200325044227-4184120f674c
 	github.com/antchfx/xmlquery v1.2.1
 	github.com/antchfx/xpath v1.1.2 // indirect

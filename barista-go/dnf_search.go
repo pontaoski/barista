@@ -2,7 +2,9 @@ package barista
 
 import (
 	"fmt"
+	"sort"
 
+	"github.com/agext/levenshtein"
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
 	"github.com/godbus/dbus"
@@ -73,5 +75,9 @@ func DnfSearch(c commandlib.Context) {
 		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("No packages were found.")))
 		return
 	}
-	c.SendMessage("primary", pkgListToUnionEmbed(toPackageList(pkgs), distro, c))
+	packs := toPackageList(pkgs)
+	sort.Slice(packs, func(i, j int) bool {
+		return levenshtein.Distance(c.Content(), packs[i].name, nil) < levenshtein.Distance(c.Content(), packs[j].name, nil)
+	})
+	c.SendMessage("primary", pkgListToUnionEmbed(packs, distro, c))
 }
