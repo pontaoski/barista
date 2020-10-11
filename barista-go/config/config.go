@@ -26,6 +26,11 @@ type Config struct {
 			Username string   `toml:"username"`
 			Channels []string `toml:"channels"`
 		} `toml:"irc"`
+		Harmony struct {
+			Homeserver string `toml:"homeserver"`
+			Email      string `toml:"email"`
+			Password   string `toml:"password"`
+		} `toml:"harmony"`
 	} `toml:"services"`
 	Owner struct {
 		Discord  string `toml:"discord"`
