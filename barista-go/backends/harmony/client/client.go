@@ -6,6 +6,7 @@ import (
 	corev1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/core"
 	foundationv1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/foundation"
 	profilev1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/profile"
+	"github.com/appadeia/barista/barista-go/log"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -45,15 +46,19 @@ func (c *Client) GuildEvents(guildID uint64) (chan *corev1.GuildEvent, error) {
 
 	channel := make(chan *corev1.GuildEvent)
 	go func() {
-		ev, err := stream.Recv()
-		if err != nil {
-			close(channel)
+		for {
+			ev, err := stream.Recv()
+			if err != nil {
+				log.Error("%+v", err)
+				close(channel)
+				return
+			}
+			for _, handler := range c.onceHandlers {
+				handler(ev)
+			}
+			c.onceHandlers = []func(*corev1.GuildEvent){}
+			channel <- ev
 		}
-		for _, handler := range c.onceHandlers {
-			handler(ev)
-		}
-		c.onceHandlers = []func(*corev1.GuildEvent){}
-		channel <- ev
 	}()
 
 	return channel, nil
