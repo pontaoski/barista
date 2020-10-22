@@ -119,9 +119,9 @@ func (c *Context) RoomIdentifier() string {
 
 func convert(embed commandlib.Embed) *corev1.Embed {
 	return &corev1.Embed{
-		Title: embed.Body,
 		Body:  embed.Body,
 		Color: int64(embed.Colour),
+		Title: embed.Title.Text,
 		Header: &corev1.EmbedHeading{
 			Text: embed.Header.Text,
 			Url:  embed.Header.URL,
