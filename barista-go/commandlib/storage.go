@@ -1,8 +1,12 @@
 package commandlib
 
 import (
+	"context"
+	"fmt"
+
+	"github.com/appadeia/barista/ent"
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Data struct {
@@ -13,15 +17,15 @@ type Data struct {
 	LocationID string
 }
 
-var StorageDB *gorm.DB
+var StorageDB *ent.Client
 
 func init() {
 	var err error
-	StorageDB, err = gorm.Open("sqlite3", "storage/data.db")
+	StorageDB, err = ent.Open("sqlite3", "file:data?_fk=1")
+	StorageDB.Schema.Create(context.Background())
 	if err != nil {
 		panic(err.Error())
 	}
-	StorageDB.AutoMigrate(&Data{})
 }
 
 type Scope int
@@ -33,7 +37,7 @@ const (
 	Community
 )
 
-func StoreData(c Context, key string, value string, scope Scope) {
+func StoreNote(c Context, key string, value string, scope Scope) {
 	var id string
 	switch scope {
 	case User:
@@ -43,17 +47,28 @@ func StoreData(c Context, key string, value string, scope Scope) {
 	case Community:
 		id = c.CommunityIdentifier()
 	}
+	id = fmt.Sprintf("%s-%s", id, key)
 
-	var data Data
-	StorageDB.Where("kind = ?", int(scope)).Where("location_id = ?", id).FirstOrCreate(&data, "key = ?", key)
-	data.Kind = int(scope)
-	data.Key = key
-	data.Value = value
-	data.LocationID = id
-	StorageDB.Save(&data)
+	note, err := StorageDB.Note.Get(context.Background(), id)
+	if err != nil {
+		if _, ok := err.(*ent.NotFoundError); ok {
+			StorageDB.Note.Create().
+				SetID(id).
+				SetContent(value).
+				SaveX(context.Background())
+		}
+
+		return
+	}
+
+	note.Update().SetContent(value).SaveX(context.Background())
+
+	StorageDB.Note.UpdateOneID(id).
+		SetContent(value).
+		SaveX(context.Background())
 }
 
-func RecallData(c Context, key string, scope Scope) string {
+func GetNote(c Context, key string, scope Scope) (string, bool) {
 	var id string
 	switch scope {
 	case User:
@@ -63,8 +78,15 @@ func RecallData(c Context, key string, scope Scope) string {
 	case Community:
 		id = c.CommunityIdentifier()
 	}
+	id = fmt.Sprintf("%s-%s", id, key)
 
-	var data Data
-	StorageDB.Where("kind = ?", int(scope)).Where("location_id = ?", id).First(&data, "key = ?", key)
-	return data.Value
+	data, err := StorageDB.Note.Get(context.Background(), id)
+	if data == nil {
+		if err != nil {
+			println(err.Error())
+		}
+		return "", false
+	}
+
+	return data.Content, true
 }

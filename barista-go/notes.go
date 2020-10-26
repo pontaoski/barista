@@ -33,8 +33,10 @@ func SilentRecall(c commandlib.Context) {
 	if c.Arg(0) == "" {
 		return
 	}
-	data := commandlib.RecallData(c, c.Arg(0), commandlib.Community)
-	c.SendMessage("primary", data)
+	data, ok := commandlib.GetNote(c, c.Arg(0), commandlib.Community)
+	if ok {
+		c.SendMessage("primary", data)
+	}
 }
 
 func SilentStore(c commandlib.Context) {
@@ -42,7 +44,7 @@ func SilentStore(c commandlib.Context) {
 		return
 	}
 	trimmed := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c.RawContent()), c.Arg(0)))
-	commandlib.StoreData(c, c.Arg(0), trimmed, commandlib.Community)
+	commandlib.StoreNote(c, c.Arg(0), trimmed, commandlib.Community)
 	c.SendMessage("primary", "Note saved!")
 }
 
@@ -54,14 +56,17 @@ func Notes(c commandlib.Context) {
 			return
 		}
 		trimmed := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c.RawContent()), "store")), c.Arg(1)))
-		commandlib.StoreData(c, c.Arg(1), trimmed, commandlib.Community)
+		commandlib.StoreNote(c, c.Arg(1), trimmed, commandlib.Community)
 		c.SendMessage("primary", "Note saved!")
 	case "read":
 		if c.Arg(1) == "" {
 			c.SendMessage("primary", CommandHelp(c, c.Command()))
 			return
 		}
-		data := commandlib.RecallData(c, c.Arg(1), commandlib.Community)
+		data, ok := commandlib.GetNote(c, c.Arg(1), commandlib.Community)
+		if !ok {
+			c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an error recalling the note. Does it exist?")))
+		}
 		c.SendMessage("primary", data)
 	default:
 		c.SendMessage("primary", CommandHelp(c, c.Command()))

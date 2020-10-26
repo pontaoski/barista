@@ -13,9 +13,9 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
+	github.com/facebook/ent v0.4.3
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/godbus/dbus v4.1.0+incompatible
-	github.com/golang/groupcache v0.0.0-20191027212112-611e8accdfc9 // indirect
 	github.com/golang/protobuf v1.4.1
 	github.com/hashicorp/go-immutable-radix v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4
@@ -24,13 +24,11 @@ require (
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/lrstanley/girc v0.0.0-20190801035559-4fc93959e1a7
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
+	github.com/mattn/go-sqlite3 v2.0.1+incompatible
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/pflag v1.0.3
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/spf13/pflag v1.0.5
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
-	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
-	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0
 )
