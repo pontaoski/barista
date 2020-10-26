@@ -39,8 +39,17 @@ func SilentRecall(c commandlib.Context) {
 	}
 }
 
+func isOnly(s string, r rune) bool {
+	for _, char := range s {
+		if char != r {
+			return false
+		}
+	}
+	return true
+}
+
 func SilentStore(c commandlib.Context) {
-	if c.Arg(0) == "" {
+	if c.Arg(0) == "" || isOnly(c.Arg(0), '!') {
 		return
 	}
 	trimmed := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c.RawContent()), c.Arg(0)))

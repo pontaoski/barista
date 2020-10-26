@@ -3,3 +3,6 @@ config.toml
 containers/config.ini
 storage/
 barista
+credentials.json
+token.json
+data
