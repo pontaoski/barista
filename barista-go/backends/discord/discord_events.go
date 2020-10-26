@@ -24,7 +24,9 @@ func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 			paginator.Widget.Close <- true
 		}
 		for _, message := range tmp.pm {
-			s.ChannelMessageDelete(message.ChannelID, message.ID)
+			if message != nil {
+				s.ChannelMessageDelete(message.ChannelID, message.ID)
+			}
 		}
 	}
 }
