@@ -15,7 +15,7 @@ func init() {
 		Name:    "toki pona vocabulary lookup",
 		Usage:   "Look up words in pu",
 		ID:      "pu-lookup",
-		Matches: []string{"o pu"},
+		Matches: []string{"ilo o pu"},
 		Flags: []commandlib.Flag{
 			commandlib.BoolFlag{
 				LongFlag: "browse",
