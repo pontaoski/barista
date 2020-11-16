@@ -121,7 +121,7 @@ func (m MatrixContext) NextResponse() (out chan string) {
 func (m *MatrixContext) AwaitResponse(tenpo time.Duration) (response string, ok bool) {
 	timeoutChan := make(chan struct{})
 	go func() {
-		time.Sleep(tenpo)
+		time.Sleep(tenpo * 3)
 		timeoutChan <- struct{}{}
 	}()
 	for {
