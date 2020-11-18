@@ -3,6 +3,8 @@ package commandlib
 import (
 	"strings"
 
+	"github.com/kballard/go-shellquote"
+
 	iradix "github.com/hashicorp/go-immutable-radix"
 )
 
@@ -52,6 +54,10 @@ func LexCommand(content string) (Command, ContextMixin, bool) {
 	ctx.Data = make(map[string]interface{})
 	ctx.FlagSet = *cmd.Flags.GetFlagSet()
 	ctx.RawData = content
-	ctx.FlagSet.Parse(strings.Fields(content))
+	data, err := shellquote.Split(content)
+	if err != nil {
+		return Command{}, ContextMixin{}, false
+	}
+	ctx.FlagSet.Parse(data)
 	return cmd, ctx, true
 }
