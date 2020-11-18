@@ -225,8 +225,8 @@ func init() {
 		},
 		Action: func(c commandlib.Context) {
 			book := c.Arg(0)
-			chapter := c.Arg(1)
-			rawVerse := c.Arg(2)
+			chapterVerse := strings.SplitN(c.Arg(1), ":", 2)
+			chapter, rawVerse := chapterVerse[0], chapterVerse[1]
 			var verse verseKind
 
 			badInt := commandlib.ErrorEmbed("Your number doesn't appear to be a number")
@@ -283,7 +283,7 @@ func init() {
 
 			c.SendMessage("primary", commandlib.Embed{
 				Title: commandlib.EmbedHeader{
-					Text: fmt.Sprintf("%s %s %s", book, chapter, verse.String()),
+					Text: fmt.Sprintf("%s %s:%s", book, chapter, verse.String()),
 				},
 				Body: data,
 			})
