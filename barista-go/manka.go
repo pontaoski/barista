@@ -37,6 +37,11 @@ func init() {
 			"ilo o manka",
 		},
 		Action: func(c commandlib.Context) {
+			c.SendMessage("primary", commandlib.Embed{
+				Title: commandlib.EmbedHeader{
+					Text: "mi pali...",
+				},
+			})
 			resp, _, err := bot.PingAndList("51.161.52.187", 25614)
 			if err != nil {
 				c.SendMessage("primary", commandlib.ErrorEmbed("There was an error getting server info: "+err.Error()))
