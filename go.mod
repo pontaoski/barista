@@ -5,6 +5,8 @@ go 1.12
 require (
 	github.com/BurntSushi/toml v0.3.1
 	github.com/Necroforger/dgwidgets v0.0.0-20190131052008-56c8c1ca33e0
+	github.com/SpencerSharkey/gomc v0.0.0-20171215012004-e16df85c4e5f
+	github.com/Tnze/go-mc v1.16.1
 	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/repr v0.0.0-20200325044227-4184120f674c
 	github.com/antchfx/xmlquery v1.2.1
@@ -17,6 +19,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/godbus/dbus v4.1.0+incompatible
 	github.com/golang/protobuf v1.4.2
+	github.com/google/uuid v1.1.2
 	github.com/hashicorp/go-immutable-radix v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jinzhu/gorm v1.9.12
@@ -27,6 +30,7 @@ require (
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
 	github.com/pkg/errors v0.9.1
+	github.com/rur0/gomc v0.0.0-20200601200220-b726bafe61e8
 	github.com/spf13/pflag v1.0.5
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
