@@ -37,6 +37,9 @@ type Config struct {
 		Matrix   string `toml:"matrix"`
 		Telegram int    `toml:"telegram"`
 	} `toml:"owner"`
+	Tokens struct {
+		InventKDEOrg string `toml:"invent.kde.org"`
+	} `toml:"tokens"`
 }
 
 // BotConfig holds an instance of Config with values loaded

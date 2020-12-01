@@ -122,6 +122,23 @@ func HiddenNAP(c commandlib.Context) {
 		c.SendMessage("primary", commandlib.ErrorEmbed("There was an error: "+err.Error()))
 	}
 
+	words = []Word{
+		{
+			Names:          []string{"akesun"},
+			Category:       "post-pu",
+			Definition:     "The toki pona alphabet",
+			SourceLanguage: "toki pona",
+			Etymology:      "akesi + esun",
+		},
+		{
+			Names:          []string{"kese"},
+			Category:       "post-pu",
+			Definition:     "queer; LGBT+",
+			SourceLanguage: "Hebrew",
+			Etymology:      "késhet 'rainbow' (also name of Jewish LGBT org)",
+		},
+	}
+
 	for _, row := range resp.Values {
 		word := Word{
 			Names:          strings.Split(row[0].(string), ","),

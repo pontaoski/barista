@@ -2,9 +2,9 @@ package matrix
 
 import (
 	"fmt"
-	"html/template"
 	"strings"
 	"sync"
+	"text/template"
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
