@@ -76,6 +76,7 @@ func invent(c commandlib.Context) {
 			embeds = append(embeds, commandlib.Embed{
 				Title: commandlib.EmbedHeader{
 					Text: fmt.Sprintf("%s", mr.Title),
+					URL:  mr.WebURL,
 				},
 				Body: mr.Description,
 				Fields: []commandlib.EmbedField{
