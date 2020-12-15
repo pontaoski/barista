@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/appadeia/barista/barista-go/bases"
@@ -61,10 +62,32 @@ var sarcasm = map[bases.Base]string{
 	720720: I18n("you should learn how to say no."),
 }
 
+var baseinatorState map[string]struct{} = make(map[string]struct{})
+var baseinatorStateMutex sync.RWMutex
+
 func Baseinator(c commandlib.Context) {
 	if c.Type() == commandlib.EditCommand {
 		return
 	}
+
+	baseinatorStateMutex.RLock()
+	if _, ok := baseinatorState[c.RoomIdentifier()]; ok {
+		c.SendMessage("error", c.I18n("Sorry, someone else is already running the baseinator here. Please wait until they finish."))
+		baseinatorStateMutex.RUnlock()
+		return
+	}
+	baseinatorStateMutex.RUnlock()
+
+	baseinatorStateMutex.Lock()
+	baseinatorState[c.RoomIdentifier()] = struct{}{}
+	baseinatorStateMutex.Unlock()
+
+	defer func() {
+		baseinatorStateMutex.Lock()
+		delete(baseinatorState, c.RoomIdentifier())
+		baseinatorStateMutex.Unlock()
+	}()
+
 	c.SendMessage("introduction", c.I18n("welcome to the baseinator, the tool that will help you figure out the best base for your needs!"))
 	c.SendMessage("largest", c.I18n("before we begin, let's set some boundaries. what is the largest base you'd be fine with using?"))
 	goto postMaximum
