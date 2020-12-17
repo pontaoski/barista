@@ -89,10 +89,7 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 }
 
 func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author.ID == s.State.User.ID {
-		return
-	}
-	if m.Message.WebhookID != "" {
+	if m.Author != nil && m.Author.ID == s.State.User.ID {
 		return
 	}
 	DiscordMessage(s, m.Message, m)
@@ -103,7 +100,7 @@ func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
 	if err != nil {
 		return
 	}
-	if msg.Author.ID == s.State.User.ID {
+	if m.Author != nil && msg.Author.ID == s.State.User.ID {
 		return
 	}
 	DiscordMessage(s, m.Message, m)
