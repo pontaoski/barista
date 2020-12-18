@@ -63,8 +63,8 @@ func (b *Backend) Start(cancel chan struct{}) error {
 	for {
 		select {
 		case ev := <-channel:
-			switch a := ev.Event.(type) {
-			case *corev1.GuildEvent_SentMessage:
+			switch a := ev.Event.Event.(type) {
+			case *corev1.Event_SentMessage:
 				b.Message(&client.Client, a.SentMessage.Message)
 			}
 		case <-cancel:

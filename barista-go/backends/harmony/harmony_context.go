@@ -66,7 +66,7 @@ func (c *Context) Backend() commandlib.Backend {
 }
 
 func (c *Context) CommunityIdentifier() string {
-	return strconv.FormatUint(c.tm.Location.GuildId, 10)
+	return strconv.FormatUint(c.tm.GuildId, 10)
 }
 
 func (c *Context) GenerateLink(text string, URL string) string {
@@ -85,8 +85,8 @@ func waitForMessage(c *client.Client) chan *corev1.Message {
 	channel := make(chan *corev1.Message)
 	var f func()
 	f = func() {
-		c.HandleOnce(func(ev *corev1.GuildEvent) {
-			if val, ok := ev.Event.(*corev1.GuildEvent_SentMessage); ok {
+		c.HandleOnce(func(ev *corev1.Event) {
+			if val, ok := ev.Event.(*corev1.Event_SentMessage); ok {
 				channel <- val.SentMessage.Message
 			} else {
 				f()
@@ -103,7 +103,7 @@ func (c *Context) NextResponse() chan string {
 		for {
 			select {
 			case usermsg := <-waitForMessage(c.c):
-				if usermsg.AuthorId == c.tm.AuthorId && usermsg.Location.ChannelId == usermsg.Location.ChannelId {
+				if usermsg.AuthorId == c.tm.AuthorId && usermsg.ChannelId == usermsg.ChannelId {
 					out <- usermsg.Content
 					return
 				}
@@ -114,7 +114,7 @@ func (c *Context) NextResponse() chan string {
 }
 
 func (c *Context) RoomIdentifier() string {
-	return strconv.FormatUint(c.tm.Location.ChannelId, 10)
+	return strconv.FormatUint(c.tm.ChannelId, 10)
 }
 
 func convert(embed commandlib.Embed) *corev1.Embed {
@@ -149,15 +149,17 @@ func (c *Context) SendMessage(id string, content interface{}) {
 	switch content := content.(type) {
 	case string:
 		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
-			Location: c.tm.Location,
-			Content:  content,
+			GuildId:   c.tm.GuildId,
+			ChannelId: c.tm.ChannelId,
+			Content:   content,
 		})
 		if err != nil {
 			log.Error("%+v", err)
 		}
 	case commandlib.Embed:
 		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
-			Location: c.tm.Location,
+			GuildId:   c.tm.GuildId,
+			ChannelId: c.tm.ChannelId,
 			Embeds: []*corev1.Embed{
 				convert(content),
 			},
@@ -167,7 +169,8 @@ func (c *Context) SendMessage(id string, content interface{}) {
 		}
 	case commandlib.EmbedList:
 		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
-			Location: c.tm.Location,
+			GuildId:   c.tm.GuildId,
+			ChannelId: c.tm.ChannelId,
 			Embeds: func() (r []*corev1.Embed) {
 				for _, embed := range content.Embeds {
 					r = append(r, convert(embed))
@@ -186,7 +189,8 @@ func (c *Context) SendMessage(id string, content interface{}) {
 
 func (c *Context) SendTags(id string, tags []commandlib.Embed) {
 	c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
-		Location: c.tm.Location,
+		GuildId:   c.tm.GuildId,
+		ChannelId: c.tm.ChannelId,
 		Embeds: func() (r []*corev1.Embed) {
 			for _, embed := range tags {
 				r = append(r, convert(embed))

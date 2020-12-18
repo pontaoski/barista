@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc"
 )
 
-type GuildEvent struct {
-	*corev1.GuildEvent
+type Event struct {
+	*corev1.Event
 	Client *Client
 }
 
@@ -21,7 +21,8 @@ type MainClient struct {
 	Client
 	homeserver string
 	subclients map[string]*Client
-	streams    map[chan *corev1.GuildEvent]*Client
+	streams    map[chan *corev1.Event]*Client
+	listening  map[*Client]corev1.CoreService_StreamEventsClient
 }
 
 func NewClient(homeserver, email, password string) (client *MainClient, err error) {
@@ -31,7 +32,7 @@ func NewClient(homeserver, email, password string) (client *MainClient, err erro
 
 	client.homeserver = homeserver
 	client.subclients = make(map[string]*Client)
-	client.streams = make(map[chan *corev1.GuildEvent]*Client)
+	client.streams = make(map[chan *corev1.Event]*Client)
 
 	client.conn, err = grpc.Dial(homeserver, grpc.WithInsecure())
 	if err != nil {
@@ -110,7 +111,7 @@ func (m *MainClient) ClientFor(homeserver string) (*Client, error) {
 	return client, nil
 }
 
-func (m *MainClient) Start() (chan GuildEvent, error) {
+func (m *MainClient) Start() (chan Event, error) {
 	list, err := m.CoreKit.GetGuildList(m.Context(), &corev1.GetGuildListRequest{})
 	if err != nil {
 		err = errors.Wrap(err, "Start: failed to get guild list")
@@ -126,20 +127,48 @@ func (m *MainClient) Start() (chan GuildEvent, error) {
 			return nil, err
 		}
 
-		stream, err := client.GuildEvents(guild.GuildId)
-		if err != nil {
-			err = errors.Wrap(err, "Start: failed to get guild events stream")
-			return nil, err
+		stream, ok := m.listening[client]
+		if !ok {
+			var err error
+
+			stream, err = client.CoreKit.StreamEvents(client.Context())
+			if err != nil {
+				err = errors.Wrap(err, "Start: failed to get guild events stream")
+				return nil, err
+			}
+
+			channel := make(chan *corev1.Event)
+
+			cases = append(cases, reflect.SelectCase{
+				Dir:  reflect.SelectRecv,
+				Chan: reflect.ValueOf(channel),
+			})
+
+			go func() {
+				for {
+					msg, err := stream.Recv()
+					if err != nil {
+						panic(err)
+					}
+
+					channel <- msg
+				}
+			}()
+
+			m.listening[client] = stream
+			m.streams[channel] = client
 		}
 
-		m.streams[stream] = client
-		cases = append(cases, reflect.SelectCase{
-			Dir:  reflect.SelectRecv,
-			Chan: reflect.ValueOf(stream),
+		stream.Send(&corev1.StreamEventsRequest{
+			Request: &corev1.StreamEventsRequest_SubscribeToGuild_{
+				SubscribeToGuild: &corev1.StreamEventsRequest_SubscribeToGuild{
+					GuildId: guild.GuildId,
+				},
+			},
 		})
 	}
 
-	channel := make(chan GuildEvent)
+	channel := make(chan Event)
 	go func() {
 		for {
 			i, v, ok := reflect.Select(cases)
@@ -147,11 +176,11 @@ func (m *MainClient) Start() (chan GuildEvent, error) {
 				cases = append(cases[:i], cases[i+1:]...)
 			}
 
-			val := v.Interface().(*corev1.GuildEvent)
+			val := v.Interface().(*corev1.Event)
 
-			channel <- GuildEvent{
-				GuildEvent: val,
-				Client:     m.streams[cases[i].Chan.Interface().(chan *corev1.GuildEvent)],
+			channel <- Event{
+				Event:  val,
+				Client: m.streams[cases[i].Chan.Interface().(chan *corev1.Event)],
 			}
 		}
 	}()
