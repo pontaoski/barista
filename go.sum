@@ -369,6 +369,8 @@ github.com/harmony-development/shibshib v0.0.0-20210305030551-6488d8a03a8b h1:XB
 github.com/harmony-development/shibshib v0.0.0-20210305030551-6488d8a03a8b/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
 github.com/harmony-development/shibshib v0.0.0-20210305030906-9d619f568ab0 h1:YAO75sWUsPbZ++ODVcW31cDwnIUV4LiNOjAQUzLyfKs=
 github.com/harmony-development/shibshib v0.0.0-20210305030906-9d619f568ab0/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
+github.com/harmony-development/shibshib v0.0.0-20210305031837-ebe850523cde h1:kt2NlO/DlawK3ERItSK1qhWOz5PunWZ9CH0PRm0B5wg=
+github.com/harmony-development/shibshib v0.0.0-20210305031837-ebe850523cde/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=
 github.com/hashicorp/consul/api v1.3.0/go.mod h1:MmDNSzIMUjNpY/mQ398R4bk2FnqQLoPndWW5VkKPlCE=
 github.com/hashicorp/consul/sdk v0.1.1/go.mod h1:VKf9jXwCTEY1QZP2MOLRhb5i/I/ssyNV1vwHyQBF0x8=
