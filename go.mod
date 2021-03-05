@@ -21,7 +21,7 @@ require (
 	github.com/golang/protobuf v1.4.3
 	github.com/gomarkdown/markdown v0.0.0-20201113031856-722100d81a8e
 	github.com/google/uuid v1.2.0
-	github.com/harmony-development/shibshib v0.0.0-20210305023710-a09eb0ec2e82
+	github.com/harmony-development/shibshib v0.0.0-20210305030906-9d619f568ab0
 	github.com/hashicorp/go-immutable-radix v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jinzhu/gorm v1.9.12

@@ -365,6 +365,10 @@ github.com/harmony-development/shibshib v0.0.0-20210305023045-e58f31600958 h1:oD
 github.com/harmony-development/shibshib v0.0.0-20210305023045-e58f31600958/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
 github.com/harmony-development/shibshib v0.0.0-20210305023710-a09eb0ec2e82 h1:x0E8tUJHtny0QjD+ccALdmWDTmFBuvB7H8+Idp53pPY=
 github.com/harmony-development/shibshib v0.0.0-20210305023710-a09eb0ec2e82/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
+github.com/harmony-development/shibshib v0.0.0-20210305030551-6488d8a03a8b h1:XB/dzZmb5EbZNV58ztzW44R95b2Bu/URNTRlqSfmpT0=
+github.com/harmony-development/shibshib v0.0.0-20210305030551-6488d8a03a8b/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
+github.com/harmony-development/shibshib v0.0.0-20210305030906-9d619f568ab0 h1:YAO75sWUsPbZ++ODVcW31cDwnIUV4LiNOjAQUzLyfKs=
+github.com/harmony-development/shibshib v0.0.0-20210305030906-9d619f568ab0/go.mod h1:oU4noSUo141/iyvbJdqgIRTFx/njAxt8r/2C+3FGSug=
 github.com/hashicorp/consul/api v1.1.0/go.mod h1:VmuI/Lkw1nC05EYQWNKwWGbkg+FbDBtguAZLlVdkD9Q=
 github.com/hashicorp/consul/api v1.3.0/go.mod h1:MmDNSzIMUjNpY/mQ398R4bk2FnqQLoPndWW5VkKPlCE=
 github.com/hashicorp/consul/sdk v0.1.1/go.mod h1:VKf9jXwCTEY1QZP2MOLRhb5i/I/ssyNV1vwHyQBF0x8=

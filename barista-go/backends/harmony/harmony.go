@@ -47,18 +47,22 @@ func (b *Backend) IsBotOwner(c commandlib.Context) bool {
 
 // Start starts the Harmony backend
 func (b *Backend) Start(cancel chan struct{}) error {
-	client, err := shibshib.NewClient(b.homeserver, b.token, b.userID)
+	client, err := shibshib.NewFederatedClient(b.homeserver, b.token, b.userID)
 	if err != nil {
 		return err
 	}
 
 	log.Info("%s session started", b.Name())
 
+	evs, err := client.Start()
+	if err != nil {
+		return err
+	}
+
 	for {
 		select {
-		case ev := <-client.EventsStream():
-			println(ev)
-			b.Message(client, ev)
+		case ev := <-evs:
+			b.Message(ev.Client, ev.Event)
 		case <-cancel:
 			return nil
 		}
