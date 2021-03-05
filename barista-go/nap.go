@@ -113,13 +113,17 @@ type Word struct {
 	Tag            string
 }
 
-func HiddenNAP(c commandlib.Context) {
-	if !c.Backend().IsBotOwner(c) {
-		c.SendMessage("primary", commandlib.ErrorEmbed("You are not the bot owner."))
+func init() {
+	err := lanpan()
+	if err != nil {
+		panic(err)
 	}
+}
+
+func lanpan() error {
 	resp, err := sheet.Spreadsheets.Values.Get(sheetID, "nimi (inli)!A1:F1000").Do()
 	if err != nil {
-		c.SendMessage("primary", commandlib.ErrorEmbed("There was an error: "+err.Error()))
+		return err
 	}
 
 	words = []Word{
@@ -153,6 +157,19 @@ func HiddenNAP(c commandlib.Context) {
 			word.Etymology = row[4].(string)
 		}
 		words = append(words, word)
+	}
+
+	return nil
+}
+
+func HiddenNAP(c commandlib.Context) {
+	if !c.Backend().IsBotOwner(c) {
+		c.SendMessage("primary", commandlib.ErrorEmbed("You are not the bot owner."))
+	}
+
+	err := lanpan()
+	if err != nil {
+		c.SendMessage("primary", commandlib.ErrorEmbed("There was an error: "+err.Error()))
 	}
 
 	c.SendMessage("primary", "mi lanpan e nimi ale pona nanpa tu!")

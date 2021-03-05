@@ -2,7 +2,7 @@ package barista
 
 import (
 	_ "github.com/appadeia/barista/barista-go/backends/discord"
-	_ "github.com/appadeia/barista/barista-go/backends/harmony"
+	// _ "github.com/appadeia/barista/barista-go/backends/harmony"
 	_ "github.com/appadeia/barista/barista-go/backends/irc"
 	_ "github.com/appadeia/barista/barista-go/backends/matrix"
 	_ "github.com/appadeia/barista/barista-go/backends/telegram"
