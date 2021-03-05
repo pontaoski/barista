@@ -1,3 +1,0 @@
-[submodule "barista-go/backends/harmony/protocol"]
-	path = barista-go/backends/harmony/protocol
-	url = https://github.com/harmony-development/protocol.git

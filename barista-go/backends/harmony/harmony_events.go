@@ -1,14 +1,14 @@
 package harmony
 
 import (
-	"github.com/appadeia/barista/barista-go/backends/harmony/client"
-	corev1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/core"
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
+	"github.com/harmony-development/shibshib"
+	types "github.com/harmony-development/shibshib/gen/harmonytypes/v1"
 )
 
 // DeleteMessage handles a deleted message
-func (b *Backend) DeleteMessage(c *client.Client, m *corev1.Message) {
+func (b *Backend) DeleteMessage(c *shibshib.Client, m *types.Message) {
 	if val, ok := commandCache.Get(m.MessageId); ok {
 		tmp := val.(*Context)
 		tmp.ContextMixin.ContextType = commandlib.DeleteCommand
@@ -22,7 +22,7 @@ func (b *Backend) DeleteMessage(c *client.Client, m *corev1.Message) {
 }
 
 // Message handles a created or edited message
-func (b *Backend) Message(c *client.Client, m *corev1.Message) {
+func (b *Backend) Message(c *shibshib.Client, m *types.Message) {
 	strip := m.Content
 	if val, ok := commandCache.Get(m.MessageId); ok {
 		if cmd, contextMixin, ok := commandlib.LexCommand(strip); ok {

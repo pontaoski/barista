@@ -28,8 +28,8 @@ type Config struct {
 		} `toml:"irc"`
 		Harmony struct {
 			Homeserver string `toml:"homeserver"`
-			Email      string `toml:"email"`
-			Password   string `toml:"password"`
+			UserID     uint64 `toml:"userID"`
+			Token      string `toml:"token"`
 		} `toml:"harmony"`
 	} `toml:"services"`
 	Owner struct {

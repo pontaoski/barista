@@ -5,22 +5,22 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/appadeia/barista/barista-go/backends/harmony/client"
-	corev1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/core"
-	profilev1 "github.com/appadeia/barista/barista-go/backends/harmony/gen/profile"
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
+	"github.com/harmony-development/shibshib"
+	chatv1 "github.com/harmony-development/shibshib/gen/chat/v1"
+	types "github.com/harmony-development/shibshib/gen/harmonytypes/v1"
 )
 
 // Context is a context holding information about a Harmony command
 type Context struct {
 	commandlib.ContextMixin
 	b  *Backend
-	c  *client.Client
-	tm *corev1.Message
+	c  *shibshib.Client
+	tm *types.Message
 }
 
-func buildContext(ctx commandlib.ContextMixin, b *Backend, c *client.Client, m *corev1.Message) Context {
+func buildContext(ctx commandlib.ContextMixin, b *Backend, c *shibshib.Client, m *types.Message) Context {
 	dc := Context{
 		ContextMixin: ctx,
 	}
@@ -35,14 +35,7 @@ func (c *Context) AuthorIdentifier() string {
 }
 
 func (c *Context) AuthorName() string {
-	resp, err := c.c.Profilekit.GetUser(c.c.Context(), &profilev1.GetUserRequest{
-		UserId: c.tm.AuthorId,
-	})
-	if err != nil {
-		return c.AuthorIdentifier()
-	}
-
-	return resp.UserName
+	return c.c.UsernameFor(c.tm)
 }
 
 func (c *Context) AwaitResponse(tenpo time.Duration) (content string, ok bool) {
@@ -81,16 +74,12 @@ func (c *Context) I18nc(context, message string) string {
 	return c.I18n(message)
 }
 
-func waitForMessage(c *client.Client) chan *corev1.Message {
-	channel := make(chan *corev1.Message)
+func waitForMessage(c *shibshib.Client) chan *types.Message {
+	channel := make(chan *types.Message)
 	var f func()
 	f = func() {
-		c.HandleOnce(func(ev *corev1.Event) {
-			if val, ok := ev.Event.(*corev1.Event_SentMessage); ok {
-				channel <- val.SentMessage.Message
-			} else {
-				f()
-			}
+		c.HandleOnce(func(ev *types.Message) {
+			channel <- ev
 		})
 	}
 	f()
@@ -117,27 +106,27 @@ func (c *Context) RoomIdentifier() string {
 	return strconv.FormatUint(c.tm.ChannelId, 10)
 }
 
-func convert(embed commandlib.Embed) *corev1.Embed {
-	return &corev1.Embed{
+func convert(embed commandlib.Embed) *types.Embed {
+	return &types.Embed{
 		Body:  embed.Body,
 		Color: int64(embed.Colour),
 		Title: embed.Title.Text,
-		Header: &corev1.EmbedHeading{
+		Header: &types.EmbedHeading{
 			Text: embed.Header.Text,
 			Url:  embed.Header.URL,
 			Icon: embed.Header.Icon,
 		},
-		Footer: &corev1.EmbedHeading{
+		Footer: &types.EmbedHeading{
 			Text: embed.Footer.Text,
 			Url:  embed.Footer.URL,
 			Icon: embed.Footer.Icon,
 		},
-		Fields: func() (f []*corev1.EmbedField) {
+		Fields: func() (f []*types.EmbedField) {
 			for _, field := range embed.Fields {
-				f = append(f, &corev1.EmbedField{
+				f = append(f, &types.EmbedField{
 					Title:        field.Title,
 					Body:         field.Body,
-					Presentation: corev1.FieldPresentation_Data,
+					Presentation: types.FieldPresentation_Data,
 				})
 			}
 			return
@@ -148,7 +137,7 @@ func convert(embed commandlib.Embed) *corev1.Embed {
 func (c *Context) SendMessage(id string, content interface{}) {
 	switch content := content.(type) {
 	case string:
-		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
+		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 			GuildId:   c.tm.GuildId,
 			ChannelId: c.tm.ChannelId,
 			Content:   content,
@@ -157,10 +146,10 @@ func (c *Context) SendMessage(id string, content interface{}) {
 			log.Error("%+v", err)
 		}
 	case commandlib.Embed:
-		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
+		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 			GuildId:   c.tm.GuildId,
 			ChannelId: c.tm.ChannelId,
-			Embeds: []*corev1.Embed{
+			Embeds: []*types.Embed{
 				convert(content),
 			},
 		})
@@ -168,10 +157,10 @@ func (c *Context) SendMessage(id string, content interface{}) {
 			log.Error("%+v", err)
 		}
 	case commandlib.EmbedList:
-		_, err := c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
+		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 			GuildId:   c.tm.GuildId,
 			ChannelId: c.tm.ChannelId,
-			Embeds: func() (r []*corev1.Embed) {
+			Embeds: func() (r []*types.Embed) {
 				for _, embed := range content.Embeds {
 					r = append(r, convert(embed))
 				}
@@ -188,10 +177,10 @@ func (c *Context) SendMessage(id string, content interface{}) {
 }
 
 func (c *Context) SendTags(id string, tags []commandlib.Embed) {
-	c.c.CoreKit.SendMessage(c.c.Context(), &corev1.SendMessageRequest{
+	c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 		GuildId:   c.tm.GuildId,
 		ChannelId: c.tm.ChannelId,
-		Embeds: func() (r []*corev1.Embed) {
+		Embeds: func() (r []*types.Embed) {
 			for _, embed := range tags {
 				r = append(r, convert(embed))
 			}
