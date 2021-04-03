@@ -15,7 +15,7 @@ func init() {
 		Name:    "toki pona vocabulary lookup",
 		Usage:   "Look up words in pu",
 		ID:      "pu-lookup",
-		Matches: []string{"ilo o pu"},
+		Matches: []string{"ilo o pu", ",pu"},
 		Flags: []commandlib.Flag{
 			commandlib.BoolFlag{
 				LongFlag: "browse",
@@ -27,14 +27,14 @@ func init() {
 		Name:    "toki pona quiz",
 		Usage:   "Quiz yourself on toki pona (pu)",
 		ID:      "tpo-quiz",
-		Matches: []string{"o quiz pu"},
+		Matches: []string{"o quiz pu", ",qpu"},
 		Action:  QuizPu,
 	})
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:    "toki pona quiz",
 		Usage:   "Quiz yourself on toki pona (nimi ale pona)",
 		ID:      "tpo-quiz",
-		Matches: []string{"o quiz nap"},
+		Matches: []string{"o quiz nap", ",qnap"},
 		Action:  QuizNap,
 	})
 }
