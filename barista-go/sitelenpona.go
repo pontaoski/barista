@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
+	lru "github.com/hashicorp/golang-lru"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -25,14 +26,27 @@ func randSeq(n int) string {
 	return string(b)
 }
 
+var spCache *lru.ARCCache
+
+func init() {
+	var err error
+	spCache, err = lru.NewARC(1 << 16)
+	if err != nil {
+		panic(err)
+	}
+}
+
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:     I18n("sitelen pona"),
 		Usage:    I18n("Write with sitelen pona."),
-		Matches:  []string{"ilo o sitelen pona", ",sp"},
+		Matches:  []string{"ilo o sitelen pona", ",os"},
 		Examples: `ilo o sitelen pona mu`,
 		ID:       "sitelenpona",
 		Action: func(c commandlib.Context) {
+			if val, ok := spCache.Get(c.Content()); ok {
+				c.SendMessage("main", val.(string))
+			}
 			filename := "/tmp/" + randSeq(10) + ".png"
 			cmd := exec.Command("pango-view", "--no-display", "-t", c.Content(), "--font", "linja sike 50", "-o", filename, "--align=center", "--hinting=full", "--margin=10px")
 
@@ -57,6 +71,7 @@ func init() {
 				return
 			}
 
+			spCache.Add(c.Content(), url)
 			c.SendMessage("main", url)
 		},
 	})
