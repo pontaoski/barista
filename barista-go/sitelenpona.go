@@ -44,11 +44,11 @@ func init() {
 		Examples: `ilo o sitelen pona mu`,
 		ID:       "sitelenpona",
 		Action: func(c commandlib.Context) {
-			if val, ok := spCache.Get(c.Content()); ok {
+			if val, ok := spCache.Get(c.RawContent()); ok {
 				c.SendMessage("main", val.(string))
 			}
 			filename := "/tmp/" + randSeq(10) + ".png"
-			cmd := exec.Command("pango-view", "--no-display", "-t", c.Content(), "--font", "linja sike 50", "-o", filename, "--align=center", "--hinting=full", "--margin=10px")
+			cmd := exec.Command("pango-view", "--no-display", "-t", c.RawContent(), "--font", "linja sike 50", "-o", filename, "--align=center", "--hinting=full", "--margin=10px")
 
 			var b bytes.Buffer
 			cmd.Stdout = &b
@@ -71,7 +71,7 @@ func init() {
 				return
 			}
 
-			spCache.Add(c.Content(), url)
+			spCache.Add(c.RawContent(), url)
 			c.SendMessage("main", url)
 		},
 	})
