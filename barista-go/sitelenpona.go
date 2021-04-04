@@ -49,6 +49,7 @@ func init() {
 			}
 			filename := "/tmp/" + randSeq(10) + ".png"
 			cmd := exec.Command("pango-view", "--no-display", "-t", c.RawContent(), "--font", "linja sike 50", "-o", filename, "--align=center", "--hinting=full", "--margin=10px")
+			fmt.Printf("%+v", cmd.Args)
 
 			var b bytes.Buffer
 			cmd.Stdout = &b

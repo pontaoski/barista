@@ -1,12 +1,9 @@
 package discord
 
 import (
-	"strings"
-
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
 	"github.com/bwmarrin/discordgo"
-	stripmd "github.com/writeas/go-strip-markdown"
 )
 
 // DeleteDiscordMessage handles a deleted Discord message
@@ -33,7 +30,7 @@ func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 
 // DiscordMessage handles a created or edited Discord message
 func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) {
-	strip := strings.TrimSuffix(stripmd.Strip(m.Content), "`")
+	strip := m.Content
 	if val, ok := commandCache.Get(m.ID); ok {
 		if cmd, contextMixin, ok := commandlib.LexCommand(strip); ok {
 			contextMixin.ContextType = commandlib.EditCommand

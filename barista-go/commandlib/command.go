@@ -6,6 +6,7 @@ import (
 	"github.com/kballard/go-shellquote"
 
 	iradix "github.com/hashicorp/go-immutable-radix"
+	stripmd "github.com/writeas/go-strip-markdown"
 )
 
 var commandRadix = iradix.New()
@@ -54,7 +55,7 @@ func LexCommand(content string) (Command, ContextMixin, bool) {
 	ctx.Data = make(map[string]interface{})
 	ctx.FlagSet = *cmd.Flags.GetFlagSet()
 	ctx.RawData = content
-	data, err := shellquote.Split(content)
+	data, err := shellquote.Split(strings.TrimSuffix(stripmd.Strip(content), "`"))
 	if err != nil {
 		return Command{}, ContextMixin{}, false
 	}
