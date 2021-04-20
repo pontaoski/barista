@@ -141,6 +141,27 @@ func lanpan() error {
 			SourceLanguage: "Hebrew",
 			Etymology:      "késhet 'rainbow' (also name of Jewish LGBT org)",
 		},
+		{
+			Names:          []string{"tajan"},
+			Category:       "post-pu",
+			Definition:     "triangular, spikey, triplet",
+			SourceLanguage: "English",
+			Etymology:      "kinda sounds like triangle",
+		},
+		{
+			Names:          []string{"lipamanka"},
+			Category:       "post-pu",
+			Definition:     "jewish, jan olin pi jan opasan",
+			SourceLanguage: "jew",
+			Etymology:      "lipamanka is jew",
+		},
+		{
+			Names:          []string{"opasan"},
+			Category:       "post-pu",
+			Definition:     "jan olin pi jan lipamanka",
+			SourceLanguage: "pona",
+			Etymology:      "opasan is pona",
+		},
 	}
 
 	for _, row := range resp.Values {
