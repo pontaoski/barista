@@ -37,12 +37,16 @@ func init() {
 			"ilo o manka",
 		},
 		Action: func(c commandlib.Context) {
+			ip, port := "51.161.52.187", 25614
+			if strings.Contains(c.Content(), "ante") {
+				ip, port = "5.9.30.86", 25565
+			}
 			c.SendMessage("primary", commandlib.Embed{
 				Title: commandlib.EmbedHeader{
 					Text: "mi pali...",
 				},
 			})
-			resp, _, err := bot.PingAndList("51.161.52.187", 25614)
+			resp, _, err := bot.PingAndList(ip, port)
 			if err != nil {
 				c.SendMessage("primary", commandlib.ErrorEmbed("There was an error getting server info: "+err.Error()))
 				return
@@ -57,7 +61,7 @@ func init() {
 
 			c.SendMessage("primary", commandlib.Embed{
 				Title: commandlib.EmbedHeader{
-					Text: fmt.Sprintf("jan %d li musi lon 51.161.52.187:25614", s.Players.Online),
+					Text: fmt.Sprintf("jan %d li musi lon %s:%d", s.Players.Online, ip, port),
 				},
 				Fields: []commandlib.EmbedField{
 					{
