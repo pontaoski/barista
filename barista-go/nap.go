@@ -170,12 +170,7 @@ func lanpan() error {
 			Category:       row[1].(string),
 			Definition:     row[2].(string),
 			SourceLanguage: row[3].(string),
-		}
-		switch {
-		case len(row) >= 6:
-			word.Etymology = row[5].(string)
-		case len(row) >= 5:
-			word.Etymology = row[4].(string)
+			Etymology:	row[4].(string),
 		}
 		words = append(words, word)
 	}
