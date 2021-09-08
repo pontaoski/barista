@@ -50,6 +50,8 @@ forLoop:
 		select {
 		case update := <-updates:
 			if update.CallbackQuery != nil && update.CallbackQuery.Message != nil {
+                                // to avoid the spinny circle
+                                bot.AnswerCallbackQuery()
 				TelegramPaginatorHandler(update.CallbackQuery.Message.MessageID, update.CallbackQuery.Data)
 			}
 			if update.Message != nil {
