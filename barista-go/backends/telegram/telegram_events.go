@@ -28,6 +28,10 @@ func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
 		tg.bot = b
 		tg.tm = m
 		go log.CanPanic(func() {
+			b.Send(tgbotapi.NewChatAction(
+				m.Chat.ID,
+				"typing",
+			))
 			cmd.Action(&tg)
 		})
 	} else {
@@ -37,6 +41,10 @@ func TelegramMessage(b *tgbotapi.BotAPI, m *tgbotapi.Message) {
 			tg.bot = b
 			tg.tm = m
 			go log.CanPanic(func() {
+				b.Send(tgbotapi.NewChatAction(
+					m.Chat.ID,
+					"typing",
+				))
 				tc.Tag.Action(&tg)
 			})
 		}

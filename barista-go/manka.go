@@ -37,7 +37,7 @@ func init() {
 			"ilo o manka",
 		},
 		Action: func(c commandlib.Context) {
-			ip, port := "51.161.52.187", 25614
+			ip, port := "musi.musimanka.com", 25565
 			if strings.Contains(c.Content(), "ante") {
 				ip, port = "5.9.30.86", 25565
 			}

@@ -87,6 +87,18 @@ var Distros []Distro = []Distro{
 		matches:      []string{"rpmfusion", "rf", "rpmf"},
 		colour:       0x0855A7,
 	},
+	{
+		displayName:  "Arch",
+		queryKitName: "arch",
+		matches:      []string{"arch"},
+		colour:       0x1793D1,
+	},
+	{
+		displayName:  "Literal Garbage",
+		queryKitName: "manjaro",
+		matches:      []string{"manjaro", "garbage", "greed", "lust", "gluttony", "wrath", "envy"},
+		colour:       0x87ab08,
+	},
 }
 
 func distroList() string {

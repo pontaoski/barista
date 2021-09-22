@@ -11,7 +11,7 @@ require (
 	github.com/alecthomas/repr v0.0.0-20201120212035-bb82daffcca2
 	github.com/antchfx/xmlquery v1.2.1
 	github.com/antchfx/xpath v1.1.2 // indirect
-	github.com/bwmarrin/discordgo v0.20.2
+	github.com/bwmarrin/discordgo v0.23.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/envoyproxy/protoc-gen-validate v0.1.0
@@ -37,7 +37,9 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 	github.com/xanzy/go-gitlab v0.39.0
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	google.golang.org/api v0.33.0
 	google.golang.org/grpc v1.33.2
 	google.golang.org/protobuf v1.25.1-0.20200805231151-a709e31e5d12

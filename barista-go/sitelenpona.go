@@ -3,17 +3,11 @@ package barista
 import (
 	"bytes"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"math/rand"
-	"mime/multipart"
-	"net/http"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	lru "github.com/hashicorp/golang-lru"
 )
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -26,16 +20,6 @@ func randSeq(n int) string {
 	return string(b)
 }
 
-var spCache *lru.ARCCache
-
-func init() {
-	var err error
-	spCache, err = lru.NewARC(1 << 16)
-	if err != nil {
-		panic(err)
-	}
-}
-
 func init() {
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:     I18n("sitelen pona"),
@@ -44,9 +28,6 @@ func init() {
 		Examples: `ilo o sitelen pona mu`,
 		ID:       "sitelenpona",
 		Action: func(c commandlib.Context) {
-			if val, ok := spCache.Get(c.RawContent()); ok {
-				c.SendMessage("main", val.(string))
-			}
 			filename := "/tmp/" + randSeq(10) + ".png"
 			cmd := exec.Command("pango-view", "--no-display", "-t", c.RawContent(), "--font", "linja sike 50", "-o", filename, "--align=center", "--hinting=full", "--margin=10px")
 			fmt.Printf("%+v", cmd.Args)
@@ -66,69 +47,11 @@ func init() {
 				return
 			}
 
-			url, err := uploadFile(mu)
-			if err != nil {
-				c.SendMessage("main", commandlib.ErrorEmbed("ilo li pakala a! \n"+err.Error()))
-				return
-			}
-
-			spCache.Add(c.RawContent(), url)
-			c.SendMessage("main", url)
+			c.SendMessage("main", commandlib.File{
+				Name:     "image.png",
+				Mimetype: "image/png",
+				Reader:   mu,
+			})
 		},
 	})
-}
-
-func uploadFile(file *os.File) (string, error) {
-	const (
-		url = "https://0x0.st"
-	)
-	var (
-		err    error
-		client http.Client
-		b      bytes.Buffer
-	)
-
-	values := map[string]io.Reader{
-		"file": file,
-	}
-
-	writer := multipart.NewWriter(&b)
-	for key, r := range values {
-		var fw io.Writer
-		if x, ok := r.(io.Closer); ok {
-			defer x.Close()
-		}
-		// Add an image file
-		if x, ok := r.(*os.File); ok {
-			if fw, err = writer.CreateFormFile(key, x.Name()); err != nil {
-				return "", err
-			}
-		}
-		if _, err = io.Copy(fw, r); err != nil {
-			return "", err
-		}
-
-	}
-	writer.Close()
-
-	req, err := http.NewRequest("POST", url, &b)
-	if err != nil {
-		return "", err
-	}
-
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusOK {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		bodyString := string(bodyBytes)
-		return strings.Replace(bodyString, "\n", "", -1), nil
-	}
-	return "", fmt.Errorf("bad status: %s", resp.Status)
 }

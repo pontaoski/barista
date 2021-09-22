@@ -57,7 +57,7 @@ func (d *DiscordContext) WrapCodeBlock(code string) string {
 
 func (d *DiscordContext) SendMessage(id string, content interface{}) {
 	if val, ok := d.pm[id]; ok {
-		switch content.(type) {
+		switch a := content.(type) {
 		case string:
 			d.pm[id], _ = d.s.ChannelMessageEdit(val.ChannelID, val.ID, content.(string))
 			goto clean
@@ -69,9 +69,21 @@ func (d *DiscordContext) SendMessage(id string, content interface{}) {
 		case commandlib.UnionEmbed:
 			d.SendMessage(id, content.(commandlib.UnionEmbed).EmbedList)
 			return
+		case commandlib.File:
+			d.s.ChannelMessageDelete(val.ChannelID, d.pm[id].ID)
+			d.pm[id], _ = d.s.ChannelMessageSendComplex(val.ChannelID, &discordgo.MessageSend{
+				Files: []*discordgo.File{
+					{
+						Name:        a.Name,
+						ContentType: a.Mimetype,
+						Reader:      a.Reader,
+					},
+				},
+			})
+			a.Reader.Close()
 		}
 	} else {
-		switch content.(type) {
+		switch a := content.(type) {
 		case string:
 			d.pm[id], _ = d.s.ChannelMessageSend(d.tm.ChannelID, content.(string))
 		case commandlib.Embed:
@@ -81,6 +93,17 @@ func (d *DiscordContext) SendMessage(id string, content interface{}) {
 		case commandlib.UnionEmbed:
 			d.SendMessage(id, content.(commandlib.UnionEmbed).EmbedList)
 			return
+		case commandlib.File:
+			d.pm[id], _ = d.s.ChannelMessageSendComplex(d.tm.ChannelID, &discordgo.MessageSend{
+				Files: []*discordgo.File{
+					{
+						Name:        a.Name,
+						ContentType: a.Mimetype,
+						Reader:      a.Reader,
+					},
+				},
+			})
+			a.Reader.Close()
 		}
 	}
 	return

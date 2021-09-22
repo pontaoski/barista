@@ -139,7 +139,7 @@ func (m MatrixContext) I18nc(context, message string) string {
 }
 
 func (m MatrixContext) SendMessage(_ string, content interface{}) {
-	switch content.(type) {
+	switch a := content.(type) {
 	case string:
 		sendMessage(m.client, m.triggerEvent.RoomID, content.(string))
 	case commandlib.Embed:
@@ -157,6 +157,12 @@ func (m MatrixContext) SendMessage(_ string, content interface{}) {
 	case commandlib.UnionEmbed:
 		m.SendMessage("", content.(commandlib.UnionEmbed).EmbedTable)
 		return
+	case commandlib.File:
+		resp, err := m.client.UploadToContentRepo(a.Reader, a.Mimetype, 0)
+		if err != nil {
+			sendMessage(m.client, m.triggerEvent.RoomID, "failed to upload file")
+		}
+		m.client.SendImage(m.triggerEvent.RoomID, "", resp.ContentURI)
 	}
 }
 

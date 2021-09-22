@@ -148,20 +148,6 @@ func lanpan() error {
 			SourceLanguage: "English",
 			Etymology:      "kinda sounds like triangle",
 		},
-		{
-			Names:          []string{"lipamanka"},
-			Category:       "post-pu",
-			Definition:     "jewish, jan olin pi jan opasan",
-			SourceLanguage: "jew",
-			Etymology:      "lipamanka is jew",
-		},
-		{
-			Names:          []string{"opasan"},
-			Category:       "post-pu",
-			Definition:     "jan olin pi jan lipamanka",
-			SourceLanguage: "pona",
-			Etymology:      "opasan is pona",
-		},
 	}
 
 	for _, row := range resp.Values {
@@ -170,7 +156,7 @@ func lanpan() error {
 			Category:       row[1].(string),
 			Definition:     row[2].(string),
 			SourceLanguage: row[3].(string),
-			Etymology:	row[4].(string),
+			Etymology:      row[4].(string),
 		}
 		words = append(words, word)
 	}
@@ -182,6 +168,8 @@ func HiddenNAP(c commandlib.Context) {
 	if !c.Backend().IsBotOwner(c) {
 		c.SendMessage("primary", commandlib.ErrorEmbed("You are not the bot owner."))
 	}
+
+	c.SendMessage("primary", "mi pali lanpan...")
 
 	err := lanpan()
 	if err != nil {

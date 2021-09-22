@@ -1,6 +1,9 @@
 package commandlib
 
-import "strings"
+import (
+	"io"
+	"strings"
+)
 
 type EmbedHeader struct {
 	Icon string
@@ -23,6 +26,12 @@ type Embed struct {
 	Fields []EmbedField
 	Body   string
 	Colour int
+}
+
+type File struct {
+	Mimetype string
+	Name     string
+	Reader   io.ReadCloser
 }
 
 type EmbedList struct {

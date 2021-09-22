@@ -151,7 +151,7 @@ func (t TelegramContext) GenerateLink(text, URL string) string {
 }
 
 func (t *TelegramContext) SendMessage(_ string, content interface{}) {
-	switch content.(type) {
+	switch a := content.(type) {
 	case string:
 		msg := tgbotapi.NewMessage(t.tm.Chat.ID, content.(string))
 		t.bot.Send(msg)
@@ -175,6 +175,12 @@ func (t *TelegramContext) SendMessage(_ string, content interface{}) {
 	case commandlib.UnionEmbed:
 		t.SendMessage("", content.(commandlib.UnionEmbed).EmbedList)
 		return
+	case commandlib.File:
+		t.bot.Send(tgbotapi.NewDocumentUpload(t.tm.Chat.ID, tgbotapi.FileReader{
+			Name:   a.Name,
+			Reader: a.Reader,
+			Size:   -1,
+		}))
 	}
 }
 

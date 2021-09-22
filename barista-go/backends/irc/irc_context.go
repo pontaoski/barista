@@ -1,6 +1,14 @@
 package irc
 
 import (
+	"bytes"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"mime/multipart"
+	"net/http"
+	"os"
+	"strings"
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
@@ -80,8 +88,63 @@ func (i IRCContext) RoomIdentifier() string {
 	return i.ev.Params[0]
 }
 
+func uploadFile(file io.Reader) (string, error) {
+	const (
+		url = "https://0x0.st"
+	)
+	var (
+		err    error
+		client http.Client
+		b      bytes.Buffer
+	)
+
+	values := map[string]io.Reader{
+		"file": file,
+	}
+
+	writer := multipart.NewWriter(&b)
+	for key, r := range values {
+		var fw io.Writer
+		if x, ok := r.(io.Closer); ok {
+			defer x.Close()
+		}
+		// Add an image file
+		if x, ok := r.(*os.File); ok {
+			if fw, err = writer.CreateFormFile(key, x.Name()); err != nil {
+				return "", err
+			}
+		}
+		if _, err = io.Copy(fw, r); err != nil {
+			return "", err
+		}
+
+	}
+	writer.Close()
+
+	req, err := http.NewRequest("POST", url, &b)
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, _ := ioutil.ReadAll(resp.Body)
+		bodyString := string(bodyBytes)
+		return strings.Replace(bodyString, "\n", "", -1), nil
+	}
+	return "", fmt.Errorf("bad status: %s", resp.Status)
+}
+
 func (i IRCContext) SendMessage(_ string, content interface{}) {
-	switch content.(type) {
+	switch a := content.(type) {
 	case string:
 		i.cl.Cmd.ReplyTo(i.ev, content.(string))
 	case commandlib.Embed:
@@ -98,6 +161,12 @@ func (i IRCContext) SendMessage(_ string, content interface{}) {
 		}
 	case commandlib.UnionEmbed:
 		i.SendMessage("", content.(commandlib.UnionEmbed).EmbedList)
+	case commandlib.File:
+		fi, err := uploadFile(a.Reader)
+		if err != nil {
+			i.cl.Cmd.ReplyTo(i.ev, "failed to upload a file")
+		}
+		i.cl.Cmd.ReplyTo(i.ev, fi)
 	}
 }
 
