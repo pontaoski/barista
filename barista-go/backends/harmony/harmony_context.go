@@ -9,7 +9,6 @@ import (
 	"github.com/appadeia/barista/barista-go/log"
 	"github.com/harmony-development/shibshib"
 	chatv1 "github.com/harmony-development/shibshib/gen/chat/v1"
-	types "github.com/harmony-development/shibshib/gen/harmonytypes/v1"
 )
 
 // Context is a context holding information about a Harmony command
@@ -17,10 +16,17 @@ type Context struct {
 	commandlib.ContextMixin
 	b  *Backend
 	c  *shibshib.Client
-	tm *types.Message
+	tm *shibshib.LocatedMessage
 }
 
-func buildContext(ctx commandlib.ContextMixin, b *Backend, c *shibshib.Client, m *types.Message) Context {
+type mgid struct {
+	chatv1.MessageWithId
+
+	guildID   uint64
+	channelID uint64
+}
+
+func buildContext(ctx commandlib.ContextMixin, b *Backend, c *shibshib.Client, m *shibshib.LocatedMessage) Context {
 	dc := Context{
 		ContextMixin: ctx,
 	}
@@ -31,11 +37,11 @@ func buildContext(ctx commandlib.ContextMixin, b *Backend, c *shibshib.Client, m
 }
 
 func (c *Context) AuthorIdentifier() string {
-	return strconv.FormatUint(c.tm.AuthorId, 10)
+	return strconv.FormatUint(c.tm.Message.AuthorId, 10)
 }
 
 func (c *Context) AuthorName() string {
-	return c.c.UsernameFor(c.tm)
+	return c.c.UsernameFor(c.tm.Message)
 }
 
 func (c *Context) AwaitResponse(tenpo time.Duration) (content string, ok bool) {
@@ -59,7 +65,7 @@ func (c *Context) Backend() commandlib.Backend {
 }
 
 func (c *Context) CommunityIdentifier() string {
-	return strconv.FormatUint(c.tm.GuildId, 10)
+	return strconv.FormatUint(c.tm.GuildID, 10)
 }
 
 func (c *Context) GenerateLink(text string, URL string) string {
@@ -74,11 +80,11 @@ func (c *Context) I18nc(context, message string) string {
 	return c.I18n(message)
 }
 
-func waitForMessage(c *shibshib.Client) chan *types.Message {
-	channel := make(chan *types.Message)
+func waitForMessage(c *shibshib.Client) chan *shibshib.LocatedMessage {
+	channel := make(chan *shibshib.LocatedMessage)
 	var f func()
 	f = func() {
-		c.HandleOnce(func(ev *types.Message) {
+		c.HandleOnce(func(ev *shibshib.LocatedMessage) {
 			channel <- ev
 		})
 	}
@@ -92,8 +98,8 @@ func (c *Context) NextResponse() chan string {
 		for {
 			select {
 			case usermsg := <-waitForMessage(c.c):
-				if usermsg.AuthorId == c.tm.AuthorId && usermsg.ChannelId == usermsg.ChannelId {
-					out <- usermsg.Content
+				if usermsg.Message.AuthorId == c.tm.Message.AuthorId && usermsg.ChannelID == c.tm.ChannelID {
+					out <- usermsg.GetMessage().GetContent().GetTextMessage().String()
 					return
 				}
 			}
@@ -103,30 +109,35 @@ func (c *Context) NextResponse() chan string {
 }
 
 func (c *Context) RoomIdentifier() string {
-	return strconv.FormatUint(c.tm.ChannelId, 10)
+	return strconv.FormatUint(c.tm.ChannelID, 10)
 }
 
-func convert(embed commandlib.Embed) *types.Embed {
-	return &types.Embed{
-		Body:  embed.Body,
-		Color: int64(embed.Colour),
+func ftext(s string) *chatv1.FormattedText {
+	return &chatv1.FormattedText{Text: s}
+}
+
+func convert(embed commandlib.Embed) *chatv1.Embed {
+	c := int32(embed.Colour)
+	return &chatv1.Embed{
+		Body:  ftext(embed.Body),
+		Color: &c,
 		Title: embed.Title.Text,
-		Header: &types.EmbedHeading{
+		Header: &chatv1.Embed_EmbedHeading{
 			Text: embed.Header.Text,
-			Url:  embed.Header.URL,
-			Icon: embed.Header.Icon,
+			Url:  &embed.Header.URL,
+			Icon: &embed.Header.Icon,
 		},
-		Footer: &types.EmbedHeading{
+		Footer: &chatv1.Embed_EmbedHeading{
 			Text: embed.Footer.Text,
-			Url:  embed.Footer.URL,
-			Icon: embed.Footer.Icon,
+			Url:  &embed.Footer.URL,
+			Icon: &embed.Footer.Icon,
 		},
-		Fields: func() (f []*types.EmbedField) {
+		Fields: func() (f []*chatv1.Embed_EmbedField) {
 			for _, field := range embed.Fields {
-				f = append(f, &types.EmbedField{
+				f = append(f, &chatv1.Embed_EmbedField{
 					Title:        field.Title,
-					Body:         field.Body,
-					Presentation: types.FieldPresentation_Data,
+					Body:         ftext(field.Body),
+					Presentation: chatv1.Embed_EmbedField_PRESENTATION_DATA_UNSPECIFIED,
 				})
 			}
 			return
@@ -138,34 +149,40 @@ func (c *Context) SendMessage(id string, content interface{}) {
 	switch content := content.(type) {
 	case string:
 		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
-			GuildId:   c.tm.GuildId,
-			ChannelId: c.tm.ChannelId,
-			Content:   content,
+			GuildId:   c.tm.GuildID,
+			ChannelId: c.tm.ChannelID,
+			Content:   &chatv1.Content{Content: &chatv1.Content_TextMessage{TextMessage: &chatv1.Content_TextContent{Content: ftext(content)}}},
 		})
 		if err != nil {
 			log.Error("%+v", err)
 		}
 	case commandlib.Embed:
 		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
-			GuildId:   c.tm.GuildId,
-			ChannelId: c.tm.ChannelId,
-			Embeds: []*types.Embed{
-				convert(content),
+			GuildId:   c.tm.GuildID,
+			ChannelId: c.tm.ChannelID,
+			Content: &chatv1.Content{
+				Content: &chatv1.Content_EmbedMessage{
+					EmbedMessage: &chatv1.Content_EmbedContent{
+						Embed: convert(content),
+					},
+				},
 			},
 		})
 		if err != nil {
 			log.Error("%+v", err)
 		}
 	case commandlib.EmbedList:
+		log.Error("unhandled embed list")
+		return
 		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
-			GuildId:   c.tm.GuildId,
-			ChannelId: c.tm.ChannelId,
-			Embeds: func() (r []*types.Embed) {
-				for _, embed := range content.Embeds {
-					r = append(r, convert(embed))
-				}
-				return
-			}(),
+			GuildId:   c.tm.GuildID,
+			ChannelId: c.tm.ChannelID,
+			// Embeds: func() (r []*types.Embed) {
+			// 	for _, embed := range content.Embeds {
+			// 		r = append(r, convert(embed))
+			// 	}
+			// 	return
+			// }(),
 		})
 		if err != nil {
 			log.Error("%+v", err)
@@ -177,15 +194,17 @@ func (c *Context) SendMessage(id string, content interface{}) {
 }
 
 func (c *Context) SendTags(id string, tags []commandlib.Embed) {
+	log.Error("unhandled embed list")
+	return
 	c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
-		GuildId:   c.tm.GuildId,
-		ChannelId: c.tm.ChannelId,
-		Embeds: func() (r []*types.Embed) {
-			for _, embed := range tags {
-				r = append(r, convert(embed))
-			}
-			return
-		}(),
+		GuildId:   c.tm.GuildID,
+		ChannelId: c.tm.ChannelID,
+		// Embeds: func() (r []*types.Embed) {
+		// 	for _, embed := range tags {
+		// 		r = append(r, convert(embed))
+		// 	}
+		// 	return
+		// }(),
 	})
 }
 
