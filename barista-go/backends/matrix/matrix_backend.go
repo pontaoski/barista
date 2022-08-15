@@ -29,6 +29,10 @@ func (m MatrixBackend) Name() string {
 	return "Matrix"
 }
 
+func (m MatrixBackend) ID() string {
+	return "matrix"
+}
+
 func (m MatrixBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
 	casted := ctx.(*MatrixContext)

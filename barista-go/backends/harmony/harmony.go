@@ -3,6 +3,7 @@ package harmony
 import (
 	"fmt"
 
+	"github.com/alecthomas/repr"
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/config"
 	"github.com/appadeia/barista/barista-go/log"
@@ -40,6 +41,10 @@ func (b *Backend) Name() string {
 	return fmt.Sprintf("Harmony (%d on %s)", b.userID, b.homeserver)
 }
 
+func (b *Backend) ID() string {
+	return "harmony"
+}
+
 // IsBotOwner checks whether the context is of the bot owner
 func (b *Backend) IsBotOwner(c commandlib.Context) bool {
 	panic("Implement me")
@@ -62,6 +67,7 @@ func (b *Backend) Start(cancel chan struct{}) error {
 	for {
 		select {
 		case ev := <-evs:
+			repr.Println("new event", ev)
 			b.Message(ev.Client, ev.Event)
 		case <-cancel:
 			return nil

@@ -163,7 +163,7 @@ func (c *Context) SendMessage(id string, content interface{}) {
 			Content: &chatv1.Content{
 				Content: &chatv1.Content_EmbedMessage{
 					EmbedMessage: &chatv1.Content_EmbedContent{
-						Embed: convert(content),
+						Embeds: []*chatv1.Embed{convert(content)},
 					},
 				},
 			},
@@ -172,17 +172,21 @@ func (c *Context) SendMessage(id string, content interface{}) {
 			log.Error("%+v", err)
 		}
 	case commandlib.EmbedList:
-		log.Error("unhandled embed list")
-		return
 		_, err := c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 			GuildId:   c.tm.GuildID,
 			ChannelId: c.tm.ChannelID,
-			// Embeds: func() (r []*types.Embed) {
-			// 	for _, embed := range content.Embeds {
-			// 		r = append(r, convert(embed))
-			// 	}
-			// 	return
-			// }(),
+			Content: &chatv1.Content{
+				Content: &chatv1.Content_EmbedMessage{
+					EmbedMessage: &chatv1.Content_EmbedContent{
+						Embeds: func() (r []*chatv1.Embed) {
+							for _, embed := range content.Embeds {
+								r = append(r, convert(embed))
+							}
+							return
+						}(),
+					},
+				},
+			},
 		})
 		if err != nil {
 			log.Error("%+v", err)
@@ -194,17 +198,21 @@ func (c *Context) SendMessage(id string, content interface{}) {
 }
 
 func (c *Context) SendTags(id string, tags []commandlib.Embed) {
-	log.Error("unhandled embed list")
-	return
 	c.c.ChatKit.SendMessage(&chatv1.SendMessageRequest{
 		GuildId:   c.tm.GuildID,
 		ChannelId: c.tm.ChannelID,
-		// Embeds: func() (r []*types.Embed) {
-		// 	for _, embed := range tags {
-		// 		r = append(r, convert(embed))
-		// 	}
-		// 	return
-		// }(),
+		Content: &chatv1.Content{
+			Content: &chatv1.Content_EmbedMessage{
+				EmbedMessage: &chatv1.Content_EmbedContent{
+					Embeds: func() (r []*chatv1.Embed) {
+						for _, embed := range tags {
+							r = append(r, convert(embed))
+						}
+						return
+					}(),
+				},
+			},
+		},
 	})
 }
 

@@ -95,7 +95,7 @@ func init() {
 		Usage: I18n("Search a heck tonne of Jewish texts using Sefaria"),
 		ID:    "sefaria",
 		Matches: []string{
-			"o alasa lon lipu suli Ju e ni:",
+			"o alasa lon lipu suli Jejusi e ni:",
 		},
 		Action: func(c commandlib.Context) {
 			data, err := searchSefaria(c.Content())
@@ -221,7 +221,7 @@ func init() {
 		Usage: I18n("Look up a specific Jewish text using Sefaria"),
 		ID:    "sefaria",
 		Matches: []string{
-			"o pana e lipu Ju ni tawa mi:",
+			"o pana e lipu Jejusi ni tawa mi:",
 		},
 		Action: func(c commandlib.Context) {
 			book := c.Arg(0)

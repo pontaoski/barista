@@ -32,6 +32,10 @@ func (i IRCBackend) Name() string {
 	return "IRC"
 }
 
+func (i IRCBackend) ID() string {
+	return "irc"
+}
+
 // IsBotOwner always returns false because IRC is insecure
 func (i IRCBackend) IsBotOwner(c commandlib.Context) bool {
 	return false

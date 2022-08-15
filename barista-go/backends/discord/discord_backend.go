@@ -56,6 +56,10 @@ func (d *DiscordBackend) Name() string {
 	return fmt.Sprintf("Discord (%s)", d.name)
 }
 
+func (d *DiscordBackend) ID() string {
+	return "discord"
+}
+
 func (d *DiscordBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
 	casted := ctx.(*DiscordContext)

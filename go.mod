@@ -9,8 +9,8 @@ require (
 	github.com/Tnze/go-mc v1.16.1
 	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/repr v0.0.0-20210801044451-80ca428c5142
+	github.com/antchfx/htmlquery v1.2.4 // indirect
 	github.com/antchfx/xmlquery v1.2.1
-	github.com/antchfx/xpath v1.1.2 // indirect
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dustin/go-humanize v1.0.0
@@ -21,8 +21,6 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/gomarkdown/markdown v0.0.0-20201113031856-722100d81a8e
 	github.com/google/uuid v1.3.0
-	github.com/harmony-development/legato v0.0.0-20210304161906-5dc67afae05f // indirect
-	github.com/harmony-development/shibshib v0.0.0-20211118224216-e24b8c5b0070
 	github.com/hashicorp/go-immutable-radix v1.2.0
 	github.com/hashicorp/golang-lru v0.5.4
 	github.com/jinzhu/gorm v1.9.12

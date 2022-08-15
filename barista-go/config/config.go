@@ -8,6 +8,8 @@ import (
 // Config defines what the bot configuration looks like
 type Config struct {
 	Services struct {
+		Backends []string `toml:"active"`
+
 		Discord []struct {
 			Token string `toml:"token"`
 			Name  string `toml:"name"`

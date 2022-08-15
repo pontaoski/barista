@@ -33,6 +33,10 @@ func (t TelegramBackend) Name() string {
 	return "Telegram"
 }
 
+func (t TelegramBackend) ID() string {
+	return "telegram"
+}
+
 func (t TelegramBackend) Start(cancel chan struct{}) error {
 	bot, err := tgbotapi.NewBotAPI(config.BotConfig.Services.Telegram.Token)
 	if err != nil {

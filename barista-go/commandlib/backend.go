@@ -6,6 +6,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/appadeia/barista/barista-go/config"
 	"github.com/appadeia/barista/barista-go/log"
 )
 
@@ -18,6 +19,7 @@ type BackendStats struct {
 // A Backend represents a service that Barista can chat on
 type Backend interface {
 	Name() string
+	ID() string
 	Start(chan struct{}) error
 	IsBotOwner(c Context) bool
 	CanGiveStats() bool
@@ -35,6 +37,13 @@ func RegisterBackend(b Backend) {
 func StartBackends() {
 	wg := sync.WaitGroup{}
 	for _, backend := range backends {
+		for _, active := range config.BotConfig.Services.Backends {
+			if backend.ID() == active {
+				goto willStart
+			}
+		}
+		continue
+	willStart:
 		wg.Add(1)
 		log.Info("Starting backend %s", backend.Name())
 
