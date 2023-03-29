@@ -18,21 +18,42 @@ func init() {
 			"ilo o pana sona e nimi",
 			"ilo o define e nimi",
 		},
+		Flags: commandlib.FlagList{
+			commandlib.StringFlag{
+				LongFlag:  "prompt",
+				ShortFlag: "p",
+				FlagUsage: "which prompt to use",
+				Value:     "",
+			},
+		},
 		Action: define,
 	})
 }
 
-func funnyPrompt() string {
-	prompts := []string{
-		"using marketing speak, explain the following toki pona word:",
-		"using many cliches and buzzwords, explain the following toki pona word:",
-		"describe the following toki pona word in an impatient and irritable manner:",
-		"explain the following toki pona word shyly:",
-		"pretend to be billy mays and explain the following toki pona word:",
-		"using iambic pentameter, explain the following toki pona word:",
-		"give a jeopardy prompt for the following toki pona word:",
+func funnyPrompt(p string) string {
+	prompts := map[string]string{
+		"marketing": "using marketing speak, explain the following toki pona word:",
+		"buzzword":  "using many cliches and buzzwords, explain the following toki pona word:",
+		"angry":     "describe the following toki pona word in an impatient and irritable manner:",
+		"shy":       "explain the following toki pona word shyly:",
+		"billy":     "pretend to be billy mays and explain the following toki pona word:",
+		"poem":      "using iambic pentameter, explain the following toki pona word:",
+		"jeopardy":  "give a jeopardy prompt for the following toki pona word:",
 	}
-	return prompts[rand.Intn(len(prompts))]
+	if v, ok := prompts[p]; ok {
+		return v
+	}
+	ps := []string{
+		"marketing",
+		"buzzword",
+		"angry",
+		"shy",
+		"billy",
+		"poem",
+		"jeopardy",
+	}
+
+	return prompts[ps[rand.Intn(len(ps))]]
 }
 
 func define(c commandlib.Context) {
@@ -50,7 +71,7 @@ func define(c commandlib.Context) {
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role:    openai.ChatMessageRoleUser,
-					Content: funnyPrompt(),
+					Content: funnyPrompt(c.FlagValue("prompt")),
 				},
 				{
 					Role:    openai.ChatMessageRoleUser,
