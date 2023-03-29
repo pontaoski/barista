@@ -15,19 +15,25 @@ import (
 //go:embed "linku.json"
 var linkuString []byte
 
-var linkuDict = map[string]string{}
+type linkuWord struct {
+	Definition string
+	Commentary string
+}
+
+var linkuDict = map[string]linkuWord{}
 
 func init() {
 	var s []struct {
 		Word       string `json:"prompt"`
 		Definition string `json:"completion"`
+		Commentary string `json:"commentary"`
 	}
 	err := json.Unmarshal(linkuString, &s)
 	if err != nil {
 		panic(err)
 	}
 	for _, word := range s {
-		linkuDict[word.Word] = word.Definition
+		linkuDict[word.Word] = linkuWord{word.Definition, word.Commentary}
 	}
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:  "Define?",
@@ -115,21 +121,29 @@ func define(c commandlib.Context) {
 		messages = []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleUser,
-				Content: fmt.Sprintf(`the toki pona dictionary says that "%s" means "%s"`, word, def),
+				Content: fmt.Sprintf(`the toki pona dictionary says that "%s" means "%s"`, word, def.Definition),
 			},
-			{
+		}
+		if def.Commentary != "" {
+			messages = append(messages, openai.ChatCompletionMessage{
+				Role:    openai.ChatMessageRoleUser,
+				Content: fmt.Sprintf("it elaborates that %s", def.Commentary),
+			})
+		}
+		messages = append(messages,
+			openai.ChatCompletionMessage{
 				Role:    openai.ChatMessageRoleUser,
 				Content: "avoid repeating the dictionary verbatim",
 			},
-			{
+			openai.ChatCompletionMessage{
 				Role:    openai.ChatMessageRoleUser,
 				Content: prompt.Contextual,
 			},
-			{
+			openai.ChatCompletionMessage{
 				Role:    openai.ChatMessageRoleUser,
 				Content: word,
 			},
-		}
+		)
 	} else {
 		messages = []openai.ChatCompletionMessage{
 			{
