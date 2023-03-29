@@ -8,7 +8,7 @@ require (
 	github.com/Tnze/go-mc v1.16.1
 	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/repr v0.0.0-20210801044451-80ca428c5142
-	github.com/antchfx/xmlquery v1.2.1
+	github.com/antchfx/xmlquery v1.3.1
 	github.com/antchfx/xpath v1.2.0 // indirect
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/dustin/go-humanize v1.0.0
