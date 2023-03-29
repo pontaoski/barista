@@ -123,7 +123,7 @@ func define(c commandlib.Context) {
 	client := openai.NewClient(config.BotConfig.Tokens.OpenAI)
 	prompt := funnyPrompt(c.FlagValue("prompt"))
 	var messages []openai.ChatCompletionMessage
-	if def, ok := linkuDict[word]; ok && c.IsFlagSet("musi") {
+	if def, ok := linkuDict[word]; ok && !c.IsFlagSet("musi") {
 		messages = []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleUser,
