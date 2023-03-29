@@ -11,17 +11,31 @@ import (
 )
 
 type ContextMixin struct {
-	FlagSet     flag.FlagSet
-	LastUsed    time.Time
-	IsTag       bool
-	Words       []string
-	RawData     string
-	ContextType ContextType
-	Action      Command
-	Data        map[string]interface{}
+	FlagSet      flag.FlagSet
+	LastUsed     time.Time
+	IsTag        bool
+	Words        []string
+	RawData      string
+	ContextType  ContextType
+	Action       Command
+	CacheHintTTL int
+	CacheHintSet bool
+	Data         map[string]interface{}
 }
 
 var pofiles map[string]*gotext.Po = make(map[string]*gotext.Po)
+
+func (c *ContextMixin) CacheHint(ttl int) {
+	c.CacheHintTTL = ttl
+	c.CacheHintSet = true
+}
+
+func (c *ContextMixin) GetTTL() int {
+	if c.CacheHintSet {
+		return c.CacheHintTTL
+	}
+	return 300
+}
 
 func (c *ContextMixin) Command() Command {
 	return c.Action

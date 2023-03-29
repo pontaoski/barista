@@ -120,6 +120,7 @@ func define(c commandlib.Context) {
 		c.SendMessage("response", commandlib.ErrorEmbed("sina pana ala e nimi a!"))
 		return
 	}
+	c.CacheHint(5)
 	client := openai.NewClient(config.BotConfig.Tokens.OpenAI)
 	prompt := funnyPrompt(c.FlagValue("prompt"))
 	var messages []openai.ChatCompletionMessage

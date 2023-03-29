@@ -21,6 +21,7 @@ type Context interface {
 	RecallData(key string) (interface{}, bool)
 	SetData(key string, v interface{})
 	Command() Command
+	CacheHint(ttl int)
 	// Flags needed by implementations
 	AuthorIdentifier() string
 	AuthorName() string

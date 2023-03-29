@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
-	"github.com/appadeia/barista/barista-go/log"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
@@ -65,6 +64,7 @@ func (t *InlineQueryContext) SendMessage(id string, content interface{}) {
 	case string:
 		t.bot.AnswerInlineQuery(tgbotapi.InlineConfig{
 			InlineQueryID: t.iq.ID,
+			CacheTime:     t.GetTTL(),
 			Results: []interface{}{
 				tgbotapi.NewInlineQueryResultArticle(
 					randSeq(16),
@@ -75,8 +75,9 @@ func (t *InlineQueryContext) SendMessage(id string, content interface{}) {
 		})
 	case commandlib.Embed:
 		msg := telegramEmbed(content)
-		_, err := t.bot.AnswerInlineQuery(tgbotapi.InlineConfig{
+		t.bot.AnswerInlineQuery(tgbotapi.InlineConfig{
 			InlineQueryID: t.iq.ID,
+			CacheTime:     t.GetTTL(),
 			Results: []interface{}{
 				tgbotapi.NewInlineQueryResultArticleHTML(
 					randSeq(16),
@@ -85,9 +86,6 @@ func (t *InlineQueryContext) SendMessage(id string, content interface{}) {
 				),
 			},
 		})
-		if err != nil {
-			log.Error("%s", err)
-		}
 	case commandlib.EmbedList:
 		var results []interface{}
 		for _, page := range content.Embeds {
@@ -100,6 +98,7 @@ func (t *InlineQueryContext) SendMessage(id string, content interface{}) {
 		}
 		t.bot.AnswerInlineQuery(tgbotapi.InlineConfig{
 			InlineQueryID: t.iq.ID,
+			CacheTime:     t.GetTTL(),
 			Results:       results,
 		})
 	case commandlib.UnionEmbed:
