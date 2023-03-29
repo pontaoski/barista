@@ -25,8 +25,14 @@ func (t TelegramBackend) CanGiveStats() bool {
 
 func (t TelegramBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
-	casted := ctx.(*TelegramContext)
-	return casted.tm.From.ID == config.BotConfig.Owner.Telegram
+	switch casted := ctx.(type) {
+	case *MessageTelegramContext:
+		return casted.tm.From.ID == config.BotConfig.Owner.Telegram
+	case *InlineQueryContext:
+		return casted.iq.From.ID == config.BotConfig.Owner.Telegram
+	default:
+		return false
+	}
 }
 
 func (t TelegramBackend) Name() string {
@@ -55,6 +61,9 @@ forLoop:
 		case update := <-updates:
 			if update.CallbackQuery != nil && update.CallbackQuery.Message != nil {
 				TelegramPaginatorHandler(update.CallbackQuery.Message.MessageID, update.CallbackQuery.Data)
+			}
+			if update.InlineQuery != nil {
+				TelegramInlineQuery(bot, update.InlineQuery)
 			}
 			if update.Message != nil {
 				TelegramMessage(bot, update.Message)
