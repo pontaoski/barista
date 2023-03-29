@@ -26,6 +26,18 @@ func TelegramInlineQuery(b *tgbotapi.BotAPI, m *tgbotapi.InlineQuery) {
 		go log.CanPanic(func() {
 			cmd.Action(&tg)
 		})
+	} else {
+		b.AnswerInlineQuery(tgbotapi.InlineConfig{
+			InlineQueryID: m.ID,
+			CacheTime:     300,
+			Results: []interface{}{
+				tgbotapi.NewInlineQueryResultArticleHTML(
+					randSeq(16),
+					"Sorry, I don't understand that.",
+					"Sorry, I don't understand that.",
+				),
+			},
+		})
 	}
 }
 
