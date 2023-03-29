@@ -41,6 +41,7 @@ type Config struct {
 	} `toml:"owner"`
 	Tokens struct {
 		InventKDEOrg string `toml:"invent.kde.org"`
+		OpenAI       string `toml:"openai"`
 	} `toml:"tokens"`
 }
 

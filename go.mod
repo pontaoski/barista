@@ -27,6 +27,7 @@ require (
 	github.com/lrstanley/girc v0.0.0-20190801035559-4fc93959e1a7
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
+	github.com/sashabaranov/go-openai v1.5.7 // indirect
 	github.com/spf13/pflag v1.0.5
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
