@@ -2,6 +2,9 @@ package barista
 
 import (
 	"context"
+	_ "embed"
+	"encoding/json"
+	"fmt"
 	"math/rand"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
@@ -9,7 +12,23 @@ import (
 	"github.com/sashabaranov/go-openai"
 )
 
+//go:embed "linku.json"
+var linkuString []byte
+
+var linkuDict = map[string]string{}
+
 func init() {
+	var s []struct {
+		Word       string `json:"prompt"`
+		Definition string `json:"completion"`
+	}
+	err := json.Unmarshal(linkuString, &s)
+	if err != nil {
+		panic(err)
+	}
+	for _, word := range s {
+		linkuDict[word.Word] = word.Definition
+	}
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:  "Define?",
 		Usage: "Define? a toki pona word",
@@ -30,16 +49,43 @@ func init() {
 	})
 }
 
-func funnyPrompt(p string) string {
-	prompts := map[string]string{
-		"marketing": "using marketing speak, explain the following toki pona word:",
-		"buzzword":  "using many cliches and buzzwords, explain the following toki pona word:",
-		"angry":     "describe the following toki pona word in an impatient and irritable manner:",
-		"shy":       "explain the following toki pona word shyly:",
-		"billy":     "pretend to be billy mays and explain the following toki pona word:",
-		"poem":      "using iambic pentameter, explain the following toki pona word:",
-		"jeopardy":  "give a jeopardy prompt for the following toki pona word:",
-	}
+type prompt struct {
+	Contextless string
+	Contextual  string
+}
+
+var prompts = map[string]prompt{
+	"marketing": {
+		Contextless: "using marketing speak, explain the following toki pona word:",
+		Contextual:  "rephrase the definition of the following toki pona word using many cliches and buzzwords:",
+	},
+	"buzzword": {
+		Contextless: "using many cliches and buzzwords, explain the following toki pona word:",
+		Contextual:  "rephrase the definition of the following toki pona word using many cliches and buzzwords:",
+	},
+	"angry": {
+		Contextless: "describe the following toki pona word in an impatient and irritable manner:",
+		Contextual:  "rephrase the definition of the following toki pona word in an impatient and irritable manner:",
+	},
+	"shy": {
+		Contextless: "explain the following toki pona word shyly:",
+		Contextual:  "rephrase the definition of the following toki pona word in a shy manner:",
+	},
+	"billy": {
+		Contextless: "pretend to be billy mays and explain the following toki pona word:",
+		Contextual:  "rephrase the definition of the following toki pona word in the style of pretending to be billy mays:",
+	},
+	"poem": {
+		Contextless: "using iambic pentameter, explain the following toki pona word:",
+		Contextual:  "rephrase the definition of the following toki pona word in iambic pentameter:",
+	},
+	"jeopardy": {
+		Contextless: "give a jeopardy prompt for the following toki pona word:",
+		Contextual:  "rephrase the definition of the following toki pona word in the style of a jeopardy prompt: ",
+	},
+}
+
+func funnyPrompt(p string) prompt {
 	if v, ok := prompts[p]; ok {
 		return v
 	}
@@ -63,21 +109,45 @@ func define(c commandlib.Context) {
 		return
 	}
 	client := openai.NewClient(config.BotConfig.Tokens.OpenAI)
+	prompt := funnyPrompt(c.FlagValue("prompt"))
+	var messages []openai.ChatCompletionMessage
+	if def, ok := linkuDict[word]; ok {
+		messages = []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: fmt.Sprintf(`the toki pona dictionary says that "%s" means "%s"`, word, def),
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: "avoid repeating the dictionary verbatim",
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: prompt.Contextual,
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: word,
+			},
+		}
+	} else {
+		messages = []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: prompt.Contextless,
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: word,
+			},
+		}
+	}
 	resp, err := client.CreateChatCompletion(
 		context.Background(),
 		openai.ChatCompletionRequest{
 			Model:       openai.GPT3Dot5Turbo,
 			Temperature: 1.0,
-			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: funnyPrompt(c.FlagValue("prompt")),
-				},
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: word,
-				},
-			},
+			Messages:    messages,
 		},
 	)
 	if err != nil {
