@@ -24,10 +24,10 @@ func init() {
 
 func funnyPrompt() string {
 	prompts := []string{
-		"explain the following toki pona word. make the description sound like marketing speak.",
-		"explain the following toki pona word. use many cliches and buzzwords.",
-		"describe the following toki pona word in an impatient and irritable manner.",
-		"explain the following toki pona word shyly",
+		"using marketing speak, explain the following toki pona word:",
+		"using many cliches and buzzwords, explain the following toki pona word:",
+		"describe the following toki pona word in an impatient and irritable manner:",
+		"explain the following toki pona word shyly:",
 		"pretend to be billy mays and explain the following toki pona word:",
 		"using iambic pentameter, explain the following toki pona word:",
 		"give a jeopardy prompt for the following toki pona word:",
