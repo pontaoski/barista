@@ -90,7 +90,7 @@ func (t *InlineQueryContext) SendMessage(id string, content interface{}) {
 			msg := telegramEmbed(page)
 			results = append(results, tgbotapi.NewInlineQueryResultArticleHTML(
 				randSeq(16),
-				content.ItemTypeName,
+				content.ItemTypeName+" - "+page.Title.Text,
 				msg.Text,
 			))
 		}
