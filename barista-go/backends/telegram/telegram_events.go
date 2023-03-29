@@ -22,6 +22,7 @@ func TelegramInlineQuery(b *tgbotapi.BotAPI, m *tgbotapi.InlineQuery) {
 		tg.ContextMixin = ContextMixin
 		tg.ContextMixin.ContextType = commandlib.CreateCommand
 		tg.bot = b
+		tg.iq = m
 		go log.CanPanic(func() {
 			cmd.Action(&tg)
 		})
