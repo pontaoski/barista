@@ -35,6 +35,10 @@ func init() {
 	for _, word := range s {
 		linkuDict[word.Word] = linkuWord{word.Definition, word.Commentary}
 	}
+	linkuDict["eliki"] = linkuWord{
+		Definition: "distress, affliction, adversity, pain",
+		Commentary: "a nimisin made by kala suno pi kulupu telo mun with the intent to help people describe a range of experiences that may not fit in the space of alternative words—particularly those of ike or pakala—either because they are personally uncomfortable with it or feel it does not properly express the meaning they wish to convey.",
+	}
 	commandlib.RegisterCommand(commandlib.Command{
 		Name:  "Define?",
 		Usage: "Define? a toki pona word",
@@ -97,27 +101,27 @@ var prompts = map[string]prompt{
 	},
 	"horse": {
 		Contextless: "talk about the following toki pona word like you are commentating on a horse race:",
-		Contextual: "rephrase the definition of the following toki pona word in the style of commentary on a horse race:",
+		Contextual:  "rephrase the definition of the following toki pona word in the style of commentary on a horse race:",
 	},
 	"flight": {
 		Contextless: "explain the following toki pona word as if you were a flight attendant on a plane going down:",
-		Contextual: "pretend to be a flight attendant on a plane going down and explain the following toki pona word:",
+		Contextual:  "pretend to be a flight attendant on a plane going down and explain the following toki pona word:",
 	},
 	"wwe": {
 		Contextless: "give a wwe announcement for the following toki pona word (make sure to explain what their name means):",
-		Contextual: "give a wwe announcement for the following toki pona word (make sure to explain what their name means):",
+		Contextual:  "give a wwe announcement for the following toki pona word (make sure to explain what their name means):",
 	},
 	"auction": {
 		Contextless: "pretend to be an auctioneer and make a sales pitch for the following toki pona word:",
-		Contextual: "pretend to be an auctioneer and make a sales pitch for the following toki pona word:",
+		Contextual:  "pretend to be an auctioneer and make a sales pitch for the following toki pona word:",
 	},
 	"walter": {
 		Contextless: "Pretend you are Walter White from breaking bad, but instead of cooking methamphetamine you are telling Jesse how you need to cook the following toki pona word:",
-		Contextual: "Pretend you are Walter White from breaking bad, but instead of cooking methamphetamine you are telling Jesse how you need to cook the following toki pona word:",
+		Contextual:  "Pretend you are Walter White from breaking bad, but instead of cooking methamphetamine you are telling Jesse how you need to cook the following toki pona word:",
 	},
 	"romance": {
 		Contextless: "describe the following toki pona word as if you fell in love with it:",
-		Contextual: "describe the following toki pona word as if you fell in love with it:",
+		Contextual:  "describe the following toki pona word as if you fell in love with it:",
 	},
 }
 
