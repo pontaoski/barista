@@ -50,6 +50,12 @@ func init() {
 				FlagUsage: "which prompt to use",
 				Value:     "",
 			},
+			commandlib.BoolFlag{
+				LongFlag:  "musi",
+				ShortFlag: "m",
+				FlagUsage: "make the bot know less about toki pona (often generates funnier responses)",
+				Value:     false,
+			},
 		},
 		Action: define,
 	})
@@ -117,7 +123,7 @@ func define(c commandlib.Context) {
 	client := openai.NewClient(config.BotConfig.Tokens.OpenAI)
 	prompt := funnyPrompt(c.FlagValue("prompt"))
 	var messages []openai.ChatCompletionMessage
-	if def, ok := linkuDict[word]; ok {
+	if def, ok := linkuDict[word]; ok && c.IsFlagSet("musi") {
 		messages = []openai.ChatCompletionMessage{
 			{
 				Role:    openai.ChatMessageRoleUser,
