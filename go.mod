@@ -31,7 +31,7 @@ require (
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 	github.com/xanzy/go-gitlab v0.39.0
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/crypto v0.1.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/api v0.33.0
 	google.golang.org/grpc v1.33.2 // indirect
