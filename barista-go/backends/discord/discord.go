@@ -144,6 +144,7 @@ paginator:
 		page.Footer.Text = fmt.Sprintf("%s %d out of %d", title, index+1, len(embedList.Embeds))
 		paginator.AddPage(discordEmbed(page))
 	}
+	paginator.Send()
 }
 
 func (d DiscordContext) AuthorName() string {

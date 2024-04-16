@@ -84,12 +84,6 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	discord.AddHandler(d.discordMessageEdit)
 	discord.AddHandler(d.discordMessageDelete)
 
-	d.s = discord
-	err := discord.Connect(context.Background())
-	if err != nil {
-		return err
-	}
-
 	d.token = ""
 	me, err := d.s.Me()
 	if err != nil {
@@ -97,6 +91,12 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	}
 	backends[me.ID] = d
 	d.me = me
+
+	d.s = discord
+	err = discord.Connect(context.Background())
+	if err != nil {
+		return err
+	}
 
 	log.Info("Discord (%s) session started", d.name)
 
