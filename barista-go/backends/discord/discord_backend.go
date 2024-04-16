@@ -75,6 +75,11 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	discord := state.New("Bot " + d.token)
 	defer discord.Close()
 
+	discord.AddIntents(gateway.IntentGuilds)
+	discord.AddIntents(gateway.IntentGuildMembers)
+	discord.AddIntents(gateway.IntentGuildMessages)
+	discord.AddIntents(gateway.IntentMessageContent)
+
 	d.s = discord
 	err := discord.Connect(context.Background())
 	if err != nil {
