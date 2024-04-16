@@ -129,9 +129,9 @@ func (d *DiscordBackend) paginator(m *gateway.InteractionCreateEvent) {
 	case *discord.ButtonInteraction:
 		if val, ok := paginatorCache.Get(m.Message.ID); ok {
 			if e.CustomID == "previous" {
-				val.(*paginator).Prev()
+				val.(*paginator).Prev(&m.InteractionEvent)
 			} else {
-				val.(*paginator).Next()
+				val.(*paginator).Next(&m.InteractionEvent)
 			}
 		}
 	}

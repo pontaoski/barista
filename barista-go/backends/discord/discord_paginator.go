@@ -60,36 +60,30 @@ func (p *paginator) Inactive() {
 	}
 }
 
-func (p *paginator) Prev() {
+func (p *paginator) Prev(e *discord.InteractionEvent) {
 	p.Index--
 	if p.Index < 0 {
 		p.Index = len(p.Pages) - 1
 	}
 	send := p.Pages[p.Index]
-	msg, err := p.context.s.s.Client.EditMessageComplex(p.message.ChannelID, p.message.ID, api.EditMessageData{
-		Embeds: &[]discord.Embed{send},
-		Components: &discord.ContainerComponents{
-			p.context.keyboard(),
+	p.context.s.s.Client.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
+		Type: api.UpdateMessage,
+		Data: &api.InteractionResponseData{
+			Embeds: &[]discord.Embed{send},
 		},
 	})
-	if err != nil {
-		p.message = msg
-	}
 }
 
-func (p *paginator) Next() {
+func (p *paginator) Next(e *discord.InteractionEvent) {
 	p.Index++
 	if p.Index+1 > len(p.Pages) {
 		p.Index = 0
 	}
 	send := p.Pages[p.Index]
-	msg, err := p.context.s.s.Client.EditMessageComplex(p.message.ChannelID, p.message.ID, api.EditMessageData{
-		Embeds: &[]discord.Embed{send},
-		Components: &discord.ContainerComponents{
-			p.context.keyboard(),
+	p.context.s.s.Client.RespondInteraction(e.ID, e.Token, api.InteractionResponse{
+		Type: api.UpdateMessage,
+		Data: &api.InteractionResponseData{
+			Embeds: &[]discord.Embed{send},
 		},
 	})
-	if err != nil {
-		p.message = msg
-	}
 }
