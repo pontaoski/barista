@@ -83,6 +83,7 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	discord.AddHandler(d.discordMessageCreate)
 	discord.AddHandler(d.discordMessageEdit)
 	discord.AddHandler(d.discordMessageDelete)
+	discord.AddHandler(d.paginator)
 
 	d.s = discord
 
