@@ -1,22 +1,26 @@
 package discord
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/config"
 	"github.com/appadeia/barista/barista-go/log"
-	"github.com/bwmarrin/discordgo"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
+	"github.com/diamondburned/arikawa/v3/state"
 )
 
 // The DiscordBackend handles Discord connections
 type DiscordBackend struct {
 	token string
 	name  string
-	s     *discordgo.Session
+	s     *state.State
+	me    *discord.User
 }
 
-var backends = map[string]*DiscordBackend{}
+var backends = map[discord.UserID]*DiscordBackend{}
 
 func init() {
 	for _, token := range config.BotConfig.Services.Discord {
@@ -29,16 +33,16 @@ func init() {
 
 func (d *DiscordBackend) Stats() (r *commandlib.BackendStats) {
 	r = &commandlib.BackendStats{}
-	r.Communities = uint64(len(d.s.State.Guilds))
+	guilds, err := d.s.Client.Guilds(0)
+	if err != nil {
+		return r
+	}
+	r.Communities = uint64(len(guilds))
 	var users uint64
-	var all map[string]struct{}
-	for _, guild := range d.s.State.Guilds {
-		var allGuildUsers []*discordgo.Member
-		guildUsers, _ := d.s.GuildMembers(guild.ID, "", 1000)
-		for len(guildUsers) == 1000 {
-			guildUsers, _ = d.s.GuildMembers(guild.ID, guildUsers[len(guildUsers)-1].User.ID, 1000)
-		}
-		for _, user := range allGuildUsers {
+	var all map[discord.UserID]struct{}
+	for _, guild := range guilds {
+		guildUsers, _ := d.s.Members(guild.ID)
+		for _, user := range guildUsers {
 			all[user.User.ID] = struct{}{}
 		}
 	}
@@ -63,53 +67,64 @@ func (d *DiscordBackend) ID() string {
 func (d *DiscordBackend) IsBotOwner(c commandlib.Context) bool {
 	var ctx interface{} = c
 	casted := ctx.(*DiscordContext)
-	return casted.tm.Author.ID == config.BotConfig.Owner.Discord
+	return casted.tm.Author.ID.String() == config.BotConfig.Owner.Discord
 }
 
 // Start starts the Discord backend
 func (d *DiscordBackend) Start(cancel chan struct{}) error {
-	discord, err := discordgo.New("Bot " + d.token)
+	discord := state.New("Bot " + d.token)
 	defer discord.Close()
-	if err != nil {
-		return err
-	}
 
 	d.s = discord
-	err = discord.Open()
+	err := discord.Connect(context.Background())
 	if err != nil {
 		return err
 	}
 
 	d.token = ""
-	backends[discord.State.User.ID] = d
+	me, err := d.s.Me()
+	if err != nil {
+		return err
+	}
+	backends[me.ID] = d
+	d.me = me
 
 	log.Info("Discord (%s) session started", d.name)
-	discord.AddHandler(discordMessageCreate)
-	discord.AddHandler(discordMessageEdit)
-	discord.AddHandler(discordMessageDelete)
+	discord.AddHandler(d.discordMessageCreate)
+	discord.AddHandler(d.discordMessageEdit)
+	discord.AddHandler(d.discordMessageDelete)
 
 	<-cancel
 	return nil
 }
 
-func discordMessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
-	if m.Author != nil && m.Author.ID == s.State.User.ID {
+func (d *DiscordBackend) discordMessageCreate(m *gateway.MessageCreateEvent) {
+	if m.Author.ID == d.me.ID {
 		return
 	}
-	DiscordMessage(s, m.Message, m)
+	DiscordMessage(d, &m.Message)
 }
 
-func discordMessageEdit(s *discordgo.Session, m *discordgo.MessageUpdate) {
-	msg, err := s.ChannelMessage(m.ChannelID, m.ID)
-	if err != nil {
+func (d *DiscordBackend) discordMessageEdit(m *gateway.MessageUpdateEvent) {
+	if m.Author.ID == d.me.ID {
 		return
 	}
-	if m.Author != nil && msg.Author.ID == s.State.User.ID {
-		return
-	}
-	DiscordMessage(s, m.Message, m)
+	DiscordMessage(d, &m.Message)
 }
 
-func discordMessageDelete(s *discordgo.Session, m *discordgo.MessageDelete) {
-	DeleteDiscordMessage(s, m)
+func (d *DiscordBackend) discordMessageDelete(m *gateway.MessageDeleteEvent) {
+	DeleteDiscordMessage(d, m)
+}
+
+func (d *DiscordBackend) paginator(m *gateway.InteractionCreateEvent) {
+	switch e := m.InteractionEvent.Data.(type) {
+	case *discord.ButtonInteraction:
+		if val, ok := paginatorCache.Get(m.Message.ID); ok {
+			if e.CustomID == "previous" {
+				val.(*paginator).Prev()
+			} else {
+				val.(*paginator).Next()
+			}
+		}
+	}
 }

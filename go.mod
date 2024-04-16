@@ -4,13 +4,12 @@ go 1.16
 
 require (
 	github.com/BurntSushi/toml v0.3.1
-	github.com/Necroforger/dgwidgets v0.0.0-20190131052008-56c8c1ca33e0
 	github.com/Tnze/go-mc v1.16.1
 	github.com/agext/levenshtein v1.2.3
 	github.com/alecthomas/repr v0.0.0-20210801044451-80ca428c5142
 	github.com/antchfx/xmlquery v1.2.1
 	github.com/antchfx/xpath v1.2.0 // indirect
-	github.com/bwmarrin/discordgo v0.23.2
+	github.com/diamondburned/arikawa/v3 v3.3.5
 	github.com/dustin/go-humanize v1.0.0
 	github.com/facebook/ent v0.4.3
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
@@ -27,12 +26,11 @@ require (
 	github.com/lrstanley/girc v0.0.0-20190801035559-4fc93959e1a7
 	github.com/matrix-org/gomatrix v0.0.0-20200408155310-408fff5e6a97
 	github.com/mattn/go-sqlite3 v2.0.1+incompatible
-	github.com/sashabaranov/go-openai v1.5.7 // indirect
+	github.com/sashabaranov/go-openai v1.5.7
 	github.com/spf13/pflag v1.0.5
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
 	github.com/writeas/go-strip-markdown v2.0.1+incompatible
 	github.com/xanzy/go-gitlab v0.39.0
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	google.golang.org/api v0.33.0
 	google.golang.org/grpc v1.33.2 // indirect

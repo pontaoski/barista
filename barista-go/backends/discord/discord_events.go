@@ -3,11 +3,13 @@ package discord
 import (
 	"github.com/appadeia/barista/barista-go/commandlib"
 	"github.com/appadeia/barista/barista-go/log"
-	"github.com/bwmarrin/discordgo"
+	"github.com/diamondburned/arikawa/v3/api"
+	"github.com/diamondburned/arikawa/v3/discord"
+	"github.com/diamondburned/arikawa/v3/gateway"
 )
 
 // DeleteDiscordMessage handles a deleted Discord message
-func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
+func DeleteDiscordMessage(s *DiscordBackend, m *gateway.MessageDeleteEvent) {
 	if val, ok := commandCache.Get(m.ID); ok {
 		tmp := val.(*DiscordContext)
 		tmp.ContextMixin.ContextType = commandlib.DeleteCommand
@@ -17,19 +19,19 @@ func DeleteDiscordMessage(s *discordgo.Session, m *discordgo.MessageDelete) {
 			})
 		}
 		for _, paginator := range tmp.paginators {
-			paginator.DeleteMessageWhenDone = true
-			paginator.Widget.Close <- true
+			paginator.Inactive()
+			s.s.Client.DeleteMessage(paginator.message.ChannelID, paginator.message.ID, api.AuditLogReason(""))
 		}
 		for _, message := range tmp.pm {
 			if message != nil {
-				s.ChannelMessageDelete(message.ChannelID, message.ID)
+				s.s.Client.DeleteMessage(message.ChannelID, message.ID, api.AuditLogReason(""))
 			}
 		}
 	}
 }
 
 // DiscordMessage handles a created or edited Discord message
-func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) {
+func DiscordMessage(d *DiscordBackend, m *discord.Message) {
 	strip := m.Content
 	if val, ok := commandCache.Get(m.ID); ok {
 		if cmd, contextMixin, ok := commandlib.LexCommand(strip); ok {
@@ -42,7 +44,7 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) 
 		}
 	} else {
 		if cmd, contextMixin, ok := commandlib.LexCommand(strip); ok {
-			dc := buildContext(contextMixin, s, m)
+			dc := buildContext(contextMixin, d, m)
 			contextMixin.ContextType = commandlib.CreateCommand
 			commandCache.Add(m.ID, &dc)
 			go log.CanPanic(func() {
@@ -61,7 +63,7 @@ func DiscordMessage(s *discordgo.Session, m *discordgo.Message, ev interface{}) 
 		}
 	} else {
 		for _, tag := range commandlib.LexTags(strip) {
-			dc := buildContext(tag.Context, s, m)
+			dc := buildContext(tag.Context, d, m)
 			tagCache.Add(m.ID, &dc)
 			go log.CanPanic(func() {
 				tag.Tag.Action(&dc)
