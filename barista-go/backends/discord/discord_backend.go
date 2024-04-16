@@ -80,6 +80,10 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	discord.AddIntents(gateway.IntentGuildMessages)
 	discord.AddIntents(gateway.IntentMessageContent)
 
+	discord.AddHandler(d.discordMessageCreate)
+	discord.AddHandler(d.discordMessageEdit)
+	discord.AddHandler(d.discordMessageDelete)
+
 	d.s = discord
 	err := discord.Connect(context.Background())
 	if err != nil {
@@ -95,9 +99,6 @@ func (d *DiscordBackend) Start(cancel chan struct{}) error {
 	d.me = me
 
 	log.Info("Discord (%s) session started", d.name)
-	discord.AddHandler(d.discordMessageCreate)
-	discord.AddHandler(d.discordMessageEdit)
-	discord.AddHandler(d.discordMessageDelete)
 
 	<-cancel
 	return nil
