@@ -13,12 +13,12 @@ func init() {
 		Name:  I18n("DNF Repository Query"),
 		Usage: I18n("Query repositories with DNF"),
 		ID:    "dnf-repoquery",
-		Examples: `dnf repoquery -d=opensuse --provides dnf
-dnf repoquery -d=fedora --whatprovides cmake(KF5Kirigami2)
-dnf repoquery -d=mageia -l chromium`,
+		Examples: `ilo, dnf repoquery -d=opensuse --provides dnf
+ilo, dnf repoquery -d=fedora --whatprovides cmake(KF5Kirigami2)
+ilo, dnf repoquery -d=mageia -l chromium`,
 		Matches: []string{
-			"dnf rq",
-			"dnf repoquery",
+			"ilo, dnf rq",
+			"ilo, dnf repoquery",
 		},
 		Flags: commandlib.FlagList{
 			commandlib.StringFlag{

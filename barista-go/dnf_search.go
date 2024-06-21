@@ -16,13 +16,13 @@ func init() {
 		Usage: I18n("Search packages with DNF"),
 		ID:    "dnf-search",
 		Matches: []string{
-			"dnf search",
-			"dnf se",
-			"zypper search",
-			"zypper se",
+			"ilo, dnf search",
+			"ilo, dnf se",
+			"ilo, zypper search",
+			"ilo, zypper se",
 		},
-		Examples: `dnf se -d=fedora chromium
-dnf se -d=rpmfusion nvidia`,
+		Examples: `ilo, dnf se -d=fedora chromium
+ilo, dnf se -d=rpmfusion nvidia`,
 		Flags: commandlib.FlagList{
 			commandlib.StringFlag{
 				LongFlag:  "distro",
