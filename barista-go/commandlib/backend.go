@@ -36,6 +36,7 @@ func RegisterBackend(b Backend) {
 // StartBackends starts all backends and waits on them to exit
 func StartBackends() {
 	wg := sync.WaitGroup{}
+	log.Info("Starting %d backend...", len(backends))
 	for _, backend := range backends {
 		for _, active := range config.BotConfig.Services.Backends {
 			if backend.ID() == active {

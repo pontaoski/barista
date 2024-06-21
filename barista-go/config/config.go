@@ -20,7 +20,7 @@ type Config struct {
 		Matrix struct {
 			Homeserver string `toml:"homeserver"`
 			Username   string `toml:"username"`
-			Password   string `toml:"password"`
+			Token      string `toml:"token"`
 		} `toml:"matrix"`
 		IRC struct {
 			Server   string   `toml:"server"`

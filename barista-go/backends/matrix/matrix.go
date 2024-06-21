@@ -40,6 +40,7 @@ func sendHTMLMessage(client *gomatrix.Client, roomID, html, text string) {
 	if err != nil {
 		log.Error(err.Error())
 	}
+	client.UserTyping(roomID, false, 0)
 }
 
 func sendMessage(client *gomatrix.Client, roomID, text string) {
@@ -51,6 +52,7 @@ func sendMessage(client *gomatrix.Client, roomID, text string) {
 	if err != nil {
 		log.Error(err.Error())
 	}
+	client.UserTyping(roomID, false, 0)
 }
 
 func wrapCode(code string) string {
@@ -221,6 +223,7 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 			mc.client = client
 			mc.triggerEvent = ev
 			go log.CanPanic(func() {
+				client.UserTyping(ev.RoomID, true, 1000)
 				cmd.Action(&mc)
 			})
 		} else {
@@ -230,6 +233,7 @@ func MatrixMessage(client *gomatrix.Client, ev *gomatrix.Event) {
 				mc.client = client
 				mc.triggerEvent = ev
 				go log.CanPanic(func() {
+					client.UserTyping(ev.RoomID, true, 1000)
 					tc.Tag.Action(&mc)
 				})
 			}

@@ -73,7 +73,7 @@ func DnfRepoquery(c commandlib.Context) {
 		return
 	}
 
-	conn, err := dbus.SessionBus()
+	conn, err := dbus.SystemBus()
 	if err != nil {
 		log.Error("%+v", err)
 		c.SendMessage("primary", commandlib.ErrorEmbed(c.I18n("There was an issue connecting to QueryKit, the package search service.")))

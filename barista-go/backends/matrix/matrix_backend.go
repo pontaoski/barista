@@ -45,17 +45,8 @@ func (m MatrixBackend) Start(cancel chan struct{}) error {
 		return err
 	}
 
-	resp, err := client.Login(&gomatrix.ReqLogin{
-		Type:     "m.login.password",
-		User:     config.BotConfig.Services.Matrix.Username,
-		Password: config.BotConfig.Services.Matrix.Password,
-	})
-	if err != nil {
-		return err
-	}
-
-	client.SetCredentials(resp.UserID, resp.AccessToken)
-	client.UserID = resp.UserID
+	client.SetCredentials(config.BotConfig.Services.Matrix.Username, config.BotConfig.Services.Matrix.Token)
+	client.UserID = config.BotConfig.Services.Matrix.Username
 
 	syncer := client.Syncer.(*gomatrix.DefaultSyncer)
 	syncer.OnEventType("m.room.message", func(ev *gomatrix.Event) {
@@ -70,7 +61,11 @@ func (m MatrixBackend) Start(cancel chan struct{}) error {
 	})
 	go func() {
 		for {
-			client.Sync()
+			err := client.Sync()
+			if err != nil {
+				log.Error("matrix syncer failed: %v", err)
+				return
+			}
 			time.Sleep(time.Millisecond * 500)
 		}
 	}()
